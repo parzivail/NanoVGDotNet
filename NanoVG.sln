@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2042
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NanoVGDotNet", "NanoVG.net\NanoVGDotNet.csproj", "{9F9EC075-682C-4D38-B27F-9DD3384C5999}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FontStashDotNet", "FontStash.net\FontStashDotNet.csproj", "{E993C0A5-926B-4A10-B40E-2D5AECD1411D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9F9EC075-682C-4D38-B27F-9DD3384C5999}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F9EC075-682C-4D38-B27F-9DD3384C5999}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F9EC075-682C-4D38-B27F-9DD3384C5999}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F9EC075-682C-4D38-B27F-9DD3384C5999}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E993C0A5-926B-4A10-B40E-2D5AECD1411D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E993C0A5-926B-4A10-B40E-2D5AECD1411D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E993C0A5-926B-4A10-B40E-2D5AECD1411D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E993C0A5-926B-4A10-B40E-2D5AECD1411D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9678E25F-2CB6-471D-8C71-A8403D186305}
+	EndGlobalSection
+EndGlobal
