@@ -29,11 +29,13 @@ namespace NanoVgTest
         {
             NanoVG.nvgSave(vg);
 
-            NanoVG.nvgStrokeWidth(vg, 1);
-            NanoVG.nvgStrokePaint(vg, NanoVG.nvgLinearGradient(vg, 10, 10, 50, 30, NanoVG.nvgRGBA(255, 255, 255, 255), NanoVG.nvgRGBA(0, 255, 0, 255)));
+            NanoVG.nvgStrokeWidth(vg, 4);
+            NanoVG.nvgStrokePaint(vg, NanoVG.nvgLinearGradient(vg, 10, 10, 50, 50, NanoVG.nvgRGBA(255, 255, 255, 255), NanoVG.nvgRGBA(0, 128, 0, 255)));
+            NanoVG.nvgFillPaint(vg, NanoVG.nvgLinearGradient(vg, 10, 10, 50, 50, NanoVG.nvgRGBA(0, 128, 0, 255), NanoVG.nvgRGBA(255, 255, 255, 255)));
 
             NanoVG.nvgBeginPath(vg);
-            NanoVG.nvgRoundedRect(vg, 10, 10, 50, 30, 10);
+            NanoVG.nvgRect(vg, 10, 10, 50, 50);
+            NanoVG.nvgFill(vg);
             NanoVG.nvgStroke(vg);
 
             NanoVG.nvgRestore(vg);
