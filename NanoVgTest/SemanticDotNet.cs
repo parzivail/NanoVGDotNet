@@ -49,7 +49,9 @@ namespace NanoVgTest
         public static readonly SStyle StyleDefault = new SStyle();
         public static readonly SStyle StyleConnectedBtn = new SStyle
         {
-            ButtonBackgroundDefaultColor = NanoVG.nvgRGBA(214, 215, 216, 255)
+            ButtonBackgroundDefaultColor = NanoVG.nvgRGBA(214, 215, 216, 255),
+            ButtonBackgroundHoverColor = NanoVG.nvgRGBA(192, 193, 195, 255),
+            ButtonBackgroundFocusColor = NanoVG.nvgRGBA(176, 177, 178, 255)
         };
 
         public static SStyle Style { get; set; } = StyleDefault;
@@ -125,11 +127,12 @@ namespace NanoVgTest
         {
             NanoVG.nvgSave(ctx);
 
-            Style = StyleConnectedBtn;
-            SetButtonBgColor(ctx, state);
-            DrawConnectedRect(ctx, x, y, splitWidth, h, connection | SConnectedSide.Right);
+            WithStyle(StyleConnectedBtn, () =>
+            {
+                SetButtonBgColor(ctx, state);
+                DrawConnectedRect(ctx, x, y, splitWidth, h, connection | SConnectedSide.Right);
+            });
 
-            Style = StyleDefault;
             SetButtonBgColor(ctx, state);
             DrawConnectedRect(ctx, x + splitWidth, y, w, h, connection | SConnectedSide.Left);
 
@@ -174,6 +177,13 @@ namespace NanoVgTest
             NanoVG.nvgBeginPath(ctx);
             NanoVG.nvgRoundedRectVarying(ctx, x, y, w, h, tl, tr, br, bl);
             NanoVG.nvgFill(ctx);
+        }
+
+        public static void WithStyle(SStyle style, Action withStyle)
+        {
+            Style = style;
+            withStyle.Invoke();
+            Style = StyleDefault;
         }
 
         private static void SetFontStyle(NVGcontext ctx, SWidgetState state)
