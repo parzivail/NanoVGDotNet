@@ -47,6 +47,11 @@ namespace NanoVgTest
         }
 
         public static readonly SStyle StyleDefault = new SStyle();
+        public static readonly SStyle StyleConnectedBtn = new SStyle
+        {
+            ButtonBackgroundDefaultColor = NanoVG.nvgRGBA(214, 215, 216, 255)
+        };
+
         public static SStyle Style { get; set; } = StyleDefault;
 
         public static void SdnTextButton(NVGcontext ctx, float x, float y, float w, float h, string text, SWidgetState state = SWidgetState.Default, SConnectedSide connection = SConnectedSide.None)
@@ -111,6 +116,45 @@ namespace NanoVgTest
             NanoVG.nvgFontFace(ctx, Style.FontSans);
             NanoVG.nvgBeginPath(ctx);
             NanoVG.nvgText(ctx, Round(x + ifw + Style.IconPadding + (w - fw) / 2), Round(y + (h - sfh) / 2), text);
+            NanoVG.nvgFill(ctx);
+
+            NanoVG.nvgRestore(ctx);
+        }
+
+        public static void SdnSplitIconTextButton(NVGcontext ctx, float x, float y, float splitWidth, float w, float h, string icon, string text, SWidgetState state = SWidgetState.Default, SConnectedSide connection = SConnectedSide.None)
+        {
+            NanoVG.nvgSave(ctx);
+
+            Style = StyleConnectedBtn;
+            SetButtonBgColor(ctx, state);
+            DrawConnectedRect(ctx, x, y, splitWidth, h, connection | SConnectedSide.Right);
+
+            Style = StyleDefault;
+            SetButtonBgColor(ctx, state);
+            DrawConnectedRect(ctx, x + splitWidth, y, w, h, connection | SConnectedSide.Left);
+
+            SetFontStyle(ctx, state);
+
+            NanoVG.nvgFontFace(ctx, Style.FontIcon);
+            var ib = new float[4];
+            NanoVG.nvgTextBounds(ctx, 0, 0, icon, ib);
+            var ifw = ib[2] - ib[0];
+            var ifh = ib[3] - ib[1];
+
+            NanoVG.nvgFontFace(ctx, Style.FontSans);
+            var sb = new float[4];
+            NanoVG.nvgTextBounds(ctx, 0, 0, text, sb);
+            var sfw = sb[2] - sb[0];
+            var sfh = sb[3] - sb[1];
+
+            NanoVG.nvgFontFace(ctx, Style.FontIcon);
+            NanoVG.nvgBeginPath(ctx);
+            NanoVG.nvgText(ctx, Round(x + (splitWidth - ifw) / 2), Round(y + (h - ifh) / 2), icon);
+            NanoVG.nvgFill(ctx);
+
+            NanoVG.nvgFontFace(ctx, Style.FontSans);
+            NanoVG.nvgBeginPath(ctx);
+            NanoVG.nvgText(ctx, Round(x + splitWidth + (w - sfw) / 2), Round(y + (h - sfh) / 2), text);
             NanoVG.nvgFill(ctx);
 
             NanoVG.nvgRestore(ctx);
