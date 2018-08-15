@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NanoVGDotNet;
+using OpenTK.Input;
 
 namespace NanoVgTest
 {
@@ -15,6 +17,15 @@ namespace NanoVgTest
 
         public void Load(MainWindow win)
         {
+            var rIcons = NanoVG.nvgCreateFont(win.Nvg, "icon",
+                $"Resources{Path.DirectorySeparatorChar}Fonts{Path.DirectorySeparatorChar}{MaterialDesignIcons.FontIconFileName}");
+            if (rIcons == -1)
+                Console.WriteLine("Unable to load icons");
+
+            var rSans = NanoVG.nvgCreateFont(win.Nvg, "sans",
+                $"Resources{Path.DirectorySeparatorChar}Fonts{Path.DirectorySeparatorChar}latosemi.ttf");
+            if (rSans == -1)
+                Console.WriteLine("Unable to load sans");
         }
 
         public void Unload(MainWindow win)
@@ -29,14 +40,9 @@ namespace NanoVgTest
         {
             NanoVG.nvgSave(vg);
 
-            NanoVG.nvgStrokeWidth(vg, 4);
-            NanoVG.nvgStrokePaint(vg, NanoVG.nvgLinearGradient(vg, 10, 10, 50, 50, NanoVG.nvgRGBA(255, 255, 255, 255), NanoVG.nvgRGBA(0, 128, 0, 255)));
-            NanoVG.nvgFillPaint(vg, NanoVG.nvgLinearGradient(vg, 10, 10, 50, 50, NanoVG.nvgRGBA(0, 128, 0, 255), NanoVG.nvgRGBA(255, 255, 255, 255)));
+            SemanticDotNet.SdnTextButton(vg, 30, 30, 75, SemanticDotNet.Style.ButtonHeight, "Button", SemanticDotNet.SWidgetState.Default);
 
-            NanoVG.nvgBeginPath(vg);
-            NanoVG.nvgRect(vg, 10, 10, 50, 50);
-            NanoVG.nvgFill(vg);
-            NanoVG.nvgStroke(vg);
+            SemanticDotNet.SdnIconTextButton(vg, 30, 70, 85, SemanticDotNet.Style.ButtonHeight, MaterialDesignIcons.Qrcode, "Icon", SemanticDotNet.SWidgetState.Default);
 
             NanoVG.nvgRestore(vg);
         }

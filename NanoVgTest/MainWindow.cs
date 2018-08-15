@@ -43,7 +43,7 @@ namespace NanoVgTest
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             // Set background color
-            GL.ClearColor(Color.FromArgb(13, 13, 13));
+            GL.ClearColor(Color.FromArgb(255, 255, 255));
 
             // Init keyboard to ensure first frame won't NPE
             Keyboard = OpenTK.Input.Keyboard.GetState();
@@ -83,6 +83,10 @@ namespace NanoVgTest
             Mouse = OpenTK.Input.Mouse.GetState();
 
             _window.Tick(this);
+
+            //TargetRenderFrequency = Focused ? 0 : 15;
+
+            Title = $"FPS: {Math.Round(RenderFrequency)} | RenderTime: {Math.Round(RenderTime) * 1000}ms";
         }
 
         private void RenderHandler(object sender, FrameEventArgs e)
