@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using NanoVGDotNet;
@@ -24,9 +25,9 @@ namespace NanoVgTest
 
             public float BorderRadius { get; set; } = 4;
 
-            public NVGcolor ButtonBackgroundDefaultColor { get; set; } = NanoVG.nvgRGBA(224, 225, 226, 255);
-            public NVGcolor ButtonBackgroundHoverColor { get; set; } = NanoVG.nvgRGBA(202, 203, 205, 255);
-            public NVGcolor ButtonBackgroundFocusColor { get; set; } = NanoVG.nvgRGBA(186, 187, 188, 255);
+            public NVGcolor PrimaryDefaultColor { get; set; } = NanoVG.nvgRGBA(224, 225, 226, 255);
+            public NVGcolor PrimaryHoverColor { get; set; } = NanoVG.nvgRGBA(202, 203, 205, 255);
+            public NVGcolor PrimaryFocusColor { get; set; } = NanoVG.nvgRGBA(186, 187, 188, 255);
         }
 
         public enum SWidgetState
@@ -49,9 +50,9 @@ namespace NanoVgTest
         public static readonly SStyle StyleDefault = new SStyle();
         public static readonly SStyle StyleConnectedBtn = new SStyle
         {
-            ButtonBackgroundDefaultColor = NanoVG.nvgRGBA(214, 215, 216, 255),
-            ButtonBackgroundHoverColor = NanoVG.nvgRGBA(192, 193, 195, 255),
-            ButtonBackgroundFocusColor = NanoVG.nvgRGBA(176, 177, 178, 255)
+            PrimaryDefaultColor = NanoVG.nvgRGBA(214, 215, 216, 255),
+            PrimaryHoverColor = NanoVG.nvgRGBA(192, 193, 195, 255),
+            PrimaryFocusColor = NanoVG.nvgRGBA(176, 177, 178, 255)
         };
 
         public static SStyle Style { get; set; } = StyleDefault;
@@ -66,11 +67,39 @@ namespace NanoVgTest
             Button(ctx, x, y, w, h, Style.FontIcon, icon, state);
         }
 
+        public static void SdnCheckbox(NVGcontext ctx, float x, float y, float size, bool @checked, string label,
+            SWidgetState state = SWidgetState.Default)
+        {
+            NanoVG.nvgSave(ctx);
+
+            SetPrimaryStrokeColor(ctx, state);
+
+            NanoVG.nvgStrokeWidth(ctx, 2);
+
+            NanoVG.nvgBeginPath(ctx);
+            NanoVG.nvgRoundedRect(ctx, x, y, size, size, 4);
+            NanoVG.nvgStroke(ctx);
+
+            SetFontStyle(ctx, state);
+
+            NanoVG.nvgFontFace(ctx, Style.FontSans);
+            var b = new float[4];
+            NanoVG.nvgTextBounds(ctx, 0, 0, label, b);
+            var fw = b[2] - b[0];
+            var fh = b[3] - b[1];
+
+            NanoVG.nvgBeginPath(ctx);
+            NanoVG.nvgText(ctx, Round(x + size + 10), Round(y + (size - fh) / 2), label);
+            NanoVG.nvgFill(ctx);
+
+            NanoVG.nvgRestore(ctx);
+        }
+
         private static void Button(NVGcontext ctx, float x, float y, float w, float h, string font, string text, SWidgetState state = SWidgetState.Default, SConnectedSide connection = SConnectedSide.None)
         {
             NanoVG.nvgSave(ctx);
 
-            SetButtonBgColor(ctx, state);
+            SetPrimaryFillColor(ctx, state);
             DrawConnectedRect(ctx, x, y, w, h, connection);
 
             SetFontStyle(ctx, state);
@@ -92,7 +121,7 @@ namespace NanoVgTest
         {
             NanoVG.nvgSave(ctx);
 
-            SetButtonBgColor(ctx, state);
+            SetPrimaryFillColor(ctx, state);
             DrawConnectedRect(ctx, x, y, w, h, connection);
 
             SetFontStyle(ctx, state);
@@ -129,11 +158,11 @@ namespace NanoVgTest
 
             WithStyle(StyleConnectedBtn, () =>
             {
-                SetButtonBgColor(ctx, state);
+                SetPrimaryFillColor(ctx, state);
                 DrawConnectedRect(ctx, x, y, splitWidth, h, connection | SConnectedSide.Right);
             });
 
-            SetButtonBgColor(ctx, state);
+            SetPrimaryFillColor(ctx, state);
             DrawConnectedRect(ctx, x + splitWidth, y, w, h, connection | SConnectedSide.Left);
 
             SetFontStyle(ctx, state);
@@ -181,9 +210,10 @@ namespace NanoVgTest
 
         public static void WithStyle(SStyle style, Action withStyle)
         {
+            var orig = Style;
             Style = style;
             withStyle.Invoke();
-            Style = StyleDefault;
+            Style = orig;
         }
 
         private static void SetFontStyle(NVGcontext ctx, SWidgetState state)
@@ -198,18 +228,36 @@ namespace NanoVgTest
             return (float)Math.Round(x);
         }
 
-        private static void SetButtonBgColor(NVGcontext ctx, SWidgetState state)
+        private static void SetPrimaryFillColor(NVGcontext ctx, SWidgetState state)
         {
             switch (state)
             {
                 case SWidgetState.Default:
-                    NanoVG.nvgFillColor(ctx, Style.ButtonBackgroundDefaultColor);
+                    NanoVG.nvgFillColor(ctx, Style.PrimaryDefaultColor);
                     break;
                 case SWidgetState.Hover:
-                    NanoVG.nvgFillColor(ctx, Style.ButtonBackgroundHoverColor);
+                    NanoVG.nvgFillColor(ctx, Style.PrimaryHoverColor);
                     break;
                 case SWidgetState.Focus:
-                    NanoVG.nvgFillColor(ctx, Style.ButtonBackgroundFocusColor);
+                    NanoVG.nvgFillColor(ctx, Style.PrimaryFocusColor);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
+            }
+        }
+
+        private static void SetPrimaryStrokeColor(NVGcontext ctx, SWidgetState state)
+        {
+            switch (state)
+            {
+                case SWidgetState.Default:
+                    NanoVG.nvgStrokeColor(ctx, Style.PrimaryDefaultColor);
+                    break;
+                case SWidgetState.Hover:
+                    NanoVG.nvgStrokeColor(ctx, Style.PrimaryHoverColor);
+                    break;
+                case SWidgetState.Focus:
+                    NanoVG.nvgStrokeColor(ctx, Style.PrimaryFocusColor);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
