@@ -40,9 +40,9 @@ namespace NanoVgTest
         {
             NanoVG.nvgSave(vg);
 
-            SemanticDotNet.SdnTextButton(vg, 30, 30, 75, SemanticDotNet.Style.ButtonHeight, "Button", SemanticDotNet.SWidgetState.Default);
+            SemanticDotNet.SdnTextButton(vg, 30, 30, 75, SemanticDotNet.Style.ButtonHeight, "Button", connection: SemanticDotNet.SConnectedSide.Right);
 
-            SemanticDotNet.SdnIconTextButton(vg, 30, 70, 85, SemanticDotNet.Style.ButtonHeight, MaterialDesignIcons.Qrcode, "Icon", SemanticDotNet.SWidgetState.Default);
+            SemanticDotNet.SdnIconTextButton(vg, 105, 30, 85, SemanticDotNet.Style.ButtonHeight, MaterialDesignIcons.Qrcode, "Icon", connection: SemanticDotNet.SConnectedSide.Left);
 
             NanoVG.nvgRestore(vg);
         }

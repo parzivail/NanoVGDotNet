@@ -36,28 +36,35 @@ namespace NanoVgTest
             Focus
         }
 
+        [Flags]
+        public enum SConnectedSide
+        {
+            None = 0,
+            Top = 1,
+            Bottom = 1 << 1,
+            Left = 1 << 2,
+            Right = 1 << 3
+        }
+
         public static readonly SStyle StyleDefault = new SStyle();
         public static SStyle Style { get; set; } = StyleDefault;
 
-        public static void SdnTextButton(NVGcontext ctx, float x, float y, float w, float h, string text, SWidgetState state)
+        public static void SdnTextButton(NVGcontext ctx, float x, float y, float w, float h, string text, SWidgetState state = SWidgetState.Default, SConnectedSide connection = SConnectedSide.None)
         {
-            Button(ctx, x, y, w, h, Style.FontSans, text, state);
+            Button(ctx, x, y, w, h, Style.FontSans, text, state, connection);
         }
 
-        public static void SdnIconButton(NVGcontext ctx, float x, float y, float w, float h, string icon, SWidgetState state)
+        public static void SdnIconButton(NVGcontext ctx, float x, float y, float w, float h, string icon, SWidgetState state = SWidgetState.Default, SConnectedSide connection = SConnectedSide.None)
         {
             Button(ctx, x, y, w, h, Style.FontIcon, icon, state);
         }
 
-        private static void Button(NVGcontext ctx, float x, float y, float w, float h, string font, string text, SWidgetState state)
+        private static void Button(NVGcontext ctx, float x, float y, float w, float h, string font, string text, SWidgetState state = SWidgetState.Default, SConnectedSide connection = SConnectedSide.None)
         {
             NanoVG.nvgSave(ctx);
 
             SetButtonBgColor(ctx, state);
-
-            NanoVG.nvgBeginPath(ctx);
-            NanoVG.nvgRoundedRect(ctx, x, y, w, h, Style.BorderRadius);
-            NanoVG.nvgFill(ctx);
+            DrawConnectedRect(ctx, x, y, w, h, connection);
 
             SetFontStyle(ctx, state);
 
@@ -74,15 +81,12 @@ namespace NanoVgTest
             NanoVG.nvgRestore(ctx);
         }
 
-        public static void SdnIconTextButton(NVGcontext ctx, float x, float y, float w, float h, string icon, string text, SWidgetState state)
+        public static void SdnIconTextButton(NVGcontext ctx, float x, float y, float w, float h, string icon, string text, SWidgetState state = SWidgetState.Default, SConnectedSide connection = SConnectedSide.None)
         {
             NanoVG.nvgSave(ctx);
 
             SetButtonBgColor(ctx, state);
-
-            NanoVG.nvgBeginPath(ctx);
-            NanoVG.nvgRoundedRect(ctx, x, y, w, h, Style.BorderRadius);
-            NanoVG.nvgFill(ctx);
+            DrawConnectedRect(ctx, x, y, w, h, connection);
 
             SetFontStyle(ctx, state);
 
@@ -110,6 +114,22 @@ namespace NanoVgTest
             NanoVG.nvgFill(ctx);
 
             NanoVG.nvgRestore(ctx);
+        }
+
+        private static void DrawConnectedRect(NVGcontext ctx, float x, float y, float w, float h, SConnectedSide connection)
+        {
+            var tl = connection.HasFlag(SConnectedSide.Top) || connection.HasFlag(SConnectedSide.Left) ? 0 : Style.BorderRadius;
+            var tr = connection.HasFlag(SConnectedSide.Top) || connection.HasFlag(SConnectedSide.Right) ? 0 : Style.BorderRadius;
+            var bl = connection.HasFlag(SConnectedSide.Bottom) || connection.HasFlag(SConnectedSide.Left)
+                ? 0
+                : Style.BorderRadius;
+            var br = connection.HasFlag(SConnectedSide.Bottom) || connection.HasFlag(SConnectedSide.Right)
+                ? 0
+                : Style.BorderRadius;
+
+            NanoVG.nvgBeginPath(ctx);
+            NanoVG.nvgRoundedRectVarying(ctx, x, y, w, h, tl, tr, br, bl);
+            NanoVG.nvgFill(ctx);
         }
 
         private static void SetFontStyle(NVGcontext ctx, SWidgetState state)
