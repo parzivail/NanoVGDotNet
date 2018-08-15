@@ -77,8 +77,19 @@ namespace NanoVgTest
             NanoVG.nvgStrokeWidth(ctx, 2);
 
             NanoVG.nvgBeginPath(ctx);
-            NanoVG.nvgRoundedRect(ctx, x, y, size, size, 4);
+            NanoVG.nvgRoundedRect(ctx, x, y, size, size, Style.BorderRadius);
             NanoVG.nvgStroke(ctx);
+
+//            if (@checked)
+//            {
+//                NanoVG.nvgStrokeWidth(ctx, 3);
+//                NanoVG.nvgStrokeColor(ctx, Style.FontDefaultColor);
+//                NanoVG.nvgBeginPath(ctx);
+//                NanoVG.nvgMoveTo(ctx, x + 3, y + size * 1/2);
+//                NanoVG.nvgLineTo(ctx, x + size * 1/2, y + size * 3/4);
+//                NanoVG.nvgLineTo(ctx, x + size - 4, y + size * 1 / 4);
+//                NanoVG.nvgStroke(ctx);
+//            }
 
             SetFontStyle(ctx, state);
 

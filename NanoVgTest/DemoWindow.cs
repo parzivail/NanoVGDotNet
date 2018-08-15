@@ -45,7 +45,7 @@ namespace NanoVgTest
 
             SemanticDotNet.SdnSplitIconTextButton(vg, 30, 75, 36, 75, SemanticDotNet.Style.ButtonHeight, MaterialDesignIcons.BrightnessAuto, "Auto");
 
-            SemanticDotNet.SdnCheckbox(vg, 30, 120, 17, false, "Checkbox");
+            SemanticDotNet.SdnCheckbox(vg, 30, 120, 17, true, "Checkbox");
 
             NanoVG.nvgRestore(vg);
         }
