@@ -36,7 +36,7 @@
  *  the file lgpl-3.0.txt for more details.
  */
 
-#define NANOVG_GL2_IMPLEMENTATION
+#define NANOVG_GL3_IMPLEMENTATION
 #define NANOVG_GL_USE_STATE_FILTER
 
 #if NANOVG_GL2_IMPLEMENTATION
@@ -45,7 +45,7 @@
 #elif NANOVG_GL3_IMPLEMENTATION
 #define NANOVG_GL3
 #define NANOVG_GL_IMPLEMENTATION
-#define NANOVG_GL_USE_UNIFORMBUFFER
+//#define NANOVG_GL_USE_UNIFORMBUFFER
 #endif
 
 using System;
@@ -424,7 +424,7 @@ namespace NanoVGDotNet
 			shader.loc[(int)GlNvgUniformLoc.LocTex] = GL.GetUniformLocation(shader.prog, "tex");
 
 #if NANOVG_GL_USE_UNIFORMBUFFER
-			shader.loc[(int)GLNVGuniformLoc.GLNVG_LOC_FRAG] = GL.GetUniformBlockIndex(shader.prog, "frag");
+			shader.loc[(int)GlNvgUniformLoc.LocFrag] = GL.GetUniformBlockIndex(shader.prog, "frag");
 #else
 			shader.loc[(int)GlNvgUniformLoc.LocFrag] = GL.GetUniformLocation(shader.prog, "frag");
 #endif
@@ -459,8 +459,8 @@ namespace NanoVGDotNet
 
 #if NANOVG_GL_USE_UNIFORMBUFFER
 			// Create UBOs
-			uint iBlock = (uint)gl.shader.loc[(int)GLNVGuniformLoc.GLNVG_LOC_FRAG];
-			GL.UniformBlockBinding(gl.shader.prog, iBlock, (int)GLNVGuniformBindings.GLNVG_FRAG_BINDING);
+			uint iBlock = (uint)gl.shader.loc[(int)GlNvgUniformLoc.LocFrag];
+			GL.UniformBlockBinding(gl.shader.prog, iBlock, (int)GlNvgUniformBindings.GLNVG_FRAG_BINDING);
 			GL.GenBuffers(1, out gl.fragBuf);
 			GL.GetInteger(GetPName.UniformBufferOffsetAlignment, out align);
 #endif
@@ -508,8 +508,8 @@ namespace NanoVGDotNet
 		if (gl->fragBuf != 0)
 			glDeleteBuffers(1, &gl->fragBuf);
 			#endif
-		if (gl->vertArr != 0)
-			glDeleteVertexArrays(1, &gl->vertArr);
+		if (gl.vertArr != 0)
+			GL.DeleteVertexArray(gl.vertArr);
 			#endif
 			if (gl.vertBuf != 0)
 				GL.DeleteBuffers(1, ref gl.vertBuf);

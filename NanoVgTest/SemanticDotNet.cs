@@ -79,7 +79,7 @@ namespace NanoVgTest
             NanoVG.nvgBeginPath(ctx);
             NanoVG.nvgRoundedRect(ctx, x, y, size, size, Style.BorderRadius);
             NanoVG.nvgStroke(ctx);
-            
+
             if (@checked)
             {
                 NanoVG.nvgTextAlign(ctx, (int)NvgAlign.Top | (int)NvgAlign.Left);
@@ -93,7 +93,7 @@ namespace NanoVgTest
 
                 NanoVG.nvgFillColor(ctx, Style.FontDefaultColor);
                 NanoVG.nvgBeginPath(ctx);
-                NanoVG.nvgText(ctx, Round(x + (size - ifw) / 2), Round(y + (size - ifh) / 2f + 1), MaterialDesignIcons.Check);
+                NanoVG.nvgText(ctx, Round(x + (size - ifw) / 2), Round(y + (size - ifh) / 2 + 1), MaterialDesignIcons.Check);
                 NanoVG.nvgStroke(ctx);
             }
 
@@ -106,8 +106,8 @@ namespace NanoVgTest
             var fh = b[3] - b[1];
 
             NanoVG.nvgBeginPath(ctx);
-            NanoVG.nvgText(ctx, Round(x + size + 10), Round(y + (size - fh) / 2), label);
-            NanoVG.nvgFill(ctx);
+            NanoVG.nvgText(ctx, Round(x + size + 10), Round(y + (size - fh) / 2 + 1), label);
+            NanoVG.nvgStroke(ctx);
 
             NanoVG.nvgRestore(ctx);
         }
@@ -117,7 +117,29 @@ namespace NanoVgTest
             NanoVG.nvgSave(ctx);
 
             SetPrimaryFillColor(ctx, state);
-            DrawConnectedRect(ctx, x, y, w, h, connection);
+            DrawFilledRect(ctx, x, y, w, h, connection);
+
+            SetFontStyle(ctx, state);
+
+            NanoVG.nvgFontFace(ctx, font);
+            var b = new float[4];
+            NanoVG.nvgTextBounds(ctx, 0, 0, text, b);
+            var fw = b[2] - b[0];
+            var fh = b[3] - b[1];
+            
+            NanoVG.nvgBeginPath(ctx);
+            NanoVG.nvgText(ctx, Round(x + (w - fw) / 2), Round(y + (h - fh) / 2), text);
+            NanoVG.nvgStroke(ctx);
+
+            NanoVG.nvgRestore(ctx);
+        }
+
+        private static void TextBox(NVGcontext ctx, float x, float y, float w, float h, string font, string text, SWidgetState state = SWidgetState.Default, SConnectedSide connection = SConnectedSide.None)
+        {
+            NanoVG.nvgSave(ctx);
+
+            SetPrimaryStrokeColor(ctx, state);
+            DrawStrokedRect(ctx, x, y, w, h, connection);
 
             SetFontStyle(ctx, state);
 
@@ -127,9 +149,13 @@ namespace NanoVgTest
             var fw = b[2] - b[0];
             var fh = b[3] - b[1];
 
+            NanoVG.nvgScissor(ctx, x + 1, y + 1, w - 2, h - 2);
+
             NanoVG.nvgBeginPath(ctx);
             NanoVG.nvgText(ctx, Round(x + (w - fw) / 2), Round(y + (h - fh) / 2), text);
-            NanoVG.nvgFill(ctx);
+            NanoVG.nvgStroke(ctx);
+
+            NanoVG.nvgResetScissor(ctx);
 
             NanoVG.nvgRestore(ctx);
         }
@@ -139,7 +165,7 @@ namespace NanoVgTest
             NanoVG.nvgSave(ctx);
 
             SetPrimaryFillColor(ctx, state);
-            DrawConnectedRect(ctx, x, y, w, h, connection);
+            DrawFilledRect(ctx, x, y, w, h, connection);
 
             SetFontStyle(ctx, state);
 
@@ -159,12 +185,12 @@ namespace NanoVgTest
             NanoVG.nvgFontFace(ctx, Style.FontIcon);
             NanoVG.nvgBeginPath(ctx);
             NanoVG.nvgText(ctx, Round(x + (w - fw) / 2), Round(y + (h - sfh) / 2), icon);
-            NanoVG.nvgFill(ctx);
+            NanoVG.nvgStroke(ctx);
 
             NanoVG.nvgFontFace(ctx, Style.FontSans);
             NanoVG.nvgBeginPath(ctx);
             NanoVG.nvgText(ctx, Round(x + ifw + Style.IconPadding + (w - fw) / 2), Round(y + (h - sfh) / 2), text);
-            NanoVG.nvgFill(ctx);
+            NanoVG.nvgStroke(ctx);
 
             NanoVG.nvgRestore(ctx);
         }
@@ -176,11 +202,11 @@ namespace NanoVgTest
             WithStyle(StyleConnectedBtn, () =>
             {
                 SetPrimaryFillColor(ctx, state);
-                DrawConnectedRect(ctx, x, y, splitWidth, h, connection | SConnectedSide.Right);
+                DrawFilledRect(ctx, x, y, splitWidth, h, connection | SConnectedSide.Right);
             });
 
             SetPrimaryFillColor(ctx, state);
-            DrawConnectedRect(ctx, x + splitWidth, y, w, h, connection | SConnectedSide.Left);
+            DrawFilledRect(ctx, x + splitWidth, y, w, h, connection | SConnectedSide.Left);
 
             SetFontStyle(ctx, state);
 
@@ -199,17 +225,27 @@ namespace NanoVgTest
             NanoVG.nvgFontFace(ctx, Style.FontIcon);
             NanoVG.nvgBeginPath(ctx);
             NanoVG.nvgText(ctx, Round(x + (splitWidth - ifw) / 2), Round(y + (h - ifh) / 2), icon);
-            NanoVG.nvgFill(ctx);
+            NanoVG.nvgStroke(ctx);
 
             NanoVG.nvgFontFace(ctx, Style.FontSans);
             NanoVG.nvgBeginPath(ctx);
             NanoVG.nvgText(ctx, Round(x + splitWidth + (w - sfw) / 2), Round(y + (h - sfh) / 2), text);
-            NanoVG.nvgFill(ctx);
+            NanoVG.nvgStroke(ctx);
 
             NanoVG.nvgRestore(ctx);
         }
 
-        private static void DrawConnectedRect(NVGcontext ctx, float x, float y, float w, float h, SConnectedSide connection)
+        private static void DrawFilledRect(NVGcontext ctx, float x, float y, float w, float h, SConnectedSide connection)
+        {
+            DrawRect(ctx, x, y, w, h, connection, true);
+        }
+
+        private static void DrawStrokedRect(NVGcontext ctx, float x, float y, float w, float h, SConnectedSide connection)
+        {
+            DrawRect(ctx, x, y, w, h, connection, false);
+        }
+
+        private static void DrawRect(NVGcontext ctx, float x, float y, float w, float h, SConnectedSide connection, bool fill)
         {
             var tl = connection.HasFlag(SConnectedSide.Top) || connection.HasFlag(SConnectedSide.Left) ? 0 : Style.BorderRadius;
             var tr = connection.HasFlag(SConnectedSide.Top) || connection.HasFlag(SConnectedSide.Right) ? 0 : Style.BorderRadius;
@@ -222,7 +258,10 @@ namespace NanoVgTest
 
             NanoVG.nvgBeginPath(ctx);
             NanoVG.nvgRoundedRectVarying(ctx, x, y, w, h, tl, tr, br, bl);
-            NanoVG.nvgFill(ctx);
+            if (fill)
+                NanoVG.nvgFill(ctx);
+            else
+                NanoVG.nvgStroke(ctx);
         }
 
         public static void WithStyle(SStyle style, Action withStyle)

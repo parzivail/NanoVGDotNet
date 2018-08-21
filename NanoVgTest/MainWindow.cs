@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
+using NanoVgTest.Shader;
 using NanoVGDotNet;
 using OpenTK;
 using OpenTK.Graphics;
@@ -14,6 +16,11 @@ namespace NanoVgTest
     {
         private readonly IWindow _window;
         private bool _shouldDie;
+
+        private ShaderProgram _shaderProgram;
+        uint _colorTexture;
+        uint _depthTexture;
+        uint _fboHandle;
 
         public NVGcontext Nvg = new NVGcontext();
         public KeyboardState Keyboard;
@@ -45,6 +52,38 @@ namespace NanoVgTest
             // Set background color
             GL.ClearColor(Color.FromArgb(255, 255, 255));
 
+            // Create Color Tex
+            GL.GenTextures(1, out _colorTexture);
+            GL.BindTexture(TextureTarget.Texture2D, _colorTexture);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
+            // GL.Ext.GenerateMipmap( GenerateMipmapTarget.Texture2D );
+
+            // Create Depth Tex
+            GL.GenTextures(1, out _depthTexture);
+            GL.BindTexture(TextureTarget.Texture2D, _depthTexture);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, (PixelInternalFormat)All.DepthComponent32, Width, Height, 0, PixelFormat.DepthComponent, PixelType.UnsignedInt, IntPtr.Zero);
+            // things go horribly wrong if DepthComponent's Bitcount does not match the main Framebuffer's Depth
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
+            // GL.Ext.GenerateMipmap( GenerateMipmapTarget.Texture2D );
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            // Create a FBO and attach the textures
+            GL.Ext.GenFramebuffers(1, out _fboHandle);
+            GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, _fboHandle);
+            GL.Ext.FramebufferTexture2D(FramebufferTarget.FramebufferExt, FramebufferAttachment.ColorAttachment0Ext, TextureTarget.Texture2D, _colorTexture, 0);
+            GL.Ext.FramebufferTexture2D(FramebufferTarget.FramebufferExt, FramebufferAttachment.DepthAttachmentExt, TextureTarget.Texture2D, _depthTexture, 0);
+            GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, 0);
+
+            _shaderProgram = new DefaultShaderProgram(File.ReadAllText("Resources/Shader/shader.frag"), File.ReadAllText("Resources/Shader/shader.vert"));
+            _shaderProgram.InitProgram();
+
             // Init keyboard to ensure first frame won't NPE
             Keyboard = OpenTK.Input.Keyboard.GetState();
             Mouse = OpenTK.Input.Mouse.GetState();
@@ -71,6 +110,12 @@ namespace NanoVgTest
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
             GL.Ortho(-1.0, 1.0, -1.0, 1.0, 0.0, 4.0);
+
+            GL.BindTexture(TextureTarget.Texture2D, _colorTexture);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
+            GL.BindTexture(TextureTarget.Texture2D, _depthTexture);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, (PixelInternalFormat)All.DepthComponent32, Width, Height, 0, PixelFormat.DepthComponent, PixelType.UnsignedInt, IntPtr.Zero);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
         private void UpdateHandler(object sender, FrameEventArgs e)
@@ -86,7 +131,11 @@ namespace NanoVgTest
 
             //TargetRenderFrequency = Focused ? 0 : 15;
 
-            Title = $"FPS: {Math.Round(RenderFrequency)} | RenderTime: {Math.Round(RenderTime) * 1000}ms";
+            Title = $"FPS: {Math.Round(RenderFrequency)} | RenderTime: {Math.Round(RenderTime * 1000)}ms";
+
+            var err = GL.GetError();
+            if (err != ErrorCode.NoError)
+                Console.WriteLine($"GL Error: {err}");
         }
 
         private void RenderHandler(object sender, FrameEventArgs e)
@@ -96,9 +145,51 @@ namespace NanoVgTest
                      ClearBufferMask.DepthBufferBit |
                      ClearBufferMask.StencilBufferBit);
 
-            NanoVG.nvgBeginFrame(Nvg, Width, Height, 1);
-            _window.Render(this, Nvg);
-            NanoVG.nvgEndFrame(Nvg);
+            GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, _fboHandle); // disable rendering into the FBO
+            {
+                // Reset the view
+                GL.Clear(ClearBufferMask.ColorBufferBit |
+                         ClearBufferMask.DepthBufferBit |
+                         ClearBufferMask.StencilBufferBit);
+
+                NanoVG.nvgBeginFrame(Nvg, Width, Height, 1);
+                _window.Render(this, Nvg);
+                NanoVG.nvgEndFrame(Nvg);
+            }
+            GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, 0); // disable rendering into the FBO
+            
+            GL.Disable(EnableCap.Texture2D);
+            GL.PushMatrix();
+            {
+                GL.Color3(Color.White);
+                GL.BindTexture(TextureTarget.Texture2D, _colorTexture);
+                _shaderProgram.Use(new List<Uniform>
+                {
+                    new Uniform("screenTexture")
+                    {
+                        Value = 0
+                    }
+                });
+
+                GL.Begin(PrimitiveType.Quads);
+                {
+                    GL.TexCoord2(0f, 1f);
+                    GL.Vertex2(-1.0f, 1.0f);
+                    GL.TexCoord2(0.0f, 0.0f);
+                    GL.Vertex2(-1.0f, -1.0f);
+                    GL.TexCoord2(1.0f, 0.0f);
+                    GL.Vertex2(1.0f, -1.0f);
+                    GL.TexCoord2(1.0f, 1.0f);
+                    GL.Vertex2(1.0f, 1.0f);
+                }
+                GL.End();
+
+                GL.BindTexture(TextureTarget.Texture2D, 0);
+
+                GL.UseProgram(0);
+            }
+            GL.PopMatrix();
+            GL.Disable(EnableCap.Texture2D);
 
             // Swap the graphics buffer
             SwapBuffers();
