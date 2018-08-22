@@ -14,9 +14,9 @@ uniform float unfocus;
 
 vec3 kernel[3];
 
-float rand(vec2 p)
+float rand(vec2 v)
 {
-	return fract(1e4 * sin(17.0 * p.x + p.y * 0.1) * (0.1 + abs(sin(p.y * 13.0 + p.x))));
+	return fract(((53. + v.x) * 53. + v.y) / 100.);
 }
 
 vec2 ntscInterlaceJitter(vec2 randvec, vec2 uv)
