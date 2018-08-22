@@ -49,9 +49,6 @@ namespace NanoVgTest
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            // Set background color
-            GL.ClearColor(Color.FromArgb(255, 255, 255));
-
             // Create Color Tex
             GL.GenTextures(1, out _colorTexture);
             GL.BindTexture(TextureTarget.Texture2D, _colorTexture);
@@ -140,6 +137,7 @@ namespace NanoVgTest
 
         private void RenderHandler(object sender, FrameEventArgs e)
         {
+            GL.ClearColor(Color.FromArgb(255, 255, 255));
             // Reset the view
             GL.Clear(ClearBufferMask.ColorBufferBit |
                      ClearBufferMask.DepthBufferBit |
@@ -147,6 +145,7 @@ namespace NanoVgTest
 
             GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, _fboHandle); // disable rendering into the FBO
             {
+                GL.ClearColor(Color.FromArgb(13, 13, 13));
                 // Reset the view
                 GL.Clear(ClearBufferMask.ColorBufferBit |
                          ClearBufferMask.DepthBufferBit |
@@ -163,13 +162,22 @@ namespace NanoVgTest
             {
                 GL.Color3(Color.White);
                 GL.BindTexture(TextureTarget.Texture2D, _colorTexture);
-                _shaderProgram.Use(new List<Uniform>
+                var uniforms = new[]
                 {
-                    new Uniform("screenTexture")
+                    new Uniform("iChannel0")
                     {
                         Value = 0
+                    },
+                    new Uniform("iTime")
+                    {
+                        Value = (float)DateTime.Now.TimeOfDay.TotalSeconds
+                    },
+                    new Uniform("iResolution")
+                    {
+                        Value = new Vector2(Width, Height)
                     }
-                });
+                };
+                _shaderProgram.Use(uniforms);
 
                 GL.Begin(PrimitiveType.Quads);
                 {

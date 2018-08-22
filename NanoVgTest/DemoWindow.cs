@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -40,12 +41,21 @@ namespace NanoVgTest
         {
             NanoVG.nvgSave(vg);
 
-            SemanticDotNet.SdnTextButton(vg, 30, 30, 75, SemanticDotNet.Style.ButtonHeight, "Button", connection: SemanticDotNet.SConnectedSide.Right);
-            SemanticDotNet.SdnIconTextButton(vg, 105, 30, 85, SemanticDotNet.Style.ButtonHeight, MaterialDesignIcons.Qrcode, "Icon", connection: SemanticDotNet.SConnectedSide.Left);
+//            SemanticDotNet.SdnTextButton(vg, 30, 30, 75, SemanticDotNet.Style.ButtonHeight, "Button", connection: SemanticDotNet.SConnectedSide.Right);
+//            SemanticDotNet.SdnIconTextButton(vg, 105, 30, 85, SemanticDotNet.Style.ButtonHeight, MaterialDesignIcons.Qrcode, "Icon", connection: SemanticDotNet.SConnectedSide.Left);
+//
+//            SemanticDotNet.SdnSplitIconTextButton(vg, 30, 75, 36, 75, SemanticDotNet.Style.ButtonHeight, MaterialDesignIcons.BrightnessAuto, "Auto");
+//
+//            SemanticDotNet.SdnCheckbox(vg, 30, 120, 17, true, "Checkbox");
 
-            SemanticDotNet.SdnSplitIconTextButton(vg, 30, 75, 36, 75, SemanticDotNet.Style.ButtonHeight, MaterialDesignIcons.BrightnessAuto, "Auto");
+            NanoVG.nvgFillColor(vg, NanoVG.nvgRGBA(255, 255, 255, 255));
+            NanoVG.nvgFontFace(vg, "sans");
+            NanoVG.nvgFontSize(vg, 64);
+            NanoVG.nvgTextAlign(vg, (int)NvgAlign.Top | (int)NvgAlign.Left);
 
-            SemanticDotNet.SdnCheckbox(vg, 30, 120, 17, true, "Checkbox");
+            NanoVG.nvgBeginPath(vg);
+            NanoVG.nvgText(vg, 50, 50, "Commercial Mining Ship 'The Nostromo'");
+            NanoVG.nvgStroke(vg);
 
             NanoVG.nvgRestore(vg);
         }
