@@ -67,6 +67,9 @@
     <None Include="Resources\Fonts\materialdesignicons-webfont.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Resources\Fonts\vcrmono.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\Shader\shader.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

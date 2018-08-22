@@ -175,6 +175,22 @@ namespace NanoVgTest
                     new Uniform("iResolution")
                     {
                         Value = new Vector2(Width, Height)
+                    },
+                    new Uniform("grainAmplitude")
+                    {
+                        Value = 0.04f
+                    },
+                    new Uniform("maskSize")
+                    {
+                        Value = 2f
+                    },
+                    new Uniform("jitterChance")
+                    {
+                        Value = 0.1f
+                    },
+                    new Uniform("unfocus")
+                    {
+                        Value = 0.85f
                     }
                 };
                 _shaderProgram.Use(uniforms);

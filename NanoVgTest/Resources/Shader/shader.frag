@@ -7,29 +7,34 @@ uniform vec2 iResolution;
 uniform sampler2D iChannel0;
 uniform float iTime;
 
+uniform float grainAmplitude;
+uniform float maskSize;
+uniform float jitterChance;
+uniform float unfocus;
+
 vec3 kernel[3];
 
-const float kernelSampleDistance = 0.48;
-const float maskSize = 4.;
-
-float rand(vec2 p) { return fract(1e4 * sin(17.0 * p.x + p.y * 0.1) * (0.1 + abs(sin(p.y * 13.0 + p.x)))); }
+float rand(vec2 p)
+{
+	return fract(1e4 * sin(17.0 * p.x + p.y * 0.1) * (0.1 + abs(sin(p.y * 13.0 + p.x))));
+}
 
 vec2 ntscInterlaceJitter(vec2 randvec, vec2 uv)
 {
     int uvY = int(uv.y * iResolution.y / maskSize);
-    if (rand(randvec + vec2(0., uvY)) > 0.9 && mod(float(uvY), 2.) == 0.)
-        uv.x += (2. / iResolution.x) * (rand(randvec + vec2(0., uvY)) * 2. - 1.);
+    if (rand(randvec + vec2(0., uvY)) < jitterChance && mod(float(uvY), 2.) == 0.)
+        uv.x += (maskSize / iResolution.x) * (rand(randvec + vec2(0., uvY)) * 2. - 1.);
     return uv;
 }
 
 vec4 sampleKernel(sampler2D channel, vec2 uv)
 {
-    kernel[0] = vec3(0.2, 0.4, 0.2);
-    kernel[1] = vec3(0.8, -2.3, 0.8);
-    kernel[2] = vec3(0.2, 0.4, 0.2);
+    kernel[0] = vec3(0.1, 0.2, 0.1);
+    kernel[1] = vec3(0.8, -1.4, 0.8);
+    kernel[2] = vec3(0.1, 0.2, 0.1);
     
-    vec2 onePxX = vec2(kernelSampleDistance / iResolution.x, 0.);
-    vec2 onePxY = vec2(0., kernelSampleDistance / iResolution.y);
+    vec2 onePxX = vec2(unfocus / iResolution.x, 0.);
+    vec2 onePxY = vec2(0., unfocus / iResolution.y);
     
     vec4 col = kernel[0].x * texture(channel, uv - onePxX - onePxY);
     col += kernel[0].y * texture(channel, uv - onePxY);
@@ -64,7 +69,7 @@ void main()
     vec4 col = sampleKernel(iChannel0, uv);
 
     // add grain
-    col += vec4(vec3(0.04 * (rand(gl_FragCoord.xy + now) * 2. - 1.)), 1.0);
+    col += vec4(vec3(grainAmplitude * (rand(gl_FragCoord.xy + now) * 2. - 1.)), 1.0);
     
     // output to screen
     FragColor = col;

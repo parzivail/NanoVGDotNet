@@ -92,9 +92,7 @@ namespace NanoVgTest
                 var ifh = ib[3] - ib[1];
 
                 NanoVG.nvgFillColor(ctx, Style.FontDefaultColor);
-                NanoVG.nvgBeginPath(ctx);
                 NanoVG.nvgText(ctx, Round(x + (size - ifw) / 2), Round(y + (size - ifh) / 2 + 1), MaterialDesignIcons.Check);
-                NanoVG.nvgStroke(ctx);
             }
 
             SetFontStyle(ctx, state);
@@ -104,10 +102,8 @@ namespace NanoVgTest
             NanoVG.nvgTextBounds(ctx, 0, 0, label, b);
             var fw = b[2] - b[0];
             var fh = b[3] - b[1];
-
-            NanoVG.nvgBeginPath(ctx);
+            
             NanoVG.nvgText(ctx, Round(x + size + 10), Round(y + (size - fh) / 2 + 1), label);
-            NanoVG.nvgStroke(ctx);
 
             NanoVG.nvgRestore(ctx);
         }
@@ -127,9 +123,7 @@ namespace NanoVgTest
             var fw = b[2] - b[0];
             var fh = b[3] - b[1];
             
-            NanoVG.nvgBeginPath(ctx);
             NanoVG.nvgText(ctx, Round(x + (w - fw) / 2), Round(y + (h - fh) / 2), text);
-            NanoVG.nvgStroke(ctx);
 
             NanoVG.nvgRestore(ctx);
         }
@@ -150,10 +144,8 @@ namespace NanoVgTest
             var fh = b[3] - b[1];
 
             NanoVG.nvgScissor(ctx, x + 1, y + 1, w - 2, h - 2);
-
-            NanoVG.nvgBeginPath(ctx);
+            
             NanoVG.nvgText(ctx, Round(x + (w - fw) / 2), Round(y + (h - fh) / 2), text);
-            NanoVG.nvgStroke(ctx);
 
             NanoVG.nvgResetScissor(ctx);
 
@@ -183,14 +175,10 @@ namespace NanoVgTest
             var fw = ifw + sfw + Style.IconPadding;
 
             NanoVG.nvgFontFace(ctx, Style.FontIcon);
-            NanoVG.nvgBeginPath(ctx);
             NanoVG.nvgText(ctx, Round(x + (w - fw) / 2), Round(y + (h - sfh) / 2), icon);
-            NanoVG.nvgStroke(ctx);
 
             NanoVG.nvgFontFace(ctx, Style.FontSans);
-            NanoVG.nvgBeginPath(ctx);
             NanoVG.nvgText(ctx, Round(x + ifw + Style.IconPadding + (w - fw) / 2), Round(y + (h - sfh) / 2), text);
-            NanoVG.nvgStroke(ctx);
 
             NanoVG.nvgRestore(ctx);
         }
@@ -223,14 +211,10 @@ namespace NanoVgTest
             var sfh = sb[3] - sb[1];
 
             NanoVG.nvgFontFace(ctx, Style.FontIcon);
-            NanoVG.nvgBeginPath(ctx);
             NanoVG.nvgText(ctx, Round(x + (splitWidth - ifw) / 2), Round(y + (h - ifh) / 2), icon);
-            NanoVG.nvgStroke(ctx);
 
             NanoVG.nvgFontFace(ctx, Style.FontSans);
-            NanoVG.nvgBeginPath(ctx);
             NanoVG.nvgText(ctx, Round(x + splitWidth + (w - sfw) / 2), Round(y + (h - sfh) / 2), text);
-            NanoVG.nvgStroke(ctx);
 
             NanoVG.nvgRestore(ctx);
         }

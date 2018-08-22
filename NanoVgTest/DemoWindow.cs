@@ -27,6 +27,11 @@ namespace NanoVgTest
                 $"Resources{Path.DirectorySeparatorChar}Fonts{Path.DirectorySeparatorChar}latosemi.ttf");
             if (rSans == -1)
                 Console.WriteLine("Unable to load sans");
+
+            var rVcr = NanoVG.nvgCreateFont(win.Nvg, "vcr",
+                $"Resources{Path.DirectorySeparatorChar}Fonts{Path.DirectorySeparatorChar}vcrmono.ttf");
+            if (rVcr == -1)
+                Console.WriteLine("Unable to load vcr");
         }
 
         public void Unload(MainWindow win)
@@ -49,13 +54,23 @@ namespace NanoVgTest
 //            SemanticDotNet.SdnCheckbox(vg, 30, 120, 17, true, "Checkbox");
 
             NanoVG.nvgFillColor(vg, NanoVG.nvgRGBA(255, 255, 255, 255));
-            NanoVG.nvgFontFace(vg, "sans");
-            NanoVG.nvgFontSize(vg, 64);
+            NanoVG.nvgStrokeColor(vg, NanoVG.nvgRGBA(0, 255, 0, 255));
+            NanoVG.nvgStrokeWidth(vg, 2);
+            NanoVG.nvgFontFace(vg, "vcr");
+            NanoVG.nvgFontSize(vg, 48);
             NanoVG.nvgTextAlign(vg, (int)NvgAlign.Top | (int)NvgAlign.Left);
+            
+            NanoVG.nvgText(vg, 50, 50, "Commercial Mining Ship 'The Nostromo'");
+
+            NanoVG.nvgSave(vg);
+            NanoVG.nvgTranslate(vg, 250, 250);
+            NanoVG.nvgRotate(vg, (float) (DateTime.Now.TimeOfDay.TotalSeconds % 10 / 10f * 2 * Math.PI));
 
             NanoVG.nvgBeginPath(vg);
-            NanoVG.nvgText(vg, 50, 50, "Commercial Mining Ship 'The Nostromo'");
+            NanoVG.nvgRect(vg, -20, -20, 40, 40);
             NanoVG.nvgStroke(vg);
+
+            NanoVG.nvgRestore(vg);
 
             NanoVG.nvgRestore(vg);
         }

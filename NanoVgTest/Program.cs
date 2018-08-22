@@ -11,10 +11,7 @@ namespace NanoVgTest
     {
         static void Main(string[] args)
         {
-            new MainWindow(new DemoWindow())
-            {
-                VSync = VSyncMode.Off
-            }.Run(20);
+            new MainWindow(new DemoWindow()).Run(20);
         }
     }
 }
