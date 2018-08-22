@@ -184,9 +184,17 @@ namespace NanoVgTest
                     {
                         Value = 2f
                     },
+                    new Uniform("scanlineSize")
+                    {
+                        Value = 2f
+                    },
                     new Uniform("jitterChance")
                     {
-                        Value = 0.1f
+                        Value = 0.2f
+                    },
+                    new Uniform("trackingLossChance")
+                    {
+                        Value = 0.05f
                     },
                     new Uniform("unfocus")
                     {
