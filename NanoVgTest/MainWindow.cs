@@ -178,7 +178,7 @@ namespace NanoVgTest
                     },
                     new Uniform("grainAmplitude")
                     {
-                        Value = 0.04f
+                        Value = 0f//0.04f
                     },
                     new Uniform("maskSize")
                     {
