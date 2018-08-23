@@ -176,6 +176,10 @@ namespace NanoVgTest
                     {
                         Value = new Vector2(Width, Height)
                     },
+                    new Uniform("enabled")
+                    {
+                        Value = !Keyboard[Key.S]
+                    },
                     new Uniform("grainAmplitude")
                     {
                         Value = 0f//0.04f
@@ -196,9 +200,25 @@ namespace NanoVgTest
                     {
                         Value = 0.05f
                     },
-                    new Uniform("unfocus")
+                    new Uniform("hue")
                     {
-                        Value = 0.85f
+                        Value = 0f
+                    },
+                    new Uniform("saturation")
+                    {
+                        Value = 30f
+                    },
+                    new Uniform("brightness")
+                    {
+                        Value = 1f
+                    },
+                    new Uniform("ntscFreqScale")
+                    {
+                        Value = 1f
+                    },
+                    new Uniform("impulseResponseSize")
+                    {
+                        Value = 29
                     }
                 };
                 _shaderProgram.Use(uniforms);

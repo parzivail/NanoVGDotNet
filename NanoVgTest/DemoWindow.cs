@@ -24,7 +24,7 @@ namespace NanoVgTest
                 Console.WriteLine("Unable to load icons");
 
             var rSans = NanoVG.nvgCreateFont(win.Nvg, "sans",
-                $"Resources{Path.DirectorySeparatorChar}Fonts{Path.DirectorySeparatorChar}latosemi.ttf");
+                $"Resources{Path.DirectorySeparatorChar}Fonts{Path.DirectorySeparatorChar}neuehaasgrotesk.ttf");
             if (rSans == -1)
                 Console.WriteLine("Unable to load sans");
 
@@ -46,28 +46,35 @@ namespace NanoVgTest
         {
             NanoVG.nvgSave(vg);
 
-//            SemanticDotNet.SdnTextButton(vg, 30, 30, 75, SemanticDotNet.Style.ButtonHeight, "Button", connection: SemanticDotNet.SConnectedSide.Right);
-//            SemanticDotNet.SdnIconTextButton(vg, 105, 30, 85, SemanticDotNet.Style.ButtonHeight, MaterialDesignIcons.Qrcode, "Icon", connection: SemanticDotNet.SConnectedSide.Left);
-//
-//            SemanticDotNet.SdnSplitIconTextButton(vg, 30, 75, 36, 75, SemanticDotNet.Style.ButtonHeight, MaterialDesignIcons.BrightnessAuto, "Auto");
-//
-//            SemanticDotNet.SdnCheckbox(vg, 30, 120, 17, true, "Checkbox");
+            //            SemanticDotNet.SdnTextButton(vg, 30, 30, 75, SemanticDotNet.Style.ButtonHeight, "Button", connection: SemanticDotNet.SConnectedSide.Right);
+            //            SemanticDotNet.SdnIconTextButton(vg, 105, 30, 85, SemanticDotNet.Style.ButtonHeight, MaterialDesignIcons.Qrcode, "Icon", connection: SemanticDotNet.SConnectedSide.Left);
+            //
+            //            SemanticDotNet.SdnSplitIconTextButton(vg, 30, 75, 36, 75, SemanticDotNet.Style.ButtonHeight, MaterialDesignIcons.BrightnessAuto, "Auto");
+            //
+            //            SemanticDotNet.SdnCheckbox(vg, 30, 120, 17, true, "Checkbox");
 
             NanoVG.nvgFillColor(vg, NanoVG.nvgRGBA(255, 255, 255, 255));
-            NanoVG.nvgStrokeColor(vg, NanoVG.nvgRGBA(0, 255, 0, 255));
-            NanoVG.nvgStrokeWidth(vg, 2);
-            NanoVG.nvgFontFace(vg, "vcr");
+            NanoVG.nvgFontFace(vg, "sans");
             NanoVG.nvgFontSize(vg, 48);
             NanoVG.nvgTextAlign(vg, (int)NvgAlign.Top | (int)NvgAlign.Left);
-            
-            NanoVG.nvgText(vg, 50, 50, "Commercial Mining Ship 'The Nostromo'");
+
+            NanoVG.nvgText(vg, 50, 50, "commercial towing vehicle 'The Nostromo'");
+            NanoVG.nvgText(vg, 150, 140, "crew:");
+            NanoVG.nvgText(vg, 290, 140, "seven");
+            NanoVG.nvgText(vg, 150, 190, "cargo:");
+            NanoVG.nvgText(vg, 290, 190, "refinery processing");
+            NanoVG.nvgText(vg, 290, 230, "20,000,000 tons of mineral ore");
+            NanoVG.nvgText(vg, 150, 280, "course:");
+            NanoVG.nvgText(vg, 290, 280, "returning to earth");
 
             NanoVG.nvgSave(vg);
-            NanoVG.nvgTranslate(vg, 250, 250);
-            NanoVG.nvgRotate(vg, (float) (DateTime.Now.TimeOfDay.TotalSeconds % 10 / 10f * 2 * Math.PI));
+            NanoVG.nvgTranslate(vg, 350, 450);
+            NanoVG.nvgRotate(vg, (float)(DateTime.Now.TimeOfDay.TotalSeconds % 10 / 10f * 2 * Math.PI));
 
+            NanoVG.nvgStrokeColor(vg, NanoVG.nvgRGBA(255, 255, 255, 255));
+            NanoVG.nvgStrokeWidth(vg, 4);
             NanoVG.nvgBeginPath(vg);
-            NanoVG.nvgRect(vg, -20, -20, 40, 40);
+            NanoVG.nvgRect(vg, -40, -40, 80, 80);
             NanoVG.nvgStroke(vg);
 
             NanoVG.nvgRestore(vg);

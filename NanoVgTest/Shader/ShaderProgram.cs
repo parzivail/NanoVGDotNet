@@ -64,6 +64,11 @@ namespace NanoVgTest.Shader
                     var vec3 = (Vector3)val;
                     GL.Uniform3(loc, vec3.X, vec3.Y, vec3.Z);
                 }
+                else if (type == typeof(bool))
+                {
+                    var boolean = (bool)val;
+                    GL.Uniform1(loc, boolean ? 1 : 0);
+                }
                 else
                 {
                     throw new ArgumentException($"Unsupported uniform type: {type}");

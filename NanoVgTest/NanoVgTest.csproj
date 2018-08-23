@@ -61,10 +61,10 @@
     <None Include="App.config" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
-    <None Include="Resources\Fonts\latosemi.ttf">
+    <None Include="Resources\Fonts\materialdesignicons-webfont.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\Fonts\materialdesignicons-webfont.ttf">
+    <None Include="Resources\Fonts\neuehaasgrotesk.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Resources\Fonts\vcrmono.ttf">
