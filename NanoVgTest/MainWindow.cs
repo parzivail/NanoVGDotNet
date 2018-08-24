@@ -156,7 +156,7 @@ namespace NanoVgTest
                 NanoVG.nvgEndFrame(Nvg);
             }
             GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, 0); // disable rendering into the FBO
-            
+
             GL.Disable(EnableCap.Texture2D);
             GL.PushMatrix();
             {
