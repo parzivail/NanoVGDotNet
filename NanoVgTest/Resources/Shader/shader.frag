@@ -6,7 +6,9 @@ in vec2 TexCoords;
 uniform float hue; //0.0
 uniform float saturation; //30.0
 uniform float brightness; //1.0
-uniform float ntscFreqScale; //(1.)
+uniform float ntscColorFreqScale; //(1.)
+uniform float ntscLumaFreqScale; //(1.)
+uniform float ntscGrayscaleFreqScale; //(1.)
 uniform int impulseResponseSize; //29
 
 uniform vec2 iResolution;
@@ -20,9 +22,9 @@ uniform float scanlineSize;
 uniform float jitterChance;
 uniform float trackingLossChance;
 
-float ntscFreqColor = (1.0 / (4.0 * ntscFreqScale));
-float ntscFreqLuma = (1.0 / (8.0 * ntscFreqScale));
-float ntscFreqGreyscale = (1.0 / 50.0);
+float ntscFreqColor = (1.0 / (4.0)) * ntscColorFreqScale;
+float ntscFreqLuma = (1.0 / (8.0)) * ntscLumaFreqScale;
+float ntscFreqGrayscale = (1.0 / 50.0) * ntscGrayscaleFreqScale;
 
 float pi = atan(1.0)*4.0;
 float tau = atan(1.0)*8.0;
@@ -199,7 +201,7 @@ vec4 bufferC(vec2 fragCoord)
 {
     float Fs = iResolution.x;
     float Fcol = Fs * ntscFreqColor;
-    float Fcolbw = Fs * ntscFreqGreyscale;
+    float Fcolbw = Fs * ntscFreqGrayscale;
     float Flumlp = Fs * ntscFreqLuma;
     float n = floor(fragCoord.x);
     

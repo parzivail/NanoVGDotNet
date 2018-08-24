@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using OpenTK;
 
 namespace NanoVgTest
@@ -11,6 +12,7 @@ namespace NanoVgTest
     {
         static void Main(string[] args)
         {
+            Application.EnableVisualStyles();
             new MainWindow(new DemoWindow()).Run(20);
         }
     }

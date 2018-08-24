@@ -18,9 +18,9 @@ namespace NanoVgTest
         private bool _shouldDie;
 
         private ShaderProgram _shaderProgram;
-        uint _colorTexture;
-        uint _depthTexture;
-        uint _fboHandle;
+        private uint _colorTexture;
+        private uint _depthTexture;
+        private uint _fboHandle;
 
         public NVGcontext Nvg = new NVGcontext();
         public KeyboardState Keyboard;
@@ -86,7 +86,7 @@ namespace NanoVgTest
             Mouse = OpenTK.Input.Mouse.GetState();
 
             GlNanoVG.nvgCreateGL(ref Nvg, (int)NvgCreateFlags.AntiAlias | (int)NvgCreateFlags.StencilStrokes);
-
+            
             _window.Load(this);
         }
 
@@ -212,7 +212,15 @@ namespace NanoVgTest
                     {
                         Value = 1f
                     },
-                    new Uniform("ntscFreqScale")
+                    new Uniform("ntscColorFreqScale")
+                    {
+                        Value = 1f
+                    },
+                    new Uniform("ntscLumaFreqScale")
+                    {
+                        Value = 1f
+                    },
+                    new Uniform("ntscGrayscaleFreqScale")
                     {
                         Value = 1f
                     },
