@@ -179,54 +179,6 @@ namespace NanoVgTest
                     new Uniform("enabled")
                     {
                         Value = !Keyboard[Key.S]
-                    },
-                    new Uniform("grainAmplitude")
-                    {
-                        Value = 0f//0.04f
-                    },
-                    new Uniform("maskSize")
-                    {
-                        Value = 2f
-                    },
-                    new Uniform("scanlineSize")
-                    {
-                        Value = 2f
-                    },
-                    new Uniform("jitterChance")
-                    {
-                        Value = 0.2f
-                    },
-                    new Uniform("trackingLossChance")
-                    {
-                        Value = 0.05f
-                    },
-                    new Uniform("hue")
-                    {
-                        Value = 0f
-                    },
-                    new Uniform("saturation")
-                    {
-                        Value = 30f
-                    },
-                    new Uniform("brightness")
-                    {
-                        Value = 1f
-                    },
-                    new Uniform("ntscColorFreqScale")
-                    {
-                        Value = 1f
-                    },
-                    new Uniform("ntscLumaFreqScale")
-                    {
-                        Value = 1f
-                    },
-                    new Uniform("ntscGrayscaleFreqScale")
-                    {
-                        Value = 1f
-                    },
-                    new Uniform("impulseResponseSize")
-                    {
-                        Value = 29
                     }
                 };
                 _shaderProgram.Use(uniforms);

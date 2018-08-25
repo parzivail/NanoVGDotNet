@@ -12,7 +12,7 @@
 #define ntscFreqColor 0.25
 
 // original 0.125
-#define ntscFreqLuma 0.128
+#define ntscFreqLuma 0.125
 
 // original 0.02
 #define ntscFreqGrayscale 0.02
@@ -62,7 +62,7 @@ float sinc(float x)
 {
 	if (x == 0.)
 		return 1.;
-	float a = x*pi*0.7;
+	float a = x*pi*0.98;
 	return sin(a)/a;
 }
 
