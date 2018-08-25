@@ -69,13 +69,18 @@ namespace NanoVgTest
 
             NanoVG.nvgSave(vg);
             NanoVG.nvgTranslate(vg, 350, 450);
-            NanoVG.nvgRotate(vg, (float)(DateTime.Now.TimeOfDay.TotalSeconds % 10 / 10f * 2 * Math.PI));
 
-            NanoVG.nvgStrokeColor(vg, NanoVG.nvgRGBA(255, 255, 255, 255));
+            NanoVG.nvgFillColor(vg, NanoVG.nvgRGBA(255, 0, 0, 255));
             NanoVG.nvgStrokeWidth(vg, 4);
             NanoVG.nvgBeginPath(vg);
-            NanoVG.nvgRect(vg, -40, -40, 80, 80);
-            NanoVG.nvgStroke(vg);
+            NanoVG.nvgRect(vg, 0, 0, 80, 80);
+            NanoVG.nvgFill(vg);
+
+            NanoVG.nvgFillColor(vg, NanoVG.nvgRGBA(0, 255, 128, 255));
+            NanoVG.nvgStrokeWidth(vg, 4);
+            NanoVG.nvgBeginPath(vg);
+            NanoVG.nvgRect(vg, 50, 30, 80, 80);
+            NanoVG.nvgFill(vg);
 
             NanoVG.nvgRestore(vg);
 
