@@ -12,6 +12,9 @@ namespace NanoVgTest
 {
     class DemoWindow : IWindow
     {
+        private int _imgCat;
+        private int _imgPlanes;
+
         public void Build(MainWindow win)
         {
         }
@@ -32,6 +35,9 @@ namespace NanoVgTest
                 $"Resources{Path.DirectorySeparatorChar}Fonts{Path.DirectorySeparatorChar}vcrmono.ttf");
             if (rVcr == -1)
                 Console.WriteLine("Unable to load vcr");
+
+            _imgCat = NanoVG.nvgCreateImage(ref win.Nvg, "Resources/Images/cat.png", 0);
+            _imgPlanes = NanoVG.nvgCreateImage(ref win.Nvg, "Resources/Images/planes.png", 0);
         }
 
         public void Unload(MainWindow win)
@@ -80,6 +86,16 @@ namespace NanoVgTest
             NanoVG.nvgStrokeWidth(vg, 4);
             NanoVG.nvgBeginPath(vg);
             NanoVG.nvgRect(vg, 50, 30, 80, 80);
+            NanoVG.nvgFill(vg);
+
+            NanoVG.nvgFillPaint(vg, NanoVG.nvgImagePattern(vg, 150, 30, 220, 330, 0, _imgCat, 1));
+            NanoVG.nvgBeginPath(vg);
+            NanoVG.nvgRect(vg, 150, 30, 220, 330);
+            NanoVG.nvgFill(vg);
+            
+            NanoVG.nvgFillPaint(vg, NanoVG.nvgImagePattern(vg, 380, 30, 1000, 420, 0, _imgPlanes, 1));
+            NanoVG.nvgBeginPath(vg);
+            NanoVG.nvgRect(vg, 380, 30, 1000, 420);
             NanoVG.nvgFill(vg);
 
             NanoVG.nvgRestore(vg);
