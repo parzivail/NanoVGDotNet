@@ -50,7 +50,7 @@ namespace NanoVgTest
 
         public void Render(MainWindow win, NvgContext vg)
         {
-            NanoVg.NvgSave(vg);
+            NanoVg.Save(vg);
 
             //            SemanticDotNet.SdnTextButton(vg, 30, 30, 75, SemanticDotNet.Style.ButtonHeight, "Button", connection: SemanticDotNet.SConnectedSide.Right);
             //            SemanticDotNet.SdnIconTextButton(vg, 105, 30, 85, SemanticDotNet.Style.ButtonHeight, MaterialDesignIcons.Qrcode, "Icon", connection: SemanticDotNet.SConnectedSide.Left);
@@ -59,9 +59,9 @@ namespace NanoVgTest
             //
             //            SemanticDotNet.SdnCheckbox(vg, 30, 120, 17, true, "Checkbox");
 
-            NanoVg.NvgFillColor(vg, NanoVg.NvgRgba(255, 255, 255, 255));
-            NanoVg.NvgFontFace(vg, "sans");
-            NanoVg.NvgFontSize(vg, 48);
+            NanoVg.NvgFillColor(vg, NanoVg.Rgba(255, 255, 255, 255));
+            NanoVg.FontFace(vg, "sans");
+            NanoVg.FontSize(vg, 48);
             NanoVg.NvgTextAlign(vg, (int)NvgAlign.Top | (int)NvgAlign.Left);
 
             NanoVg.NvgText(vg, 50, 50, "commercial towing vehicle 'The Nostromo'");
@@ -73,16 +73,16 @@ namespace NanoVgTest
             NanoVg.NvgText(vg, 150, 280, "course:");
             NanoVg.NvgText(vg, 290, 280, "returning to earth");
 
-            NanoVg.NvgSave(vg);
+            NanoVg.Save(vg);
             NanoVg.NvgTranslate(vg, 350, 450);
 
-            NanoVg.NvgFillColor(vg, NanoVg.NvgRgba(255, 0, 0, 255));
+            NanoVg.NvgFillColor(vg, NanoVg.Rgba(255, 0, 0, 255));
             NanoVg.NvgStrokeWidth(vg, 4);
             NanoVg.NvgBeginPath(vg);
             NanoVg.NvgRect(vg, 0, 0, 80, 80);
             NanoVg.NvgFill(vg);
 
-            NanoVg.NvgFillColor(vg, NanoVg.NvgRgba(0, 255, 128, 255));
+            NanoVg.NvgFillColor(vg, NanoVg.Rgba(0, 255, 128, 255));
             NanoVg.NvgStrokeWidth(vg, 4);
             NanoVg.NvgBeginPath(vg);
             NanoVg.NvgRect(vg, 50, 30, 80, 80);
@@ -98,9 +98,9 @@ namespace NanoVgTest
             NanoVg.NvgRect(vg, 380, 30, 1000, 420);
             NanoVg.NvgFill(vg);
 
-            NanoVg.NvgRestore(vg);
+            NanoVg.Restore(vg);
 
-            NanoVg.NvgRestore(vg);
+            NanoVg.Restore(vg);
         }
     }
 }

@@ -85,7 +85,7 @@ namespace NanoVGDotNet
 
 			NanoVg.NvgBeginPath(vg);
 			NanoVg.NvgRect(vg, x, y, w, h);
-			NanoVg.NvgFillColor(vg, NanoVg.NvgRgba(0, 0, 0, 128));
+			NanoVg.NvgFillColor(vg, NanoVg.Rgba(0, 0, 0, 128));
 			NanoVg.NvgFill(vg);
 
 			NanoVg.NvgBeginPath(vg);
@@ -130,46 +130,46 @@ namespace NanoVGDotNet
 				}
 			}
 			NanoVg.NvgLineTo(vg, x + w, y + h);
-			NanoVg.NvgFillColor(vg, NanoVg.NvgRgba(255, 192, 0, 128));
+			NanoVg.NvgFillColor(vg, NanoVg.Rgba(255, 192, 0, 128));
 			NanoVg.NvgFill(vg);
 
-			NanoVg.NvgFontFace(vg, "sans");
+			NanoVg.FontFace(vg, "sans");
 
 			if (_name[0] != '\0')
 			{
-				NanoVg.NvgFontSize(vg, 14.0f);
+				NanoVg.FontSize(vg, 14.0f);
 				NanoVg.NvgTextAlign(vg, (int)(NvgAlign.Left | NvgAlign.Top));
-				NanoVg.NvgFillColor(vg, NanoVg.NvgRgba(240, 240, 240, 192));
+				NanoVg.NvgFillColor(vg, NanoVg.Rgba(240, 240, 240, 192));
 				NanoVg.NvgText(vg, x + 3, y + 1, _name);
 			}
 
 			if (_style == (int)GraphRenderStyle.Fps)
 			{
-				NanoVg.NvgFontSize(vg, 18.0f);
+				NanoVg.FontSize(vg, 18.0f);
 				NanoVg.NvgTextAlign(vg, (int)(NvgAlign.Right | NvgAlign.Top));
-				NanoVg.NvgFillColor(vg, NanoVg.NvgRgba(240, 240, 240, 255));
+				NanoVg.NvgFillColor(vg, NanoVg.Rgba(240, 240, 240, 255));
 				str = $"{1.0f / avg:0.00} FPS";
 				NanoVg.NvgText(vg, x + w - 3, y + 1, str);
 
-				NanoVg.NvgFontSize(vg, 15.0f);
+				NanoVg.FontSize(vg, 15.0f);
 				NanoVg.NvgTextAlign(vg, (int)(NvgAlign.Right | NvgAlign.Bottom));
-				NanoVg.NvgFillColor(vg, NanoVg.NvgRgba(240, 240, 240, 160));
+				NanoVg.NvgFillColor(vg, NanoVg.Rgba(240, 240, 240, 160));
 				str = $"{avg * 1000.0f:0.00} ms";
 				NanoVg.NvgText(vg, x + w - 3, y + h - 1, str);
 			}
 			else if (_style == (int)GraphRenderStyle.Percent)
 			{
-				NanoVg.NvgFontSize(vg, 18.0f);
+				NanoVg.FontSize(vg, 18.0f);
 				NanoVg.NvgTextAlign(vg, (int)(NvgAlign.Right | NvgAlign.Top));
-				NanoVg.NvgFillColor(vg, NanoVg.NvgRgba(240, 240, 240, 255));
+				NanoVg.NvgFillColor(vg, NanoVg.Rgba(240, 240, 240, 255));
 				str = $"{avg * 1.0f:0.0} %";
 				NanoVg.NvgText(vg, x + w - 3, y + 1, str);
 			}
 			else
 			{
-				NanoVg.NvgFontSize(vg, 18.0f);
+				NanoVg.FontSize(vg, 18.0f);
 				NanoVg.NvgTextAlign(vg, (int)(NvgAlign.Right | NvgAlign.Top));
-				NanoVg.NvgFillColor(vg, NanoVg.NvgRgba(240, 240, 240, 255));
+				NanoVg.NvgFillColor(vg, NanoVg.Rgba(240, 240, 240, 255));
 				str = $"{avg * 1000.0f:0.00} ms";
 				NanoVg.NvgText(vg, x + w - 3, y + 1, str);
 			}
