@@ -444,7 +444,7 @@ namespace NanoVGDotNet
                 nvg__vset(ref dst[idst], p1.X - dlx0 * rw, p1.Y - dly0 * rw, ru, 1);
                 idst++;
 
-                n = nvg__clampi((int)Math.Ceiling(((a0 - a1) / NvgPi) * ncap), 2, ncap);
+                n = nvg__clampi((int)Math.Ceiling((a0 - a1) / NvgPi * ncap), 2, ncap);
                 for (i = 0; i < n; i++)
                 {
                     var u = i / (float)(n - 1);
@@ -478,7 +478,7 @@ namespace NanoVGDotNet
                 nvg__vset(ref dst[idst], rx0, ry0, ru, 1);
                 idst++;
 
-                n = nvg__clampi((int)Math.Ceiling(((a1 - a0) / NvgPi) * ncap), 2, ncap);
+                n = nvg__clampi((int)Math.Ceiling((a1 - a0) / NvgPi * ncap), 2, ncap);
                 for (i = 0; i < n; i++)
                 {
                     var u = i / (float)(n - 1);
@@ -528,7 +528,7 @@ namespace NanoVGDotNet
             for (i = 0; i < cache.Npaths; i++)
             {
                 var path = cache.Paths[i];
-                var loop = (path.Closed == 0) ? 0 : 1;
+                var loop = path.Closed == 0 ? 0 : 1;
                 if (lineJoin == (int)NanoVGDotNet.NvgLineCap.Round)
                     cverts += (path.Count + path.Nbevel * (ncap + 2) + 1) * 2; // plus one for loop
                 else
@@ -568,7 +568,7 @@ namespace NanoVGDotNet
                 path.Ifill = 0;
 
                 // Calculate fringe or stroke
-                loop = (path.Closed == 0) ? 0 : 1;
+                loop = path.Closed == 0 ? 0 : 1;
                 dst = verts;
                 var idst = iverts;
                 path.Stroke = dst;
@@ -625,9 +625,9 @@ namespace NanoVGDotNet
                     }
                     else
                     {
-                        nvg__vset(ref dst[idst], p1.X + (p1.Dmx * w), p1.Y + (p1.Dmy * w), 0, 1);
+                        nvg__vset(ref dst[idst], p1.X + p1.Dmx * w, p1.Y + p1.Dmy * w, 0, 1);
                         idst++;
-                        nvg__vset(ref dst[idst], p1.X - (p1.Dmx * w), p1.Y - (p1.Dmy * w), 1, 1);
+                        nvg__vset(ref dst[idst], p1.X - p1.Dmx * w, p1.Y - p1.Dmy * w, 1, 1);
                         idst++;
                     }
                     p0 = p1;
@@ -1204,7 +1204,7 @@ namespace NanoVGDotNet
         {
             var dx = x2 - x1;
             var dy = y2 - y1;
-            return (dx * dx + dy * dy) < (tol * tol);
+            return dx * dx + dy * dy < tol * tol;
         }
 
         private static void nvg__addPoint(NvGcontext ctx, float x, float y, int flags)
@@ -1329,8 +1329,8 @@ namespace NanoVGDotNet
 
             dx = x4 - x1;
             dy = y4 - y1;
-            d2 = nvg__absf(((x2 - x4) * dy - (y2 - y4) * dx));
-            d3 = nvg__absf(((x3 - x4) * dy - (y3 - y4) * dx));
+            d2 = nvg__absf((x2 - x4) * dy - (y2 - y4) * dx);
+            d3 = nvg__absf((x3 - x4) * dy - (y3 - y4) * dx);
 
             if ((d2 + d3) * (d2 + d3) < ctx.TessTol * (dx * dx + dy * dy))
             {
@@ -1621,8 +1621,8 @@ namespace NanoVGDotNet
                     }
 
                     // Clear flags, but keep the corner.
-                    p1.Flags = (byte)(((p1.Flags &
-                    (int)NvgPointFlags.Corner) != 0) ? (int)NvgPointFlags.Corner : 0);
+                    p1.Flags = (byte)((p1.Flags &
+                                       (int)NvgPointFlags.Corner) != 0 ? (int)NvgPointFlags.Corner : 0);
 
                     // Keep track of left turns.
                     cross = p1.Dx * p0.Dy - p0.Dx * p1.Dy;
@@ -1634,13 +1634,13 @@ namespace NanoVGDotNet
 
                     // Calculate if we should use bevel or miter for inner join.
                     limit = nvg__maxf(1.01f, nvg__minf(p0.Len, p1.Len) * iw);
-                    if ((dmr2 * limit * limit) < 1.0f)
+                    if (dmr2 * limit * limit < 1.0f)
                         p1.Flags |= (int)NvgPointFlags.InnerBevel;
 
                     // Check to see if the corner needs to be beveled.
                     if ((p1.Flags & (int)NvgPointFlags.Corner) != 0)
                     {
-                        if ((dmr2 * miterLimit * miterLimit) < 1.0f ||
+                        if (dmr2 * miterLimit * miterLimit < 1.0f ||
                             lineJoin == (int)NanoVGDotNet.NvgLineCap.Bevel ||
                             lineJoin == (int)NanoVGDotNet.NvgLineCap.Round)
                         {
@@ -1656,7 +1656,7 @@ namespace NanoVGDotNet
                     p1 = pts[ip1];
                 }
 
-                path.Convex = (nleft == path.Count) ? 1 : 0;
+                path.Convex = nleft == path.Count ? 1 : 0;
             }
         }
 
@@ -2022,7 +2022,7 @@ namespace NanoVGDotNet
                         }
                         else
                         {
-                            nvg__vset(ref dst[idst], p1.X + (p1.Dmx * woff), p1.Y + (p1.Dmy * woff), 0.5f, 1);
+                            nvg__vset(ref dst[idst], p1.X + p1.Dmx * woff, p1.Y + p1.Dmy * woff, 0.5f, 1);
                             idst++;
                         }
                         p0 = p1;
@@ -2078,9 +2078,9 @@ namespace NanoVGDotNet
                         }
                         else
                         {
-                            nvg__vset(ref dst[idst], p1.X + (p1.Dmx * lw), p1.Y + (p1.Dmy * lw), lu, 1);
+                            nvg__vset(ref dst[idst], p1.X + p1.Dmx * lw, p1.Y + p1.Dmy * lw, lu, 1);
                             idst++;
-                            nvg__vset(ref dst[idst], p1.X - (p1.Dmx * rw), p1.Y - (p1.Dmy * rw), ru, 1);
+                            nvg__vset(ref dst[idst], p1.X - p1.Dmx * rw, p1.Y - p1.Dmy * rw, ru, 1);
                             idst++;
                         }
                         p0 = p1;
@@ -2320,7 +2320,7 @@ namespace NanoVGDotNet
 
             // Split arc into max 90 degree segments.
             ndivs = nvg__maxi(1, nvg__mini((int)(nvg__absf(da) / (NvgPi * 0.5f) + 0.5f), 5));
-            hda = (da / ndivs) / 2.0f;
+            hda = da / ndivs / 2.0f;
             kappa = nvg__absf(4.0f / 3.0f * (1.0f - nvg__cosf(hda)) / nvg__sinf(hda));
 
             if (dir == (int)NvgWinding.CounterClockwise)
@@ -2464,7 +2464,7 @@ namespace NanoVGDotNet
 
         private static float nvg__quantize(float a, float d)
         {
-            return ((int)(a / d + 0.5f)) * d;
+            return (int)(a / d + 0.5f) * d;
         }
 
         public static NvGpaint NvgRadialGradient(NvGcontext ctx,
@@ -2473,7 +2473,7 @@ namespace NanoVGDotNet
         {
             var p = new NvGpaint();
             var r = (inr + outr) * 0.5f;
-            var f = (outr - inr);
+            var f = outr - inr;
             //NVG_NOTUSED(ctx);
             //memset(&p, 0, sizeof(p));
 
@@ -3179,15 +3179,14 @@ namespace NanoVGDotNet
 
         public static NvGcolor NvgHsla(float h, float s, float l, byte a)
         {
-            float m1, m2;
             NvGcolor col;
             h = nvg__modf(h, 1.0f);
             if (h < 0.0f)
                 h += 1.0f;
             s = nvg__clampf(s, 0.0f, 1.0f);
             l = nvg__clampf(l, 0.0f, 1.0f);
-            m2 = l <= 0.5f ? (l * (1 + s)) : (l + s - l * s);
-            m1 = 2 * l - m2;
+            var m2 = l <= 0.5f ? l * (1 + s) : l + s - l * s;
+            var m1 = 2 * l - m2;
             col.R = nvg__clampf(nvg__hue(h + 1.0f / 3.0f, m1, m2), 0.0f, 1.0f);
             col.G = nvg__clampf(nvg__hue(h, m1, m2), 0.0f, 1.0f);
             col.B = nvg__clampf(nvg__hue(h - 1.0f / 3.0f, m1, m2), 0.0f, 1.0f);

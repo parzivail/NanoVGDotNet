@@ -98,8 +98,8 @@ namespace NanoVGDotNet
 					float vx, vy;
 					if (v > 80.0f)
 						v = 80.0f;
-					vx = x + ((float)i / (GraphHistoryCount - 1)) * w;
-					vy = y + h - ((v / 80.0f) * h);
+					vx = x + (float)i / (GraphHistoryCount - 1) * w;
+					vy = y + h - v / 80.0f * h;
 					NanoVg.NvgLineTo(vg, vx, vy);
 				}
 			}
@@ -111,8 +111,8 @@ namespace NanoVGDotNet
 					float vx, vy;
 					if (v > 100.0f)
 						v = 100.0f;
-					vx = x + ((float)i / (GraphHistoryCount - 1)) * w;
-					vy = y + h - ((v / 100.0f) * h);
+					vx = x + (float)i / (GraphHistoryCount - 1) * w;
+					vy = y + h - v / 100.0f * h;
 					NanoVg.NvgLineTo(vg, vx, vy);
 				}
 			}
@@ -124,8 +124,8 @@ namespace NanoVGDotNet
 					float vx, vy;
 					if (v > 20.0f)
 						v = 20.0f;
-					vx = x + ((float)i / (GraphHistoryCount - 1)) * w;
-					vy = y + h - ((v / 20.0f) * h);
+					vx = x + (float)i / (GraphHistoryCount - 1) * w;
+					vy = y + h - v / 20.0f * h;
 					NanoVg.NvgLineTo(vg, vx, vy);
 				}
 			}

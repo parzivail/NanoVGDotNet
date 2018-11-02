@@ -1227,7 +1227,7 @@ namespace NanoVGDotNet
 	    private static void glnvg__stencilFunc(GlnvGcontext gl, StencilFunction func, int ref_, uint mask)
 		{
 #if NANOVG_GL_USE_STATE_FILTER
-		    if ((gl.StencilFunc == func) && (gl.StencilFuncRef == ref_) && (gl.StencilFuncMask == mask)) return;
+		    if (gl.StencilFunc == func && gl.StencilFuncRef == ref_ && gl.StencilFuncMask == mask) return;
 		    gl.StencilFunc = func;
 		    gl.StencilFuncRef = ref_;
 		    gl.StencilFuncMask = mask;
@@ -1251,7 +1251,7 @@ namespace NanoVGDotNet
 	    private static GlnvGfragUniforms nvg__fragUniformPtr(GlnvGcontext gl, int offset)
 		{
 			// size of GLNVGfragUniforms = 180 bytes
-			offset = (offset / 180);
+			offset = offset / 180;
 
 			return gl.Uniforms[offset];
 		}
@@ -1259,7 +1259,7 @@ namespace NanoVGDotNet
 	    private static void nvg__setFragUniform(GlnvGcontext gl, int offset, ref GlnvGfragUniforms frag)
 		{
 			// size of GLNVGfragUniforms = 180 bytes
-			offset = (offset / 180);
+			offset = offset / 180;
 
 			gl.Uniforms[offset] = frag;
 		}
