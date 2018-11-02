@@ -36,9 +36,6 @@
  *  the file lgpl-3.0.txt for more details.
  */
 
-using System;
-using NanoVGDotNet;
-
 namespace NanoVGDotNet
 {
 	public static class PerfGraph
@@ -52,8 +49,8 @@ namespace NanoVGDotNet
 
 		public static void InitGraph(int style, string name)
 		{
-			PerfGraph._style = style;
-			PerfGraph._name = name;
+			_style = style;
+			_name = name;
 			_values = new float[GraphHistoryCount];
 			_head = 0;
 		}
@@ -72,7 +69,7 @@ namespace NanoVGDotNet
 			{
 				avg += _values[i];
 			}
-			return avg / (float)GraphHistoryCount;
+			return avg / GraphHistoryCount;
 		}
 
 		public static void RenderGraph(NvGcontext vg, float x, float y)

@@ -64,7 +64,7 @@ namespace NanoVGDotNet
         {
             get
             {
-                var size = (int)GlnvGfragUniforms.GetSize;
+                var size = (int)GetSize;
                 var felements = (int)Math.Ceiling((float)(size / sizeof(float)));
                 var farr = new float[felements];
 

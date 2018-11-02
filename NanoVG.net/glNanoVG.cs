@@ -49,12 +49,11 @@
 #endif
 
 using System;
-using System.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-
 using OpenTK.Graphics.OpenGL;
+using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using TexPixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 
 namespace NanoVGDotNet
@@ -247,25 +246,19 @@ namespace NanoVGDotNet
 
 	    private static void glnvg__checkError(GlnvGcontext gl, string str)
 		{
-			ErrorCode err;
-			if ((gl.Flags & (int)NvgCreateFlags.Debug) == 0)
+		    if ((gl.Flags & (int)NvgCreateFlags.Debug) == 0)
 				return;
-			err = GL.GetError();
-			if (err != ErrorCode.NoError)
-			{
-				Console.WriteLine($"Error {err} after {str}\n");
-				return;
-			}
+			var err = GL.GetError();
+		    if (err == ErrorCode.NoError) return;
+		    Console.WriteLine($"Error {err} after {str}\n");
 		}
 
 	    private static void glnvg__bindTexture(GlnvGcontext gl, uint tex)
 		{
 #if NANOVG_GL_USE_STATE_FILTER
-			if (gl.BoundTexture != tex)
-			{
-				gl.BoundTexture = tex;
-				GL.BindTexture(TextureTarget.Texture2D, tex);
-			}
+		    if (gl.BoundTexture == tex) return;
+		    gl.BoundTexture = tex;
+		    GL.BindTexture(TextureTarget.Texture2D, tex);
 #else
 			GL.BindTexture(TextureTarget.Texture2D, tex);
 #endif
@@ -278,40 +271,37 @@ namespace NanoVGDotNet
 
 	    private static void glnvg__dumpShaderError(int shader, string name, string type)
 		{
-			string info;
-			GL.GetShaderInfoLog((int)shader, out info);
-			// "Shader %s/%s error:\n%s\n", name, type, str
-			Console.WriteLine($"Shader {name}/{type} error:\n{info}\n");
+            GL.GetShaderInfoLog(shader, out string info);
+            // "Shader %s/%s error:\n%s\n", name, type, str
+            Console.WriteLine($"Shader {name}/{type} error:\n{info}\n");
 		}
 
 	    private static void glnvg__dumpProgramError(int prog, string name)
 		{
-			var len = 0;
-			GL.GetShaderInfoLog(prog, 512, out len, out string sb);
-			// printf("Program %s error:\n%s\n", name, str);
-			Console.WriteLine($"Shader {name} error:\n{sb}\n");
+            GL.GetShaderInfoLog(prog, 512, out int len, out string sb);
+            // printf("Program %s error:\n%s\n", name, str);
+            Console.WriteLine($"Shader {name} error:\n{sb}\n");
 		}
 
 	    private static int glnvg__createShader(out GlnvGshader shader, string name, string header, string opts, string vshader, string fshader)
 		{
-			int status, prog, vert, frag;
-			var str = new string[3];
-			str[0] = header;
-			str[1] = opts != null ? opts : "";
+            var str = new string[3];
+            str[0] = header;
+			str[1] = opts ?? "";
 
 			shader = new GlnvGshader();
 
-			prog = GL.CreateProgram();
-			vert = GL.CreateShader(ShaderType.VertexShader);
-			frag = GL.CreateShader(ShaderType.FragmentShader);
+			var prog = GL.CreateProgram();
+			var vert = GL.CreateShader(ShaderType.VertexShader);
+			var frag = GL.CreateShader(ShaderType.FragmentShader);
 			str[2] = vshader;
-			GL.ShaderSource((int)vert, str[0] + str[1] + vshader);
+			GL.ShaderSource(vert, str[0] + str[1] + vshader);
 			str[2] = fshader;
-			GL.ShaderSource((int)frag, str[0] + str[1] + fshader);
+			GL.ShaderSource(frag, str[0] + str[1] + fshader);
 
 			GL.CompileShader(vert);
-			GL.GetShader(vert, ShaderParameter.CompileStatus, out status);
-			if (status != (int)GlTrue)
+			GL.GetShader(vert, ShaderParameter.CompileStatus, out int status);
+			if (status != GlTrue)
 			{
 				glnvg__dumpShaderError(vert, name, "vert");
 				return 0;
@@ -319,7 +309,7 @@ namespace NanoVGDotNet
 
 			GL.CompileShader(frag);
 			GL.GetShader(frag, ShaderParameter.CompileStatus, out status);
-			if (status != (int)GlTrue)
+			if (status != GlTrue)
 			{
 				glnvg__dumpShaderError(frag, name, "frag");
 				return 0;
@@ -333,7 +323,7 @@ namespace NanoVGDotNet
 
 			GL.LinkProgram(prog);
 			GL.GetProgram(prog, ProgramParameter.LinkStatus, out status);
-			if (status != (int)GlTrue)
+			if (status != GlTrue)
 			{
 				glnvg__dumpProgramError(prog, name);
 				return 0;
@@ -354,7 +344,7 @@ namespace NanoVGDotNet
 			{
 				var ccalls = glnvg__maxi(gl.Ncalls + 1, 128) + gl.Ccalls / 2; // 1.5x Overallocate
 				//calls = (GLNVGcall*)realloc(gl->calls, sizeof(GLNVGcall) * ccalls);
-				Array.Resize<GlnvGcall>(ref gl.Calls, ccalls);
+				Array.Resize(ref gl.Calls, ccalls);
 
 				for (var cont = gl.Ncalls; cont < ccalls; cont++)
 					gl.Calls[cont] = new GlnvGcall();
@@ -403,7 +393,7 @@ namespace NanoVGDotNet
 				{
 					//GLNVGtexture[] textures;
 					var ctextures = glnvg__maxi(gl.Ntextures + 1, 4) + gl.Ctextures / 2; // 1.5x Overallocate
-					Array.Resize<GlnvGtexture>(ref gl.Textures, ctextures);
+					Array.Resize(ref gl.Textures, ctextures);
 					//textures = new GLNVGtexture[ctextures];
 					for (var cont = gl.Ntextures; cont < ctextures; cont++)
 						gl.Textures[cont] = new GlnvGtexture();
@@ -565,8 +555,8 @@ namespace NanoVGDotNet
 			}
 			#endif
 
-			var data = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
-				                  ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+			var data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height),
+				                  ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
 		
 			if (type == (int)NvgTexture.Rgba)
 				GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, w, h, 0,
@@ -690,8 +680,8 @@ namespace NanoVGDotNet
 	    private static void glnvg__renderViewport(object uptr, int width, int height, float devicePixelRatio)
 		{
 			var gl = (GlnvGcontext)uptr;
-			gl.View[0] = (float)width;
-			gl.View[1] = (float)height;
+			gl.View[0] = width;
+			gl.View[1] = height;
 		}
 
 	    private static void glnvg__vset(ref NvGvertex vtx, float x, float y, float u, float v)
@@ -720,7 +710,7 @@ namespace NanoVGDotNet
 			{
 				var cpaths = glnvg__maxi(gl.Npaths + n, 128) + gl.Cpaths / 2; // 1.5x Overallocate
 				//paths = (GLNVGpath*)realloc(gl->paths, sizeof(GLNVGpath) * cpaths);
-				Array.Resize<GlnvGpath>(ref gl.Paths, cpaths);
+				Array.Resize(ref gl.Paths, cpaths);
 				gl.Cpaths = cpaths;
 			}
 			ret = gl.Npaths;
@@ -735,7 +725,7 @@ namespace NanoVGDotNet
 			{
 				var cverts = glnvg__maxi(gl.Nverts + n, 4096) + gl.Cverts / 2; // 1.5x Overallocate
 				//verts = (NVGvertex*)realloc(gl->verts, sizeof(NVGvertex) * cverts);
-				Array.Resize<NvGvertex>(ref gl.Verts, cverts);
+				Array.Resize(ref gl.Verts, cverts);
 				gl.Cverts = cverts;
 			}
 			ret = gl.Nverts;
@@ -750,7 +740,7 @@ namespace NanoVGDotNet
 			{
 				var cuniforms = glnvg__maxi(gl.Nuniforms + n, 128) + gl.Cuniforms / 2; // 1.5x Overallocate
 				//uniforms = (unsigned char*)realloc(gl->uniforms, structSize * cuniforms);
-				Array.Resize<GlnvGfragUniforms>(ref gl.Uniforms, cuniforms);
+				Array.Resize(ref gl.Uniforms, cuniforms);
 				for (var cont = gl.Nuniforms; cont < cuniforms; cont++)
 					gl.Uniforms[cont] = new GlnvGfragUniforms();
 				gl.Cuniforms = cuniforms;
@@ -1522,7 +1512,7 @@ namespace NanoVGDotNet
 				GL.BindBuffer(BufferTarget.ArrayBuffer, gl.VertBuf);
 				//GL.BufferData(BufferTarget.ArrayBuffer, gl.nverts * Marshal.SizeOf(typeof(NVGvertex)), gl.verts, BufferUsageHint.StaticDraw);
 				var iptr = (IntPtr)(gl.Nverts * Marshal.SizeOf(typeof(NvGvertex)));
-				GL.BufferData<NvGvertex>(BufferTarget.ArrayBuffer, iptr, gl.Verts, BufferUsageHint.StreamDraw);
+				GL.BufferData(BufferTarget.ArrayBuffer, iptr, gl.Verts, BufferUsageHint.StreamDraw);
 				GL.EnableVertexAttribArray(0);
 				GL.EnableVertexAttribArray(1);
 

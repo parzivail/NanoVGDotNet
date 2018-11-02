@@ -39,10 +39,10 @@
 //#define ONLY_FOR_DEBUG
 
 using System;
-using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
-
+using System.IO;
+using System.Runtime.InteropServices;
 using FontStashDotNet;
 
 namespace NanoVGDotNet
@@ -661,7 +661,7 @@ namespace NanoVGDotNet
                         nvg__roundCapEnd(dst, ref idst, p1, dx, dy, w, ncap, aa);
                 }
 
-                path.Nstroke = (int)(idst - iverts);
+                path.Nstroke = idst - iverts;
 
                 verts = dst;
                 iverts = idst;
@@ -699,13 +699,13 @@ namespace NanoVGDotNet
 
         public static void NvgClosePath(NvGcontext ctx)
         {
-            var vals = new float[] { (float)NvgCommands.Close };
+            var vals = new[] { (float)NvgCommands.Close };
             nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
         public static void NvgPathWinding(NvGcontext ctx, int dir)
         {
-            var vals = new float[] { (float)NvgCommands.Winding, (float)dir };
+            var vals = new[] { (float)NvgCommands.Winding, dir };
             nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
@@ -1086,7 +1086,7 @@ namespace NanoVGDotNet
             {
                 var ccommands = ctx.Ncommands + nvals + ctx.Ccommands / 2;
                 //commands = (float*)realloc(ctx->commands, sizeof(float)*ccommands);
-                Array.Resize<float>(ref ctx.Commands, ccommands);
+                Array.Resize(ref ctx.Commands, ccommands);
                 ctx.Ccommands = ccommands;
             }
 
@@ -1159,7 +1159,7 @@ namespace NanoVGDotNet
             {
                 var cpaths = ctx.Cache.Npaths + 1 + ctx.Cache.Cpaths / 2;
                 //paths = (NVGpath*)realloc(ctx->cache->paths, sizeof(NVGpath)*cpaths);
-                Array.Resize<NvGpath>(ref ctx.Cache.Paths, cpaths);
+                Array.Resize(ref ctx.Cache.Paths, cpaths);
                 var paths = ctx.Cache.Paths;
                 if (paths == null)
                     return;
@@ -1236,7 +1236,7 @@ namespace NanoVGDotNet
             {
                 var cpoints = ctx.Cache.Npoints + 1 + ctx.Cache.Cpoints / 2;
                 //points = (NVGpoint*)realloc(ctx->cache->points, sizeof(NVGpoint)*cpoints);
-                Array.Resize<NvGpoint>(ref ctx.Cache.Points, cpoints);
+                Array.Resize(ref ctx.Cache.Points, cpoints);
                 var points = ctx.Cache.Points;
 
                 if (points == null)
@@ -1517,19 +1517,19 @@ namespace NanoVGDotNet
 
         public static void NvgMoveTo(NvGcontext ctx, float x, float y)
         {
-            var vals = new float[] { (float)NvgCommands.MoveTo, x, y };
+            var vals = new[] { (float)NvgCommands.MoveTo, x, y };
             nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
         public static void NvgBezierTo(NvGcontext ctx, float c1X, float c1Y, float c2X, float c2Y, float x, float y)
         {
-            var vals = new float[] { (float)NvgCommands.BezierTo, c1X, c1Y, c2X, c2Y, x, y };
+            var vals = new[] { (float)NvgCommands.BezierTo, c1X, c1Y, c2X, c2Y, x, y };
             nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
         public static void NvgLineTo(NvGcontext ctx, float x, float y)
         {
-            var vals = new float[] { (float)NvgCommands.LineTo, x, y };
+            var vals = new[] { (float)NvgCommands.LineTo, x, y };
             nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
@@ -1674,7 +1674,7 @@ namespace NanoVGDotNet
             {
                 var cverts = (nverts + 0xff) & ~0xff; // Round up to prevent allocations when things change just slightly.
                                                       //verts = (NVGvertex*)realloc(ctx->cache->verts, sizeof(NVGvertex)*cverts);
-                Array.Resize<NvGvertex>(ref ctx.Cache.Verts, cverts);
+                Array.Resize(ref ctx.Cache.Verts, cverts);
                 ctx.Cache.Cverts = cverts;
             }
 
@@ -2049,7 +2049,7 @@ namespace NanoVGDotNet
                     }
                 }
 
-                path2.Nfill = (int)(idst - iverts);
+                path2.Nfill = idst - iverts;
                 verts = dst;
                 iverts = idst;
 
@@ -2104,7 +2104,7 @@ namespace NanoVGDotNet
                     nvg__vset(ref dst[idst], verts[1 + iverts].X, verts[1 + iverts].Y, ru, 1);
                     idst++;
 
-                    path2.Nstroke = (int)(idst - iverts);
+                    path2.Nstroke = idst - iverts;
                     iverts = idst;
                     verts = dst;
                 }
@@ -2330,7 +2330,7 @@ namespace NanoVGDotNet
 
             // Split arc into max 90 degree segments.
             ndivs = nvg__maxi(1, nvg__mini((int)(nvg__absf(da) / (NvgPi * 0.5f) + 0.5f), 5));
-            hda = (da / (float)ndivs) / 2.0f;
+            hda = (da / ndivs) / 2.0f;
             kappa = nvg__absf(4.0f / 3.0f * (1.0f - nvg__cosf(hda)) / nvg__sinf(hda));
 
             if (dir == (int)NvgWinding.CounterClockwise)
@@ -2349,7 +2349,7 @@ namespace NanoVGDotNet
 
                 if (i == 0)
                 {
-                    vals[nvals++] = (float)move;
+                    vals[nvals++] = move;
                     vals[nvals++] = x;
                     vals[nvals++] = y;
                 }
@@ -2377,7 +2377,6 @@ namespace NanoVGDotNet
             if (r < 0.1f)
             {
                 NvgRect(ctx, x, y, w, h);
-                return;
             }
             else
             {
@@ -2642,7 +2641,7 @@ namespace NanoVGDotNet
                 return;
             }
 
-            NanoVg.NvgTextMetrics(ctx, ref fnull, ref fnull, ref lineh);
+            NvgTextMetrics(ctx, ref fnull, ref fnull, ref lineh);
 
             state.TextAlign = (int)NvgAlign.Left | valign;
 
@@ -3193,9 +3192,9 @@ namespace NanoVGDotNet
                 h -= 1;
             if (h < 1.0f / 6.0f)
                 return m1 + (m2 - m1) * h * 6.0f;
-            else if (h < 3.0f / 6.0f)
+            if (h < 3.0f / 6.0f)
                 return m2;
-            else if (h < 4.0f / 6.0f)
+            if (h < 4.0f / 6.0f)
                 return m1 + (m2 - m1) * (2.0f / 3.0f - h) * 6.0f;
             return m1;
         }
@@ -3253,10 +3252,10 @@ namespace NanoVGDotNet
             return FontStash.fonsAddFont(ctx.Fs, internalFontName, fileName);
         }
 
-        public static byte[] ImageToByteArray(System.Drawing.Image imageIn)
+        public static byte[] ImageToByteArray(Image imageIn)
         {
             var ms = new MemoryStream();
-            imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+            imageIn.Save(ms, ImageFormat.Jpeg);
             return ms.ToArray();
         }
 
@@ -3285,7 +3284,7 @@ namespace NanoVGDotNet
             {
                 //Freeze the image in memory
                 raw = bitmap.LockBits(
-                    new Rectangle(0, 0, (int)bitmap.Width, (int)bitmap.Height),
+                    new Rectangle(0, 0, bitmap.Width, bitmap.Height),
                     ImageLockMode.ReadOnly,
                     PixelFormat.Format24bppRgb
                 );
@@ -3294,7 +3293,7 @@ namespace NanoVGDotNet
                 rawImage = new byte[size];
 
                 //Copy the image into the byte[]
-                System.Runtime.InteropServices.Marshal.Copy(raw.Scan0, rawImage, 0, size);
+                Marshal.Copy(raw.Scan0, rawImage, 0, size);
             }
             finally
             {
@@ -3356,14 +3355,14 @@ namespace NanoVGDotNet
         {
             var newpoint = new NvGpoint();
 
-            newpoint.X = this.X;
-            newpoint.Y = this.Y;
-            newpoint.Dx = this.Dx;
-            newpoint.Dy = this.Dy;
-            newpoint.Len = this.Len;
-            newpoint.Dmx = this.Dmx;
-            newpoint.Dmy = this.Dmy;
-            newpoint.Flags = this.Flags;
+            newpoint.X = X;
+            newpoint.Y = Y;
+            newpoint.Dx = Dx;
+            newpoint.Dy = Dy;
+            newpoint.Len = Len;
+            newpoint.Dmx = Dmx;
+            newpoint.Dmy = Dmy;
+            newpoint.Flags = Flags;
 
             return newpoint;
         }
@@ -3522,8 +3521,8 @@ namespace NanoVGDotNet
         {
             var newScissor = new NvGscissor();
 
-            Array.Copy(this.Xform, newScissor.Xform, this.Xform.Length);
-            Array.Copy(this.Extent, newScissor.Extent, this.Extent.Length);
+            Array.Copy(Xform, newScissor.Xform, Xform.Length);
+            Array.Copy(Extent, newScissor.Extent, Extent.Length);
 
             return newScissor;
         }
@@ -3560,24 +3559,24 @@ namespace NanoVGDotNet
         public NvGstate Clone()
         {
             var newState = new NvGstate();
-            newState.CompositeOperation = this.CompositeOperation;
-            newState.Fill = this.Fill.Clone();
-            newState.Stroke = this.Stroke.Clone();
-            newState.StrokeWidth = this.StrokeWidth;
-            newState.MiterLimit = this.MiterLimit;
-            newState.LineJoin = this.LineJoin;
-            newState.LineCap = this.LineCap;
-            newState.Alpha = this.Alpha;
+            newState.CompositeOperation = CompositeOperation;
+            newState.Fill = Fill.Clone();
+            newState.Stroke = Stroke.Clone();
+            newState.StrokeWidth = StrokeWidth;
+            newState.MiterLimit = MiterLimit;
+            newState.LineJoin = LineJoin;
+            newState.LineCap = LineCap;
+            newState.Alpha = Alpha;
 
-            Array.Copy(this.Xform, newState.Xform, this.Xform.Length);
+            Array.Copy(Xform, newState.Xform, Xform.Length);
 
-            newState.Scissor = this.Scissor.Clone();
-            newState.FontSize = this.FontSize;
-            newState.LetterSpacing = this.LetterSpacing;
-            newState.LineHeight = this.LineHeight;
-            newState.FontBlur = this.FontBlur;
-            newState.TextAlign = this.TextAlign;
-            newState.FontId = this.FontId;
+            newState.Scissor = Scissor.Clone();
+            newState.FontSize = FontSize;
+            newState.LetterSpacing = LetterSpacing;
+            newState.LineHeight = LineHeight;
+            newState.FontBlur = FontBlur;
+            newState.TextAlign = TextAlign;
+            newState.FontId = FontId;
 
             return newState;
         }
@@ -3605,13 +3604,13 @@ namespace NanoVGDotNet
         {
             var newPaint = new NvGpaint();
 
-            Array.Copy(this.Xform, newPaint.Xform, this.Xform.Length);
-            Array.Copy(this.Extent, newPaint.Extent, this.Extent.Length);
-            newPaint.Radius = this.Radius;
-            newPaint.Feather = this.Feather;
-            newPaint.InnerColor = this.InnerColor;
-            newPaint.OuterColor = this.OuterColor;
-            newPaint.Image = this.Image;
+            Array.Copy(Xform, newPaint.Xform, Xform.Length);
+            Array.Copy(Extent, newPaint.Extent, Extent.Length);
+            newPaint.Radius = Radius;
+            newPaint.Feather = Feather;
+            newPaint.InnerColor = InnerColor;
+            newPaint.OuterColor = OuterColor;
+            newPaint.Image = Image;
 
             return newPaint;
         }
