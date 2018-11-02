@@ -2,13 +2,13 @@ namespace NanoVGDotNet
 {
     public class DemoData
     {
-        public int fontNormal, fontBold, fontIcons, fontEmoji;
-        public int[] images;
+        public int FontNormal, FontBold, FontIcons, FontEmoji;
+        public int[] Images;
         //[12];
 
         public DemoData()
         {
-            images = new int[12];
+            Images = new int[12];
         }
     }
 }

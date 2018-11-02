@@ -1,16 +1,16 @@
 namespace NanoVGDotNet
 {
-    public class GLNVGshader
+    public class GlnvGshader
     {
-        public int prog;
-        public int frag;
-        public int vert;
+        public int Prog;
+        public int Frag;
+        public int Vert;
         //[GLNVG_MAX_LOCS];
-        public int[] loc;
+        public int[] Loc;
 
-        public GLNVGshader()
+        public GlnvGshader()
         {
-            loc = new int[(int)GlNvgUniformLoc.MaxLocs];
+            Loc = new int[(int)GlNvgUniformLoc.MaxLocs];
         }
     }
 }

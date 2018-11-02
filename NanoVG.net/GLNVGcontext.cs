@@ -14,51 +14,51 @@ using OpenTK.Graphics.OpenGL;
 
 namespace NanoVGDotNet
 {
-    public class GLNVGcontext
+    public class GlnvGcontext
     {
-        public GLNVGshader shader;
-        public GLNVGtexture[] textures;
+        public GlnvGshader Shader;
+        public GlnvGtexture[] Textures;
         // [2]
-        public float[] view;
-        public int ntextures;
-        public int ctextures;
-        public int textureId;
-        public uint vertBuf;
+        public float[] View;
+        public int Ntextures;
+        public int Ctextures;
+        public int TextureId;
+        public uint VertBuf;
 #if NANOVG_GL3
-        public uint vertArr;
+        public uint VertArr;
 #endif
 #if NANOVG_GL_USE_UNIFORMBUFFER
 		public uint fragBuf;
 #endif
-        public int fragSize;
-        public int flags;
+        public int FragSize;
+        public int Flags;
 
         // Per frame buffers
-        public GLNVGcall[] calls;
-        public int ccalls;
-        public int ncalls;
-        public GLNVGpath[] paths;
-        public int cpaths;
-        public int npaths;
-        public NVGvertex[] verts;
-        public int cverts;
-        public int nverts;
-        public GLNVGfragUniforms[] uniforms;
-        public int cuniforms;
-        public int nuniforms;
+        public GlnvGcall[] Calls;
+        public int Ccalls;
+        public int Ncalls;
+        public GlnvGpath[] Paths;
+        public int Cpaths;
+        public int Npaths;
+        public NvGvertex[] Verts;
+        public int Cverts;
+        public int Nverts;
+        public GlnvGfragUniforms[] Uniforms;
+        public int Cuniforms;
+        public int Nuniforms;
 
         // cached state
 #if NANOVG_GL_USE_STATE_FILTER
-        public uint boundTexture;
-        public uint stencilMask;
-        public StencilFunction stencilFunc;
-        public int stencilFuncRef;
-        public uint stencilFuncMask;
+        public uint BoundTexture;
+        public uint StencilMask;
+        public StencilFunction StencilFunc;
+        public int StencilFuncRef;
+        public uint StencilFuncMask;
 #endif
 
-        public GLNVGcontext()
+        public GlnvGcontext()
         {
-            view = new float[2];
+            View = new float[2];
         }
     }
 }

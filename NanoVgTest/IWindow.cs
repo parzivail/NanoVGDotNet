@@ -8,6 +8,6 @@ namespace NanoVgTest
         void Load(MainWindow win);
         void Unload(MainWindow win);
         void Tick(MainWindow win);
-        void Render(MainWindow win, NVGcontext vg);
+        void Render(MainWindow win, NvGcontext vg);
     }
 }

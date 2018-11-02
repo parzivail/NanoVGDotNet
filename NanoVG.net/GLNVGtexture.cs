@@ -1,11 +1,11 @@
 namespace NanoVGDotNet
 {
-    public class GLNVGtexture
+    public class GlnvGtexture
     {
-        public int id;
-        public uint tex;
-        public int width, height;
-        public int type;
-        public int flags;
+        public int Id;
+        public uint Tex;
+        public int Width, Height;
+        public int Type;
+        public int Flags;
     }
 }

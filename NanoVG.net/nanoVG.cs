@@ -51,35 +51,35 @@ namespace NanoVGDotNet
     public delegate int RenderCreateTextureHandler(object uptr, int type, int w, int h, int imageFlags, byte[] data);
     public delegate int RenderCreateTextureHandler2(object uptr, int type, int w, int h, int imageFlags, Bitmap bmp);
     public delegate void RenderViewportHandler(object uptr, int width, int height, float devicePixelRatio);
-    public delegate void RenderFlushHandler(object uptr, NVGcompositeOperationState compositeOperation);
-    public delegate void RenderFillHandler(object uptr, ref NVGpaint paint, ref NVGscissor scissor, float fringe, float[] bounds, NVGpath[] paths, int npaths);
-    public delegate void RenderStrokeHandler(object uptr, ref NVGpaint paint, ref NVGscissor scissor, float fringe, float strokeWidth, NVGpath[] paths, int npaths);
-    public delegate void RenderTrianglesHandler(object uptr, ref NVGpaint paint, ref NVGscissor scissor,
-                                                NVGvertex[] verts, int nverts);
+    public delegate void RenderFlushHandler(object uptr, NvGcompositeOperationState compositeOperation);
+    public delegate void RenderFillHandler(object uptr, ref NvGpaint paint, ref NvGscissor scissor, float fringe, float[] bounds, NvGpath[] paths, int npaths);
+    public delegate void RenderStrokeHandler(object uptr, ref NvGpaint paint, ref NvGscissor scissor, float fringe, float strokeWidth, NvGpath[] paths, int npaths);
+    public delegate void RenderTrianglesHandler(object uptr, ref NvGpaint paint, ref NvGscissor scissor,
+                                                NvGvertex[] verts, int nverts);
     public delegate int RenderUpdateTextureHandler(object uptr, int image, int x, int y, int w, int h, byte[] data);
     public delegate int RenderGetTextureSizeHandler(object uptr, int image, ref int w, ref int h);
     public delegate int RenderDeleteTexture(object uptr, int image);
     public delegate void RenderDelete(object uptr);
     public delegate void RenderCancel(object uptr);
 
-    public static class NanoVG
+    public static class NanoVg
     {
-        public const float NVG_PI = 3.14159265358979323846264338327f;
+        public const float NvgPi = 3.14159265358979323846264338327f;
 
-        const int NVG_INIT_FONTIMAGE_SIZE = 512;
-        const int NVG_MAX_FONTIMAGE_SIZE = 2048;
-        public const int NVG_MAX_FONTIMAGES = 4;
+        const int NvgInitFontimageSize = 512;
+        const int NvgMaxFontimageSize = 2048;
+        public const int NvgMaxFontimages = 4;
 
-        const int NVG_INIT_COMMANDS_SIZE = 256;
-        const int NVG_INIT_POINTS_SIZE = 128;
-        const int NVG_INIT_PATHS_SIZE = 16;
-        const int NVG_INIT_VERTS_SIZE = 256;
-        public const int NVG_MAX_STATES = 32;
+        const int NvgInitCommandsSize = 256;
+        const int NvgInitPointsSize = 128;
+        const int NvgInitPathsSize = 16;
+        const int NvgInitVertsSize = 256;
+        public const int NvgMaxStates = 32;
         // Length proportional to radius of a cubic bezier handle for 90deg arcs.
-        const float NVG_KAPPA90 = 0.5522847493f;
+        const float NvgKappa90 = 0.5522847493f;
 
         //if defined NANOVG_GL2_IMPLEMENTATION
-        public const int NANOVG_GL_UNIFORMARRAY_SIZE = 11;
+        public const int NanovgGlUniformarraySize = 11;
 
         static int NVG_COUNTOF(int arr)
         {
@@ -180,38 +180,38 @@ namespace NanoVGDotNet
             return d;
         }
 
-        static void nvg__deletePathCache(ref NVGpathCache c)
+        static void nvg__deletePathCache(ref NvGpathCache c)
         {
-            c.points = null;
-            c.paths = null;
-            c.verts = null;
+            c.Points = null;
+            c.Paths = null;
+            c.Verts = null;
         }
 
-        static void nvg__allocPathCache(out NVGpathCache c)
+        static void nvg__allocPathCache(out NvGpathCache c)
         {
-            c = new NVGpathCache();
-            c.points = new NVGpoint[NVG_INIT_POINTS_SIZE];
-            c.npoints = 0;
-            c.cpoints = NVG_INIT_POINTS_SIZE;
+            c = new NvGpathCache();
+            c.Points = new NvGpoint[NvgInitPointsSize];
+            c.Npoints = 0;
+            c.Cpoints = NvgInitPointsSize;
 
-            c.paths = new NVGpath[NVG_INIT_PATHS_SIZE];
-            c.npaths = 0;
-            c.cpaths = NVG_INIT_PATHS_SIZE;
+            c.Paths = new NvGpath[NvgInitPathsSize];
+            c.Npaths = 0;
+            c.Cpaths = NvgInitPathsSize;
 
-            c.verts = new NVGvertex[NVG_INIT_VERTS_SIZE];
-            c.nverts = 0;
-            c.cverts = NVG_INIT_VERTS_SIZE;
+            c.Verts = new NvGvertex[NvgInitVertsSize];
+            c.Nverts = 0;
+            c.Cverts = NvgInitVertsSize;
         }
 
-        static void nvg__setDevicePixelRatio(ref NVGcontext ctx, float ratio)
+        static void nvg__setDevicePixelRatio(ref NvGcontext ctx, float ratio)
         {
-            ctx.tessTol = 0.25f / ratio;
-            ctx.distTol = 0.01f / ratio;
-            ctx.fringeWidth = 1.0f / ratio;
-            ctx.devicePxRatio = ratio;
+            ctx.TessTol = 0.25f / ratio;
+            ctx.DistTol = 0.01f / ratio;
+            ctx.FringeWidth = 1.0f / ratio;
+            ctx.DevicePxRatio = ratio;
         }
 
-        static NVGcompositeOperationState nvg__compositeOperationState(int op)
+        static NvGcompositeOperationState nvg__compositeOperationState(int op)
         {
             int sfactor = 0, dfactor = 0;
 
@@ -271,58 +271,58 @@ namespace NanoVGDotNet
                 dfactor = (int)NvgBlendFactor.OneMinusSrcAlpha;
             }
 
-            NVGcompositeOperationState state;
-            state.srcRGB = sfactor;
-            state.dstRGB = dfactor;
-            state.srcAlpha = sfactor;
-            state.dstAlpha = dfactor;
+            NvGcompositeOperationState state;
+            state.SrcRgb = sfactor;
+            state.DstRgb = dfactor;
+            state.SrcAlpha = sfactor;
+            state.DstAlpha = dfactor;
             return state;
         }
 
-        static NVGstate nvg__getState(NVGcontext ctx)
+        static NvGstate nvg__getState(NvGcontext ctx)
         {
-            return ctx.states[ctx.nstates - 1];
+            return ctx.States[ctx.Nstates - 1];
         }
 
         // State setting
-        public static void nvgFontSize(NVGcontext ctx, float size)
+        public static void NvgFontSize(NvGcontext ctx, float size)
         {
             var state = nvg__getState(ctx);
-            state.fontSize = size;
+            state.FontSize = size;
         }
 
-        public static void nvgFontBlur(NVGcontext ctx, float blur)
+        public static void NvgFontBlur(NvGcontext ctx, float blur)
         {
             var state = nvg__getState(ctx);
-            state.fontBlur = blur;
+            state.FontBlur = blur;
         }
 
-        public static void nvgFontFace(NVGcontext ctx, string font)
+        public static void NvgFontFace(NvGcontext ctx, string font)
         {
             var state = nvg__getState(ctx);
-            state.fontId = FontStash.fonsGetFontByName(ctx.fs, font);
+            state.FontId = FontStash.fonsGetFontByName(ctx.Fs, font);
         }
 
-        public static NVGcolor nvgRGBA(byte r, byte g, byte b, byte a)
+        public static NvGcolor NvgRgba(byte r, byte g, byte b, byte a)
         {
-            var color = default(NVGcolor);
+            var color = default(NvGcolor);
             // Use longer initialization to suppress warning.
-            color.r = r / 255.0f;
-            color.g = g / 255.0f;
-            color.b = b / 255.0f;
-            color.a = a / 255.0f;
+            color.R = r / 255.0f;
+            color.G = g / 255.0f;
+            color.B = b / 255.0f;
+            color.A = a / 255.0f;
 
             return color;
         }
 
-        static NVGcolor nvgRGBAf(float r, float g, float b, float a)
+        static NvGcolor NvgRgbAf(float r, float g, float b, float a)
         {
-            var color = default(NVGcolor);
+            var color = default(NvGcolor);
             // Use longer initialization to suppress warning.
-            color.r = r;
-            color.g = g;
-            color.b = b;
-            color.a = a;
+            color.R = r;
+            color.G = g;
+            color.B = b;
+            color.A = a;
             return color;
         }
 
@@ -339,11 +339,11 @@ namespace NanoVGDotNet
             return nvg__maxi(2, (int)Math.Ceiling(arc / da));
         }
 
-        static void nvg__buttCapStart(NVGvertex[] dst, ref int idst, NVGpoint p,
+        static void nvg__buttCapStart(NvGvertex[] dst, ref int idst, NvGpoint p,
                                       float dx, float dy, float w, float d, float aa)
         {
-            var px = p.x - dx * d;
-            var py = p.y - dy * d;
+            var px = p.X - dx * d;
+            var py = p.Y - dy * d;
             var dlx = dy;
             var dly = -dx;
             nvg__vset(ref dst[idst], px + dlx * w - dx * aa, py + dly * w - dy * aa, 0, 0);
@@ -356,18 +356,18 @@ namespace NanoVGDotNet
             idst++;
         }
 
-        static void nvg__roundCapStart(NVGvertex[] dst, ref int idst, NVGpoint p,
+        static void nvg__roundCapStart(NvGvertex[] dst, ref int idst, NvGpoint p,
                                        float dx, float dy, float w, int ncap, float aa)
         {
             int i;
-            var px = p.x;
-            var py = p.y;
+            var px = p.X;
+            var py = p.Y;
             var dlx = dy;
             var dly = -dx;
             //NVG_NOTUSED(aa);
             for (i = 0; i < ncap; i++)
             {
-                var a = i / (float)(ncap - 1) * NVG_PI;
+                var a = i / (float)(ncap - 1) * NvgPi;
                 float ax = (float)Math.Cos(a) * w, ay = (float)Math.Sin(a) * w;
                 nvg__vset(ref dst[idst], px - dlx * ax - dx * ay, py - dly * ax - dy * ay, 0, 1);
                 idst++;
@@ -380,11 +380,11 @@ namespace NanoVGDotNet
             idst++;
         }
 
-        static void nvg__buttCapEnd(NVGvertex[] dst, ref int idst, NVGpoint p,
+        static void nvg__buttCapEnd(NvGvertex[] dst, ref int idst, NvGpoint p,
                                     float dx, float dy, float w, float d, float aa)
         {
-            var px = p.x + dx * d;
-            var py = p.y + dy * d;
+            var px = p.X + dx * d;
+            var py = p.Y + dy * d;
             var dlx = dy;
             var dly = -dx;
             nvg__vset(ref dst[idst], px + dlx * w, py + dly * w, 0, 1);
@@ -397,12 +397,12 @@ namespace NanoVGDotNet
             idst++;
         }
 
-        static void nvg__roundCapEnd(NVGvertex[] dst, ref int idst, NVGpoint p,
+        static void nvg__roundCapEnd(NvGvertex[] dst, ref int idst, NvGpoint p,
                                      float dx, float dy, float w, int ncap, float aa)
         {
             int i;
-            var px = p.x;
-            var py = p.y;
+            var px = p.X;
+            var py = p.Y;
             var dlx = dy;
             var dly = -dx;
             //NVG_NOTUSED(aa);
@@ -412,7 +412,7 @@ namespace NanoVGDotNet
             idst++;
             for (i = 0; i < ncap; i++)
             {
-                var a = i / (float)(ncap - 1) * NVG_PI;
+                var a = i / (float)(ncap - 1) * NvgPi;
                 float ax = (float)Math.Cos(a) * w, ay = (float)Math.Sin(a) * w;
                 nvg__vset(ref dst[idst], px, py, 0.5f, 1);
                 idst++;
@@ -421,39 +421,39 @@ namespace NanoVGDotNet
             }
         }
 
-        static void nvg__roundJoin(NVGvertex[] dst, ref int idst, NVGpoint p0, NVGpoint p1,
+        static void nvg__roundJoin(NvGvertex[] dst, ref int idst, NvGpoint p0, NvGpoint p1,
                                    float lw, float rw, float lu, float ru, int ncap, float fringe)
         {
             int i, n;
-            var dlx0 = p0.dy;
-            var dly0 = -p0.dx;
-            var dlx1 = p1.dy;
-            var dly1 = -p1.dx;
+            var dlx0 = p0.Dy;
+            var dly0 = -p0.Dx;
+            var dlx1 = p1.Dy;
+            var dly1 = -p1.Dx;
             //NVG_NOTUSED(fringe);
 
-            if ((p1.flags & (int)NvgPointFlags.Left) != 0)
+            if ((p1.Flags & (int)NvgPointFlags.Left) != 0)
             {
                 float lx0 = 0, ly0 = 0, lx1 = 0, ly1 = 0, a0, a1;
-                nvg__chooseBevel(p1.flags & (int)NvgPointFlags.InnerBevel, p0, p1, lw,
+                nvg__chooseBevel(p1.Flags & (int)NvgPointFlags.InnerBevel, p0, p1, lw,
                     ref lx0, ref ly0, ref lx1, ref ly1);
                 a0 = (float)Math.Atan2(-dly0, -dlx0);
                 a1 = (float)Math.Atan2(-dly1, -dlx1);
                 if (a1 > a0)
-                    a1 -= NVG_PI * 2;
+                    a1 -= NvgPi * 2;
 
                 nvg__vset(ref dst[idst], lx0, ly0, lu, 1);
                 idst++;
-                nvg__vset(ref dst[idst], p1.x - dlx0 * rw, p1.y - dly0 * rw, ru, 1);
+                nvg__vset(ref dst[idst], p1.X - dlx0 * rw, p1.Y - dly0 * rw, ru, 1);
                 idst++;
 
-                n = nvg__clampi((int)Math.Ceiling(((a0 - a1) / NVG_PI) * ncap), 2, ncap);
+                n = nvg__clampi((int)Math.Ceiling(((a0 - a1) / NvgPi) * ncap), 2, ncap);
                 for (i = 0; i < n; i++)
                 {
                     var u = i / (float)(n - 1);
                     var a = a0 + u * (a1 - a0);
-                    var rx = (float)(p1.x + Math.Cos(a) * rw);
-                    var ry = (float)(p1.y + Math.Sin(a) * rw);
-                    nvg__vset(ref dst[idst], p1.x, p1.y, 0.5f, 1);
+                    var rx = (float)(p1.X + Math.Cos(a) * rw);
+                    var ry = (float)(p1.Y + Math.Sin(a) * rw);
+                    nvg__vset(ref dst[idst], p1.X, p1.Y, 0.5f, 1);
                     idst++;
                     nvg__vset(ref dst[idst], rx, ry, ru, 1);
                     idst++;
@@ -461,39 +461,39 @@ namespace NanoVGDotNet
 
                 nvg__vset(ref dst[idst], lx1, ly1, lu, 1);
                 idst++;
-                nvg__vset(ref dst[idst], p1.x - dlx1 * rw, p1.y - dly1 * rw, ru, 1);
+                nvg__vset(ref dst[idst], p1.X - dlx1 * rw, p1.Y - dly1 * rw, ru, 1);
                 idst++;
 
             }
             else
             {
                 float rx0 = 0, ry0 = 0, rx1 = 0, ry1 = 0, a0, a1;
-                nvg__chooseBevel(p1.flags & (int)NvgPointFlags.InnerBevel, p0, p1, -rw,
+                nvg__chooseBevel(p1.Flags & (int)NvgPointFlags.InnerBevel, p0, p1, -rw,
                     ref rx0, ref ry0, ref rx1, ref ry1);
                 a0 = (float)Math.Atan2(dly0, dlx0);
                 a1 = (float)Math.Atan2(dly1, dlx1);
                 if (a1 < a0)
-                    a1 += NVG_PI * 2;
+                    a1 += NvgPi * 2;
 
-                nvg__vset(ref dst[idst], p1.x + dlx0 * rw, p1.y + dly0 * rw, lu, 1);
+                nvg__vset(ref dst[idst], p1.X + dlx0 * rw, p1.Y + dly0 * rw, lu, 1);
                 idst++;
                 nvg__vset(ref dst[idst], rx0, ry0, ru, 1);
                 idst++;
 
-                n = nvg__clampi((int)Math.Ceiling(((a1 - a0) / NVG_PI) * ncap), 2, ncap);
+                n = nvg__clampi((int)Math.Ceiling(((a1 - a0) / NvgPi) * ncap), 2, ncap);
                 for (i = 0; i < n; i++)
                 {
                     var u = i / (float)(n - 1);
                     var a = a0 + u * (a1 - a0);
-                    var lx = (float)(p1.x + Math.Cos(a) * lw);
-                    var ly = (float)(p1.y + Math.Sin(a) * lw);
+                    var lx = (float)(p1.X + Math.Cos(a) * lw);
+                    var ly = (float)(p1.Y + Math.Sin(a) * lw);
                     nvg__vset(ref dst[idst], lx, ly, lu, 1);
                     idst++;
-                    nvg__vset(ref dst[idst], p1.x, p1.y, 0.5f, 1);
+                    nvg__vset(ref dst[idst], p1.X, p1.Y, 0.5f, 1);
                     idst++;
                 }
 
-                nvg__vset(ref dst[idst], p1.x + dlx1 * rw, p1.y + dly1 * rw, lu, 1);
+                nvg__vset(ref dst[idst], p1.X + dlx1 * rw, p1.Y + dly1 * rw, lu, 1);
                 idst++;
                 nvg__vset(ref dst[idst], rx1, ry1, ru, 1);
                 idst++;
@@ -502,14 +502,14 @@ namespace NanoVGDotNet
             //return dst;
         }
 
-        static int nvg__expandStroke(NVGcontext ctx, float w, int lineCap, int lineJoin, float miterLimit)
+        static int nvg__expandStroke(NvGcontext ctx, float w, int lineCap, int lineJoin, float miterLimit)
         {
-            var cache = ctx.cache;
-            NVGvertex[] verts;
-            NVGvertex[] dst;
+            var cache = ctx.Cache;
+            NvGvertex[] verts;
+            NvGvertex[] dst;
             int cverts, i, j;
-            var aa = ctx.fringeWidth;
-            var ncap = nvg__curveDivs(w, NVG_PI, ctx.tessTol);  // Calculate divisions per half circle.
+            var aa = ctx.FringeWidth;
+            var ncap = nvg__curveDivs(w, NvgPi, ctx.TessTol);  // Calculate divisions per half circle.
 
             nvg__calculateJoins(ctx, w, lineJoin, miterLimit);
 
@@ -527,18 +527,18 @@ namespace NanoVGDotNet
 
             // Calculate max vertex usage.
             cverts = 0;
-            for (i = 0; i < cache.npaths; i++)
+            for (i = 0; i < cache.Npaths; i++)
             {
-                var path = cache.paths[i];
-                var loop = (path.closed == 0) ? 0 : 1;
-                if (lineJoin == (int)NvgLineCap.Round)
-                    cverts += (path.count + path.nbevel * (ncap + 2) + 1) * 2; // plus one for loop
+                var path = cache.Paths[i];
+                var loop = (path.Closed == 0) ? 0 : 1;
+                if (lineJoin == (int)NanoVGDotNet.NvgLineCap.Round)
+                    cverts += (path.Count + path.Nbevel * (ncap + 2) + 1) * 2; // plus one for loop
                 else
-                    cverts += (path.count + path.nbevel * 5 + 1) * 2; // plus one for loop
+                    cverts += (path.Count + path.Nbevel * 5 + 1) * 2; // plus one for loop
                 if (loop == 0)
                 {
                     // space for caps
-                    if (lineCap == (int)NvgLineCap.Round)
+                    if (lineCap == (int)NanoVGDotNet.NvgLineCap.Round)
                     {
                         cverts += (ncap * 2 + 2) * 2;
                     }
@@ -554,39 +554,39 @@ namespace NanoVGDotNet
             if (verts == null)
                 return 0;
 
-            for (i = 0; i < cache.npaths; i++)
+            for (i = 0; i < cache.Npaths; i++)
             {
-                var path = cache.paths[i];
-                var ipts = path.first;
-                var pts = cache.points;
-                NVGpoint p0;
+                var path = cache.Paths[i];
+                var ipts = path.First;
+                var pts = cache.Points;
+                NvGpoint p0;
                 var ip0 = 0;
-                NVGpoint p1;
+                NvGpoint p1;
                 var ip1 = 0;
                 int s, e, loop;
                 float dx, dy;
                 var iverts = 0;
 
-                path.fill = null;
-                path.nfill = 0;
-                path.ifill = 0;
+                path.Fill = null;
+                path.Nfill = 0;
+                path.Ifill = 0;
 
                 // Calculate fringe or stroke
-                loop = (path.closed == 0) ? 0 : 1;
+                loop = (path.Closed == 0) ? 0 : 1;
                 dst = verts;
                 var idst = iverts;
-                path.stroke = dst;
-                path.istroke = idst;
+                path.Stroke = dst;
+                path.Istroke = idst;
 
                 if (loop != 0)
                 {
                     // Looping
-                    ip0 = ipts + path.count - 1;
+                    ip0 = ipts + path.Count - 1;
                     p0 = pts[ip0];
                     ip1 = ipts + 0;
                     p1 = pts[ip1];
                     s = 0;
-                    e = path.count;
+                    e = path.Count;
                 }
                 else
                 {
@@ -596,29 +596,29 @@ namespace NanoVGDotNet
                     ip1 = ipts + 1;
                     p1 = pts[ip1];
                     s = 1;
-                    e = path.count - 1;
+                    e = path.Count - 1;
                 }
 
                 if (loop == 0)
                 {
                     // Add cap
-                    dx = p1.x - p0.x;
-                    dy = p1.y - p0.y;
+                    dx = p1.X - p0.X;
+                    dy = p1.Y - p0.Y;
                     nvg__normalize(ref dx, ref dy);
-                    if (lineCap == (int)NvgLineCap.Butt)
+                    if (lineCap == (int)NanoVGDotNet.NvgLineCap.Butt)
                         nvg__buttCapStart(dst, ref idst, p0, dx, dy, w, -aa * 0.5f, aa);
-                    else if (lineCap == (int)NvgLineCap.Butt || lineCap == (int)NvgLineCap.Square)
+                    else if (lineCap == (int)NanoVGDotNet.NvgLineCap.Butt || lineCap == (int)NanoVGDotNet.NvgLineCap.Square)
                         nvg__buttCapStart(dst, ref idst, p0, dx, dy, w, w - aa, aa);
-                    else if (lineCap == (int)NvgLineCap.Round)
+                    else if (lineCap == (int)NanoVGDotNet.NvgLineCap.Round)
                         nvg__roundCapStart(dst, ref idst, p0, dx, dy, w, ncap, aa);
 
                 }
 
                 for (j = s; j < e; ++j)
                 {
-                    if ((p1.flags & (int)(NvgPointFlags.Bevel | NvgPointFlags.InnerBevel)) != 0)
+                    if ((p1.Flags & (int)(NvgPointFlags.Bevel | NvgPointFlags.InnerBevel)) != 0)
                     {
-                        if (lineJoin == (int)NvgLineCap.Round)
+                        if (lineJoin == (int)NanoVGDotNet.NvgLineCap.Round)
                         {
                             nvg__roundJoin(dst, ref idst, p0, p1, w, w, 0, 1, ncap, aa);
                         }
@@ -629,9 +629,9 @@ namespace NanoVGDotNet
                     }
                     else
                     {
-                        nvg__vset(ref dst[idst], p1.x + (p1.dmx * w), p1.y + (p1.dmy * w), 0, 1);
+                        nvg__vset(ref dst[idst], p1.X + (p1.Dmx * w), p1.Y + (p1.Dmy * w), 0, 1);
                         idst++;
-                        nvg__vset(ref dst[idst], p1.x - (p1.dmx * w), p1.y - (p1.dmy * w), 1, 1);
+                        nvg__vset(ref dst[idst], p1.X - (p1.Dmx * w), p1.Y - (p1.Dmy * w), 1, 1);
                         idst++;
                     }
                     p0 = p1;
@@ -642,26 +642,26 @@ namespace NanoVGDotNet
                 if (loop != 0)
                 {
                     // Loop it
-                    nvg__vset(ref dst[idst], verts[0].x, verts[0].y, 0, 1);
+                    nvg__vset(ref dst[idst], verts[0].X, verts[0].Y, 0, 1);
                     idst++;
-                    nvg__vset(ref dst[idst], verts[1].x, verts[1].y, 1, 1);
+                    nvg__vset(ref dst[idst], verts[1].X, verts[1].Y, 1, 1);
                     idst++;
                 }
                 else
                 {
                     // Add cap
-                    dx = p1.x - p0.x;
-                    dy = p1.y - p0.y;
+                    dx = p1.X - p0.X;
+                    dy = p1.Y - p0.Y;
                     nvg__normalize(ref dx, ref dy);
-                    if (lineCap == (int)NvgLineCap.Butt)
+                    if (lineCap == (int)NanoVGDotNet.NvgLineCap.Butt)
                         nvg__buttCapEnd(dst, ref idst, p1, dx, dy, w, -aa * 0.5f, aa);
-                    else if (lineCap == (int)NvgLineCap.Butt || lineCap == (int)NvgLineCap.Square)
+                    else if (lineCap == (int)NanoVGDotNet.NvgLineCap.Butt || lineCap == (int)NanoVGDotNet.NvgLineCap.Square)
                         nvg__buttCapEnd(dst, ref idst, p1, dx, dy, w, w - aa, aa);
-                    else if (lineCap == (int)NvgLineCap.Round)
+                    else if (lineCap == (int)NanoVGDotNet.NvgLineCap.Round)
                         nvg__roundCapEnd(dst, ref idst, p1, dx, dy, w, ncap, aa);
                 }
 
-                path.nstroke = (int)(idst - iverts);
+                path.Nstroke = (int)(idst - iverts);
 
                 verts = dst;
                 iverts = idst;
@@ -672,115 +672,115 @@ namespace NanoVGDotNet
             return 1;
         }
 
-        public static NVGpaint nvgBoxGradient(NVGcontext ctx,
+        public static NvGpaint NvgBoxGradient(NvGcontext ctx,
                                               float x, float y, float w, float h, float r, float f,
-                                              NVGcolor icol, NVGcolor ocol)
+                                              NvGcolor icol, NvGcolor ocol)
         {
-            var p = new NVGpaint();
+            var p = new NvGpaint();
             //NVG_NOTUSED(ctx);
             //memset(&p, 0, sizeof(p));
 
-            nvgTransformIdentity(p.xform);
-            p.xform[4] = x + w * 0.5f;
-            p.xform[5] = y + h * 0.5f;
+            NvgTransformIdentity(p.Xform);
+            p.Xform[4] = x + w * 0.5f;
+            p.Xform[5] = y + h * 0.5f;
 
-            p.extent[0] = w * 0.5f;
-            p.extent[1] = h * 0.5f;
+            p.Extent[0] = w * 0.5f;
+            p.Extent[1] = h * 0.5f;
 
-            p.radius = r;
+            p.Radius = r;
 
-            p.feather = nvg__maxf(1.0f, f);
+            p.Feather = nvg__maxf(1.0f, f);
 
-            p.innerColor = icol;
-            p.outerColor = ocol;
+            p.InnerColor = icol;
+            p.OuterColor = ocol;
 
             return p;
         }
 
-        public static void nvgClosePath(NVGcontext ctx)
+        public static void NvgClosePath(NvGcontext ctx)
         {
             var vals = new float[] { (float)NvgCommands.Close };
             nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
-        public static void nvgPathWinding(NVGcontext ctx, int dir)
+        public static void NvgPathWinding(NvGcontext ctx, int dir)
         {
             var vals = new float[] { (float)NvgCommands.Winding, (float)dir };
             nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
-        public static void nvgStroke(NVGcontext ctx)
+        public static void NvgStroke(NvGcontext ctx)
         {
             var state = nvg__getState(ctx);
-            var scale = nvg__getAverageScale(state.xform);
-            var strokeWidth = nvg__clampf(state.strokeWidth * scale, 0.0f, 200.0f);
-            var strokePaint = state.stroke.Clone();
-            NVGpath path;
+            var scale = nvg__getAverageScale(state.Xform);
+            var strokeWidth = nvg__clampf(state.StrokeWidth * scale, 0.0f, 200.0f);
+            var strokePaint = state.Stroke.Clone();
+            NvGpath path;
             int i;
 
-            if (strokeWidth < ctx.fringeWidth)
+            if (strokeWidth < ctx.FringeWidth)
             {
                 // If the stroke width is less than pixel size, use alpha to emulate coverage.
                 // Since coverage is area, scale by alpha*alpha.
-                var alpha = nvg__clampf(strokeWidth / ctx.fringeWidth, 0.0f, 1.0f);
-                strokePaint.innerColor.a *= alpha * alpha;
-                strokePaint.outerColor.a *= alpha * alpha;
-                strokeWidth = ctx.fringeWidth;
+                var alpha = nvg__clampf(strokeWidth / ctx.FringeWidth, 0.0f, 1.0f);
+                strokePaint.InnerColor.A *= alpha * alpha;
+                strokePaint.OuterColor.A *= alpha * alpha;
+                strokeWidth = ctx.FringeWidth;
             }
 
             // Apply global alpha
-            strokePaint.innerColor.a *= state.alpha;
-            strokePaint.outerColor.a *= state.alpha;
+            strokePaint.InnerColor.A *= state.Alpha;
+            strokePaint.OuterColor.A *= state.Alpha;
 
             nvg__flattenPaths(ctx);
 
-            if (ctx.params_.edgeAntiAlias != 0)
-                nvg__expandStroke(ctx, strokeWidth * 0.5f + ctx.fringeWidth * 0.5f,
-                    state.lineCap, state.lineJoin, state.miterLimit);
+            if (ctx.Params.EdgeAntiAlias != 0)
+                nvg__expandStroke(ctx, strokeWidth * 0.5f + ctx.FringeWidth * 0.5f,
+                    state.LineCap, state.LineJoin, state.MiterLimit);
             else
-                nvg__expandStroke(ctx, strokeWidth * 0.5f, state.lineCap, state.lineJoin, state.miterLimit);
+                nvg__expandStroke(ctx, strokeWidth * 0.5f, state.LineCap, state.LineJoin, state.MiterLimit);
 
-            ctx.params_.renderStroke(ctx.params_.userPtr, ref strokePaint, ref state.scissor, ctx.fringeWidth,
-                strokeWidth, ctx.cache.paths, ctx.cache.npaths);
+            ctx.Params.RenderStroke(ctx.Params.UserPtr, ref strokePaint, ref state.Scissor, ctx.FringeWidth,
+                strokeWidth, ctx.Cache.Paths, ctx.Cache.Npaths);
 
             // Count triangles
-            for (i = 0; i < ctx.cache.npaths; i++)
+            for (i = 0; i < ctx.Cache.Npaths; i++)
             {
-                path = ctx.cache.paths[i];
-                ctx.strokeTriCount += path.nstroke - 2;
-                ctx.drawCallCount++;
+                path = ctx.Cache.Paths[i];
+                ctx.StrokeTriCount += path.Nstroke - 2;
+                ctx.DrawCallCount++;
             }
         }
 
         // State handling
-        public static void nvgSave(NVGcontext ctx)
+        public static void NvgSave(NvGcontext ctx)
         {
-            if (ctx.nstates >= NVG_MAX_STATES)
+            if (ctx.Nstates >= NvgMaxStates)
                 return;
-            if (ctx.nstates > 0)
+            if (ctx.Nstates > 0)
                 //memcpy(&ctx->states[ctx->nstates], &ctx->states[ctx->nstates-1], sizeof(NVGstate));
-                ctx.states[ctx.nstates] = ctx.states[ctx.nstates - 1].Clone();
-            ctx.nstates++;
+                ctx.States[ctx.Nstates] = ctx.States[ctx.Nstates - 1].Clone();
+            ctx.Nstates++;
         }
 
-        public static void nvgRestore(NVGcontext ctx)
+        public static void NvgRestore(NvGcontext ctx)
         {
-            if (ctx.nstates <= 1)
+            if (ctx.Nstates <= 1)
                 return;
-            ctx.nstates--;
+            ctx.Nstates--;
         }
 
-        static void nvgTransformPremultiply(float[] t, float[] s)
+        static void NvgTransformPremultiply(float[] t, float[] s)
         {
             var s2 = new float[6];
             //memcpy(s2, s, sizeof(float)*6);
             Array.Copy(s, s2, 6);
-            nvgTransformMultiply(s2, t);
+            NvgTransformMultiply(s2, t);
             //memcpy(t, s2, sizeof(float)*6);
             Array.Copy(s2, t, 6);
         }
 
-        static void nvgTransformRotate(float[] t, float a)
+        static void NvgTransformRotate(float[] t, float a)
         {
             float cs = nvg__cosf(a), sn = nvg__sinf(a);
             t[0] = cs;
@@ -791,7 +791,7 @@ namespace NanoVGDotNet
             t[5] = 0.0f;
         }
 
-        static void nvgTransformTranslate(float[] t, float tx, float ty)
+        static void NvgTransformTranslate(float[] t, float tx, float ty)
         {
             t[0] = 1.0f;
             t[1] = 0.0f;
@@ -801,26 +801,26 @@ namespace NanoVGDotNet
             t[5] = ty;
         }
 
-        public static float nvgDegToRad(float deg)
+        public static float NvgDegToRad(float deg)
         {
-            return deg / 180.0f * NVG_PI;
+            return deg / 180.0f * NvgPi;
         }
 
         // Scissoring
-        public static void nvgScissor(NVGcontext ctx, float x, float y, float w, float h)
+        public static void NvgScissor(NvGcontext ctx, float x, float y, float w, float h)
         {
             var state = nvg__getState(ctx);
 
             w = nvg__maxf(0.0f, w);
             h = nvg__maxf(0.0f, h);
 
-            nvgTransformIdentity(state.scissor.xform);
-            state.scissor.xform[4] = x + w * 0.5f;
-            state.scissor.xform[5] = y + h * 0.5f;
-            nvgTransformMultiply(state.scissor.xform, state.xform);
+            NvgTransformIdentity(state.Scissor.Xform);
+            state.Scissor.Xform[4] = x + w * 0.5f;
+            state.Scissor.Xform[5] = y + h * 0.5f;
+            NvgTransformMultiply(state.Scissor.Xform, state.Xform);
 
-            state.scissor.extent[0] = w * 0.5f;
-            state.scissor.extent[1] = h * 0.5f;
+            state.Scissor.Extent[0] = w * 0.5f;
+            state.Scissor.Extent[1] = h * 0.5f;
         }
 
         static void nvg__isectRects(float[] dst,
@@ -837,7 +837,7 @@ namespace NanoVGDotNet
             dst[3] = nvg__maxf(0.0f, maxy - miny);
         }
 
-        public static void nvgIntersectScissor(NVGcontext ctx, float x, float y, float w, float h)
+        public static void NvgIntersectScissor(NvGcontext ctx, float x, float y, float w, float h)
         {
             var state = nvg__getState(ctx);
             float[] pxform = new float[6], invxorm = new float[6];
@@ -845,256 +845,256 @@ namespace NanoVGDotNet
             float ex, ey, tex, tey;
 
             // If no previous scissor has been set, set the scissor as current scissor.
-            if (state.scissor.extent[0] < 0)
+            if (state.Scissor.Extent[0] < 0)
             {
-                nvgScissor(ctx, x, y, w, h);
+                NvgScissor(ctx, x, y, w, h);
                 return;
             }
 
             // Transform the current scissor rect into current transform space.
             // If there is difference in rotation, this will be approximation.
             //memcpy(pxform, state->scissor.xform, sizeof(float)*6);
-            Array.Copy(state.scissor.xform, pxform, 6);
-            ex = state.scissor.extent[0];
-            ey = state.scissor.extent[1];
-            nvgTransformInverse(invxorm, state.xform);
-            nvgTransformMultiply(pxform, invxorm);
+            Array.Copy(state.Scissor.Xform, pxform, 6);
+            ex = state.Scissor.Extent[0];
+            ey = state.Scissor.Extent[1];
+            NvgTransformInverse(invxorm, state.Xform);
+            NvgTransformMultiply(pxform, invxorm);
             tex = ex * nvg__absf(pxform[0]) + ey * nvg__absf(pxform[2]);
             tey = ex * nvg__absf(pxform[1]) + ey * nvg__absf(pxform[3]);
 
             // Intersect rects.
             nvg__isectRects(rect, pxform[4] - tex, pxform[5] - tey, tex * 2, tey * 2, x, y, w, h);
 
-            nvgScissor(ctx, rect[0], rect[1], rect[2], rect[3]);
+            NvgScissor(ctx, rect[0], rect[1], rect[2], rect[3]);
         }
 
-        public static void nvgResetScissor(NVGcontext ctx)
+        public static void NvgResetScissor(NvGcontext ctx)
         {
             var state = nvg__getState(ctx);
             //memset(state->scissor.xform, 0, sizeof(state->scissor.xform));
-            for (var cont = 0; cont < state.scissor.xform.Length; cont++)
-                state.scissor.xform[cont] = 0f;
-            state.scissor.extent[0] = -1.0f;
-            state.scissor.extent[1] = -1.0f;
+            for (var cont = 0; cont < state.Scissor.Xform.Length; cont++)
+                state.Scissor.Xform[cont] = 0f;
+            state.Scissor.Extent[0] = -1.0f;
+            state.Scissor.Extent[1] = -1.0f;
         }
 
-        public static void nvgRotate(NVGcontext ctx, float angle)
+        public static void NvgRotate(NvGcontext ctx, float angle)
         {
             var state = nvg__getState(ctx);
             var t = new float[6];
-            nvgTransformRotate(t, angle);
-            nvgTransformPremultiply(state.xform, t);
+            NvgTransformRotate(t, angle);
+            NvgTransformPremultiply(state.Xform, t);
         }
 
-        public static void nvgScale(NVGcontext ctx, float x, float y)
+        public static void NvgScale(NvGcontext ctx, float x, float y)
         {
             var state = nvg__getState(ctx);
             var t = new float[6];
-            nvgTransformScale(t, x, y);
-            nvgTransformPremultiply(state.xform, t);
+            NvgTransformScale(t, x, y);
+            NvgTransformPremultiply(state.Xform, t);
         }
 
-        static void nvg__setPaintColor(ref NVGpaint p, NVGcolor color)
+        static void nvg__setPaintColor(ref NvGpaint p, NvGcolor color)
         {
-            p = new NVGpaint();
+            p = new NvGpaint();
             // la anterior línea de código equivale a "memset(p, 0, sizeof(*p));", es
             // necesario de lo contrario aparece un degradado de color no uniforme
-            nvgTransformIdentity(p.xform);
-            p.radius = 0.0f;
-            p.feather = 1.0f;
-            p.innerColor = color;
-            p.outerColor = color;
+            NvgTransformIdentity(p.Xform);
+            p.Radius = 0.0f;
+            p.Feather = 1.0f;
+            p.InnerColor = color;
+            p.OuterColor = color;
         }
 
-        public static void nvgTranslate(NVGcontext ctx, float x, float y)
+        public static void NvgTranslate(NvGcontext ctx, float x, float y)
         {
             var state = nvg__getState(ctx);
             var t = new float[6];
-            nvgTransformTranslate(t, x, y);
-            nvgTransformPremultiply(state.xform, t);
+            NvgTransformTranslate(t, x, y);
+            NvgTransformPremultiply(state.Xform, t);
         }
 
-        static void nvgReset(NVGcontext ctx)
+        static void NvgReset(NvGcontext ctx)
         {
             var state = nvg__getState(ctx);
 
-            nvg__setPaintColor(ref state.fill, nvgRGBA(255, 255, 255, 255));
-            nvg__setPaintColor(ref state.stroke, nvgRGBA(0, 0, 0, 255));
-            state.compositeOperation = nvg__compositeOperationState((int)NvgCompositeOperation.SourceOver);
-            state.strokeWidth = 1.0f;
-            state.miterLimit = 10.0f;
-            state.lineCap = (int)NvgLineCap.Butt;
-            state.lineJoin = (int)NvgLineCap.Miter;
-            state.alpha = 1.0f;
-            nvgTransformIdentity(state.xform);
+            nvg__setPaintColor(ref state.Fill, NvgRgba(255, 255, 255, 255));
+            nvg__setPaintColor(ref state.Stroke, NvgRgba(0, 0, 0, 255));
+            state.CompositeOperation = nvg__compositeOperationState((int)NvgCompositeOperation.SourceOver);
+            state.StrokeWidth = 1.0f;
+            state.MiterLimit = 10.0f;
+            state.LineCap = (int)NanoVGDotNet.NvgLineCap.Butt;
+            state.LineJoin = (int)NanoVGDotNet.NvgLineCap.Miter;
+            state.Alpha = 1.0f;
+            NvgTransformIdentity(state.Xform);
 
-            state.scissor.extent[0] = -1.0f;
-            state.scissor.extent[1] = -1.0f;
+            state.Scissor.Extent[0] = -1.0f;
+            state.Scissor.Extent[1] = -1.0f;
 
-            state.fontSize = 16.0f;
-            state.letterSpacing = 0.0f;
-            state.lineHeight = 1.0f;
-            state.fontBlur = 0.0f;
-            state.textAlign = (int)NvgAlign.Left | (int)NvgAlign.Baseline;
-            state.fontId = 0;
+            state.FontSize = 16.0f;
+            state.LetterSpacing = 0.0f;
+            state.LineHeight = 1.0f;
+            state.FontBlur = 0.0f;
+            state.TextAlign = (int)NvgAlign.Left | (int)NvgAlign.Baseline;
+            state.FontId = 0;
         }
 
-        public static void nvgCreateInternal(ref NVGparams params_, out NVGcontext ctx)
+        public static void NvgCreateInternal(ref NvGparams params_, out NvGcontext ctx)
         {
             var fontParams = new FONSparams();
-            ctx = new NVGcontext();
+            ctx = new NvGcontext();
             int i;
 
-            ctx.params_ = params_;
-            for (i = 0; i < NVG_MAX_FONTIMAGES; i++)
-                ctx.fontImages[i] = 0;
+            ctx.Params = params_;
+            for (i = 0; i < NvgMaxFontimages; i++)
+                ctx.FontImages[i] = 0;
 
-            ctx.commands = new float[NVG_INIT_COMMANDS_SIZE];
-            ctx.ncommands = 0;
-            ctx.ccommands = NVG_INIT_COMMANDS_SIZE;
+            ctx.Commands = new float[NvgInitCommandsSize];
+            ctx.Ncommands = 0;
+            ctx.Ccommands = NvgInitCommandsSize;
 
-            nvg__allocPathCache(out ctx.cache);
+            nvg__allocPathCache(out ctx.Cache);
 
-            nvgSave(ctx);
-            nvgReset(ctx);
+            NvgSave(ctx);
+            NvgReset(ctx);
 
             nvg__setDevicePixelRatio(ref ctx, 1.0f);
 
-            if (ctx.params_.renderCreate(ctx.params_.userPtr) == 0)
+            if (ctx.Params.RenderCreate(ctx.Params.UserPtr) == 0)
                 return;
 
             // Init font rendering
             //memset(&fontParams, 0, sizeof(fontParams));
-            fontParams.width = NVG_INIT_FONTIMAGE_SIZE;
-            fontParams.height = NVG_INIT_FONTIMAGE_SIZE;
+            fontParams.width = NvgInitFontimageSize;
+            fontParams.height = NvgInitFontimageSize;
             fontParams.flags = FONSflags.FONS_ZERO_TOPLEFT;
             fontParams.renderCreate = null;
             fontParams.renderUpdate = null;
             fontParams.renderDraw = null;
             fontParams.renderDelete = null;
             fontParams.userPtr = null;
-            ctx.fs = FontStash.fonsCreateInternal(ref fontParams);
+            ctx.Fs = FontStash.fonsCreateInternal(ref fontParams);
 
             // Create font texture
-            ctx.fontImages[0] = ctx.params_.renderCreateTexture(ctx.params_.userPtr, (int)NvgTexture.Alpha,
+            ctx.FontImages[0] = ctx.Params.RenderCreateTexture(ctx.Params.UserPtr, (int)NvgTexture.Alpha,
                 fontParams.width, fontParams.height, 0, null);
-            if (ctx.fontImages[0] == 0)
+            if (ctx.FontImages[0] == 0)
                 throw new Exception("NanoVG.nvgCreateInternal(): Error, creating font texture");
-            ctx.fontImageIdx = 0;
+            ctx.FontImageIdx = 0;
         }
 
-        public static void nvgDeleteImage(NVGcontext ctx, int image)
+        public static void NvgDeleteImage(NvGcontext ctx, int image)
         {
-            ctx.params_.renderDeleteTexture(ctx.params_.userPtr, image);
+            ctx.Params.RenderDeleteTexture(ctx.Params.UserPtr, image);
         }
 
-        static void nvgCancelFrame(NVGcontext ctx)
+        static void NvgCancelFrame(NvGcontext ctx)
         {
-            ctx.params_.renderCancel(ctx.params_.userPtr);
+            ctx.Params.RenderCancel(ctx.Params.UserPtr);
         }
 
-        static void nvgDeleteInternal(NVGcontext ctx)
+        static void NvgDeleteInternal(NvGcontext ctx)
         {
             int i;
             if (ctx == null)
                 return;
             //if (ctx.commands != null)
             //	free(ctx->commands);
-            if (ctx.cache != null)
-                nvg__deletePathCache(ref ctx.cache);
+            if (ctx.Cache != null)
+                nvg__deletePathCache(ref ctx.Cache);
 
-            if (ctx.fs != null)
-                FontStash.fonsDeleteInternal(ctx.fs);
+            if (ctx.Fs != null)
+                FontStash.fonsDeleteInternal(ctx.Fs);
 
-            for (i = 0; i < NVG_MAX_FONTIMAGES; i++)
+            for (i = 0; i < NvgMaxFontimages; i++)
             {
-                if (ctx.fontImages[i] != 0)
+                if (ctx.FontImages[i] != 0)
                 {
-                    nvgDeleteImage(ctx, ctx.fontImages[i]);
-                    ctx.fontImages[i] = 0;
+                    NvgDeleteImage(ctx, ctx.FontImages[i]);
+                    ctx.FontImages[i] = 0;
                 }
             }
 
-            if (ctx.params_.renderDelete != null)
-                ctx.params_.renderDelete(ctx.params_.userPtr);
+            if (ctx.Params.RenderDelete != null)
+                ctx.Params.RenderDelete(ctx.Params.UserPtr);
 
             //free(ctx);
             ctx = null;
         }
 
-        public static void nvgEndFrame(NVGcontext ctx)
+        public static void NvgEndFrame(NvGcontext ctx)
         {
             var state = nvg__getState(ctx);
             //Corrige(state);
-            ctx.params_.renderFlush(ctx.params_.userPtr, state.compositeOperation);
-            if (ctx.fontImageIdx != 0)
+            ctx.Params.RenderFlush(ctx.Params.UserPtr, state.CompositeOperation);
+            if (ctx.FontImageIdx != 0)
             {
-                var fontImage = ctx.fontImages[ctx.fontImageIdx];
+                var fontImage = ctx.FontImages[ctx.FontImageIdx];
                 int i, j, iw = 0, ih = 0;
                 // delete images that smaller than current one
                 if (fontImage == 0)
                     return;
-                nvgImageSize(ctx, fontImage, ref iw, ref ih);
-                for (i = j = 0; i < ctx.fontImageIdx; i++)
+                NvgImageSize(ctx, fontImage, ref iw, ref ih);
+                for (i = j = 0; i < ctx.FontImageIdx; i++)
                 {
-                    if (ctx.fontImages[i] != 0)
+                    if (ctx.FontImages[i] != 0)
                     {
                         int nw = 0, nh = 0;
-                        nvgImageSize(ctx, ctx.fontImages[i], ref nw, ref nh);
+                        NvgImageSize(ctx, ctx.FontImages[i], ref nw, ref nh);
                         if (nw < iw || nh < ih)
-                            nvgDeleteImage(ctx, ctx.fontImages[i]);
+                            NvgDeleteImage(ctx, ctx.FontImages[i]);
                         else
-                            ctx.fontImages[j++] = ctx.fontImages[i];
+                            ctx.FontImages[j++] = ctx.FontImages[i];
                     }
                 }
                 // make current font image to first
-                ctx.fontImages[j++] = ctx.fontImages[0];
-                ctx.fontImages[0] = fontImage;
-                ctx.fontImageIdx = 0;
+                ctx.FontImages[j++] = ctx.FontImages[0];
+                ctx.FontImages[0] = fontImage;
+                ctx.FontImageIdx = 0;
                 // clear all images after j
-                for (i = j; i < NVG_MAX_FONTIMAGES; i++)
-                    ctx.fontImages[i] = 0;
+                for (i = j; i < NvgMaxFontimages; i++)
+                    ctx.FontImages[i] = 0;
             }
         }
 
 
         // Draw
-        public static void nvgBeginPath(NVGcontext ctx)
+        public static void NvgBeginPath(NvGcontext ctx)
         {
-            ctx.ncommands = 0;
+            ctx.Ncommands = 0;
             nvg__clearPathCache(ctx);
         }
 
-        static void nvg__clearPathCache(NVGcontext ctx)
+        static void nvg__clearPathCache(NvGcontext ctx)
         {
-            ctx.cache.npoints = 0;
-            ctx.cache.npaths = 0;
+            ctx.Cache.Npoints = 0;
+            ctx.Cache.Npaths = 0;
         }
 
-        static void nvgTransformPoint(ref float dx, ref float dy, float[] t, float sx, float sy)
+        static void NvgTransformPoint(ref float dx, ref float dy, float[] t, float sx, float sy)
         {
             dx = sx * t[0] + sy * t[2] + t[4];
             dy = sx * t[1] + sy * t[3] + t[5];
         }
 
-        static void nvg__appendCommands(NVGcontext ctx, float[] vals, int nvals)
+        static void nvg__appendCommands(NvGcontext ctx, float[] vals, int nvals)
         {
             var state = nvg__getState(ctx);
             int i;
 
-            if (ctx.ncommands + nvals > ctx.ccommands)
+            if (ctx.Ncommands + nvals > ctx.Ccommands)
             {
-                var ccommands = ctx.ncommands + nvals + ctx.ccommands / 2;
+                var ccommands = ctx.Ncommands + nvals + ctx.Ccommands / 2;
                 //commands = (float*)realloc(ctx->commands, sizeof(float)*ccommands);
-                Array.Resize<float>(ref ctx.commands, ccommands);
-                ctx.ccommands = ccommands;
+                Array.Resize<float>(ref ctx.Commands, ccommands);
+                ctx.Ccommands = ccommands;
             }
 
             if ((int)vals[0] != (int)NvgCommands.Close &&
                 (int)vals[0] != (int)NvgCommands.Winding)
             {
-                ctx.commandx = vals[nvals - 2];
-                ctx.commandy = vals[nvals - 1];
+                ctx.Commandx = vals[nvals - 2];
+                ctx.Commandy = vals[nvals - 1];
             }
 
             // transform commands
@@ -1105,17 +1105,17 @@ namespace NanoVGDotNet
                 switch (cmd)
                 {
                     case (int)NvgCommands.MoveTo:
-                        nvgTransformPoint(ref vals[i + 1], ref vals[i + 2], state.xform, vals[i + 1], vals[i + 2]);
+                        NvgTransformPoint(ref vals[i + 1], ref vals[i + 2], state.Xform, vals[i + 1], vals[i + 2]);
                         i += 3;
                         break;
                     case (int)NvgCommands.LineTo:
-                        nvgTransformPoint(ref vals[i + 1], ref vals[i + 2], state.xform, vals[i + 1], vals[i + 2]);
+                        NvgTransformPoint(ref vals[i + 1], ref vals[i + 2], state.Xform, vals[i + 1], vals[i + 2]);
                         i += 3;
                         break;
                     case (int)NvgCommands.BezierTo:
-                        nvgTransformPoint(ref vals[i + 1], ref vals[i + 2], state.xform, vals[i + 1], vals[i + 2]);
-                        nvgTransformPoint(ref vals[i + 3], ref vals[i + 4], state.xform, vals[i + 3], vals[i + 4]);
-                        nvgTransformPoint(ref vals[i + 5], ref vals[i + 6], state.xform, vals[i + 5], vals[i + 6]);
+                        NvgTransformPoint(ref vals[i + 1], ref vals[i + 2], state.Xform, vals[i + 1], vals[i + 2]);
+                        NvgTransformPoint(ref vals[i + 3], ref vals[i + 4], state.Xform, vals[i + 3], vals[i + 4]);
+                        NvgTransformPoint(ref vals[i + 5], ref vals[i + 6], state.Xform, vals[i + 5], vals[i + 6]);
                         i += 7;
                         break;
                     case (int)NvgCommands.Close:
@@ -1132,7 +1132,7 @@ namespace NanoVGDotNet
 
             //memcpy(&ctx->commands[ctx->ncommands], vals, nvals * sizeof(float));
 
-            Array.Copy(vals, 0, ctx.commands, ctx.ncommands, nvals);
+            Array.Copy(vals, 0, ctx.Commands, ctx.Ncommands, nvals);
 
             // only for debug
 #if ONLY_FOR_DEBUG
@@ -1144,7 +1144,7 @@ namespace NanoVGDotNet
 			}
 #endif
 
-            ctx.ncommands += nvals;
+            ctx.Ncommands += nvals;
         }
 
         static int NVG_COUNTOF(float[] arr)
@@ -1152,59 +1152,59 @@ namespace NanoVGDotNet
             return arr.Length; //(sizeof(arr) / sizeof(0[arr]));
         }
 
-        static void nvg__addPath(NVGcontext ctx)
+        static void nvg__addPath(NvGcontext ctx)
         {
-            NVGpath path;
-            if (ctx.cache.npaths + 1 > ctx.cache.cpaths)
+            NvGpath path;
+            if (ctx.Cache.Npaths + 1 > ctx.Cache.Cpaths)
             {
-                var cpaths = ctx.cache.npaths + 1 + ctx.cache.cpaths / 2;
+                var cpaths = ctx.Cache.Npaths + 1 + ctx.Cache.Cpaths / 2;
                 //paths = (NVGpath*)realloc(ctx->cache->paths, sizeof(NVGpath)*cpaths);
-                Array.Resize<NVGpath>(ref ctx.cache.paths, cpaths);
-                var paths = ctx.cache.paths;
+                Array.Resize<NvGpath>(ref ctx.Cache.Paths, cpaths);
+                var paths = ctx.Cache.Paths;
                 if (paths == null)
                     return;
-                ctx.cache.paths = paths;
-                ctx.cache.cpaths = cpaths;
+                ctx.Cache.Paths = paths;
+                ctx.Cache.Cpaths = cpaths;
             }
-            path = ctx.cache.paths[ctx.cache.npaths];
+            path = ctx.Cache.Paths[ctx.Cache.Npaths];
             if (path == null)
             {
-                path = new NVGpath();
-                ctx.cache.paths[ctx.cache.npaths] = path;
+                path = new NvGpath();
+                ctx.Cache.Paths[ctx.Cache.Npaths] = path;
             }
             else
             {
-                path.closed = 0;
-                path.convex = 0;
-                path.count = 0;
-                path.fill = null;
-                path.ifill = 0;
-                path.first = 0;
-                path.nbevel = 0;
-                path.nfill = 0;
-                path.nstroke = 0;
-                path.stroke = null;
-                path.istroke = 0;
-                path.winding = 0;
+                path.Closed = 0;
+                path.Convex = 0;
+                path.Count = 0;
+                path.Fill = null;
+                path.Ifill = 0;
+                path.First = 0;
+                path.Nbevel = 0;
+                path.Nfill = 0;
+                path.Nstroke = 0;
+                path.Stroke = null;
+                path.Istroke = 0;
+                path.Winding = 0;
             }
 
-            path.first = ctx.cache.npoints;
-            path.winding = (int)NvgWinding.CounterClockwise;
+            path.First = ctx.Cache.Npoints;
+            path.Winding = (int)NvgWinding.CounterClockwise;
 
-            ctx.cache.npaths++;
+            ctx.Cache.Npaths++;
         }
 
-        static NVGpoint nvg__lastPoint(NVGcontext ctx)
+        static NvGpoint nvg__lastPoint(NvGcontext ctx)
         {
-            if (ctx.cache.npoints > 0)
-                return ctx.cache.points[ctx.cache.npoints - 1];
+            if (ctx.Cache.Npoints > 0)
+                return ctx.Cache.Points[ctx.Cache.Npoints - 1];
             return null;
         }
 
-        static NVGpath nvg__lastPath(NVGcontext ctx)
+        static NvGpath nvg__lastPath(NvGcontext ctx)
         {
-            if (ctx.cache.npaths > 0)
-                return ctx.cache.paths[ctx.cache.npaths - 1];
+            if (ctx.Cache.Npaths > 0)
+                return ctx.Cache.Paths[ctx.Cache.Npaths - 1];
             return null;
         }
 
@@ -1215,67 +1215,67 @@ namespace NanoVGDotNet
             return (dx * dx + dy * dy) < (tol * tol);
         }
 
-        static void nvg__addPoint(NVGcontext ctx, float x, float y, int flags)
+        static void nvg__addPoint(NvGcontext ctx, float x, float y, int flags)
         {
-            NVGpoint pt;
+            NvGpoint pt;
             var path = nvg__lastPath(ctx);
             if (path == null)
                 return;
 
-            if (path.count > 0 && ctx.cache.npoints > 0)
+            if (path.Count > 0 && ctx.Cache.Npoints > 0)
             {
                 pt = nvg__lastPoint(ctx);
-                if (nvg__ptEquals(pt.x, pt.y, x, y, ctx.distTol))
+                if (nvg__ptEquals(pt.X, pt.Y, x, y, ctx.DistTol))
                 {
-                    pt.flags |= (byte)flags;
+                    pt.Flags |= (byte)flags;
                     return;
                 }
             }
 
-            if (ctx.cache.npoints + 1 > ctx.cache.cpoints)
+            if (ctx.Cache.Npoints + 1 > ctx.Cache.Cpoints)
             {
-                var cpoints = ctx.cache.npoints + 1 + ctx.cache.cpoints / 2;
+                var cpoints = ctx.Cache.Npoints + 1 + ctx.Cache.Cpoints / 2;
                 //points = (NVGpoint*)realloc(ctx->cache->points, sizeof(NVGpoint)*cpoints);
-                Array.Resize<NVGpoint>(ref ctx.cache.points, cpoints);
-                var points = ctx.cache.points;
+                Array.Resize<NvGpoint>(ref ctx.Cache.Points, cpoints);
+                var points = ctx.Cache.Points;
 
                 if (points == null)
                     return;
-                ctx.cache.points = points;
-                ctx.cache.cpoints = cpoints;
+                ctx.Cache.Points = points;
+                ctx.Cache.Cpoints = cpoints;
             }
 
-            pt = new NVGpoint();
+            pt = new NvGpoint();
 
-            ctx.cache.points[ctx.cache.npoints] = pt;
+            ctx.Cache.Points[ctx.Cache.Npoints] = pt;
             //memset(pt, 0, sizeof(*pt));
-            pt.x = x;
-            pt.y = y;
-            pt.flags = (byte)flags;
+            pt.X = x;
+            pt.Y = y;
+            pt.Flags = (byte)flags;
 
             //only for debug
 #if ONLY_FOR_DEBUG
 			Console.WriteLine(String.Format("Added point: {0}", pt));
 #endif
 
-            ctx.cache.npoints++;
-            path.count++;
+            ctx.Cache.Npoints++;
+            path.Count++;
         }
 
-        static void nvg__closePath(NVGcontext ctx)
+        static void nvg__closePath(NvGcontext ctx)
         {
             var path = nvg__lastPath(ctx);
             if (path == null)
                 return;
-            path.closed = 1;
+            path.Closed = 1;
         }
 
-        static void nvg__pathWinding(NVGcontext ctx, int winding)
+        static void nvg__pathWinding(NvGcontext ctx, int winding)
         {
             var path = nvg__lastPath(ctx);
             if (path == null)
                 return;
-            path.winding = winding;
+            path.Winding = winding;
         }
 
         static float nvg__triarea2(float ax, float ay, float bx, float by, float cx, float cy)
@@ -1287,7 +1287,7 @@ namespace NanoVGDotNet
             return acx * aby - abx * acy;
         }
 
-        static float nvg__polyArea(NVGpoint[] pts, int ipts, int npts)
+        static float nvg__polyArea(NvGpoint[] pts, int ipts, int npts)
         {
             int i;
             float area = 0;
@@ -1296,14 +1296,14 @@ namespace NanoVGDotNet
                 var a = pts[0 + ipts];
                 var b = pts[i - 1 + ipts];
                 var c = pts[i + ipts];
-                area += nvg__triarea2(a.x, a.y, b.x, b.y, c.x, c.y);
+                area += nvg__triarea2(a.X, a.Y, b.X, b.Y, c.X, c.Y);
             }
             return area * 0.5f;
         }
 
-        static void nvg__polyReverse(NVGpoint[] pts, int ipts, int npts)
+        static void nvg__polyReverse(NvGpoint[] pts, int ipts, int npts)
         {
-            NVGpoint tmp;
+            NvGpoint tmp;
             int i = 0, j = npts - 1;
             while (i < j)
             {
@@ -1315,7 +1315,7 @@ namespace NanoVGDotNet
             }
         }
 
-        static void nvg__tesselateBezier(NVGcontext ctx,
+        static void nvg__tesselateBezier(NvGcontext ctx,
                                          float x1, float y1, float x2, float y2,
                                          float x3, float y3, float x4, float y4,
                                          int level, int type)
@@ -1340,7 +1340,7 @@ namespace NanoVGDotNet
             d2 = nvg__absf(((x2 - x4) * dy - (y2 - y4) * dx));
             d3 = nvg__absf(((x3 - x4) * dy - (y3 - y4) * dx));
 
-            if ((d2 + d3) * (d2 + d3) < ctx.tessTol * (dx * dx + dy * dy))
+            if ((d2 + d3) * (d2 + d3) < ctx.TessTol * (dx * dx + dy * dy))
             {
                 nvg__addPoint(ctx, x4, y4, type);
                 return;
@@ -1360,17 +1360,17 @@ namespace NanoVGDotNet
             nvg__tesselateBezier(ctx, x1234, y1234, x234, y234, x34, y34, x4, y4, level + 1, type);
         }
 
-        static void nvg__flattenPaths(NVGcontext ctx)
+        static void nvg__flattenPaths(NvGcontext ctx)
         {
-            var cache = ctx.cache;
+            var cache = ctx.Cache;
             //	NVGstate* state = nvg__getState(ctx);
-            NVGpoint last;
-            NVGpoint p0;
-            NVGpoint p1;
+            NvGpoint last;
+            NvGpoint p0;
+            NvGpoint p1;
             var ip1 = 0;
-            NVGpoint[] pts;
+            NvGpoint[] pts;
             var ipts = 0;
-            NVGpath path;
+            NvGpath path;
             int i, j;
             float[] cp1;
             var icp1 = 0;
@@ -1380,26 +1380,26 @@ namespace NanoVGDotNet
             var ip = 0;
             float area;
 
-            if (cache.npaths > 0)
+            if (cache.Npaths > 0)
                 return;
 
             // Flatten
             i = 0;
-            while (i < ctx.ncommands)
+            while (i < ctx.Ncommands)
             {
-                var cmd = (int)ctx.commands[i];
+                var cmd = (int)ctx.Commands[i];
 
                 switch (cmd)
                 {
                     case (int)NvgCommands.MoveTo:
                         nvg__addPath(ctx);
-                        p = ctx.commands;
+                        p = ctx.Commands;
                         ip = i + 1;
                         nvg__addPoint(ctx, p[0 + ip], p[1 + ip], (int)NvgPointFlags.Corner);
                         i += 3;
                         break;
                     case (int)NvgCommands.LineTo:
-                        p = ctx.commands;
+                        p = ctx.Commands;
                         ip = i + 1;
                         nvg__addPoint(ctx, p[0 + ip], p[1 + ip], (int)NvgPointFlags.Corner);
                         i += 3;
@@ -1408,13 +1408,13 @@ namespace NanoVGDotNet
                         last = nvg__lastPoint(ctx);
                         if (last != null)
                         {
-                            cp1 = ctx.commands;
+                            cp1 = ctx.Commands;
                             icp1 = i + 1;
-                            cp2 = ctx.commands;
+                            cp2 = ctx.Commands;
                             icp2 = i + 3;
-                            p = ctx.commands;
+                            p = ctx.Commands;
                             ip = i + 5;
-                            nvg__tesselateBezier(ctx, last.x, last.y,
+                            nvg__tesselateBezier(ctx, last.X, last.Y,
                                 cp1[0 + icp1], cp1[1 + icp1],
                                 cp2[0 + icp2], cp2[1 + icp2],
                                 p[0 + ip],
@@ -1428,7 +1428,7 @@ namespace NanoVGDotNet
                         i++;
                         break;
                     case (int)NvgCommands.Winding:
-                        nvg__pathWinding(ctx, (int)ctx.commands[i + 1]);
+                        nvg__pathWinding(ctx, (int)ctx.Commands[i + 1]);
                         i += 2;
                         break;
                     default:
@@ -1437,57 +1437,57 @@ namespace NanoVGDotNet
                 }
             }
 
-            cache.bounds[0] = cache.bounds[1] = 1e6f;
-            cache.bounds[2] = cache.bounds[3] = -1e6f;
+            cache.Bounds[0] = cache.Bounds[1] = 1e6f;
+            cache.Bounds[2] = cache.Bounds[3] = -1e6f;
 
             // Calculate the direction and length of line segments.
-            for (j = 0; j < cache.npaths; j++)
+            for (j = 0; j < cache.Npaths; j++)
             {
-                path = cache.paths[j];
-                pts = cache.points;
-                ipts = path.first;
+                path = cache.Paths[j];
+                pts = cache.Points;
+                ipts = path.First;
 
                 // If the first and last points are the same, remove the last, mark as closed path.
-                p0 = pts[ipts + path.count - 1];
+                p0 = pts[ipts + path.Count - 1];
                 ip1 = 0 + ipts;
                 p1 = pts[ip1];
 
-                if (nvg__ptEquals(p0.x, p0.y, p1.x, p1.y, ctx.distTol))
+                if (nvg__ptEquals(p0.X, p0.Y, p1.X, p1.Y, ctx.DistTol))
                 {
-                    path.count--;
-                    p0 = pts[ipts + path.count - 1];
-                    path.closed = 1;
+                    path.Count--;
+                    p0 = pts[ipts + path.Count - 1];
+                    path.Closed = 1;
                 }
 
                 // Enforce winding.
-                if (path.count > 2)
+                if (path.Count > 2)
                 {
-                    area = nvg__polyArea(pts, ipts, path.count);
-                    if (path.winding == (int)NvgWinding.CounterClockwise && area < 0.0f)
+                    area = nvg__polyArea(pts, ipts, path.Count);
+                    if (path.Winding == (int)NvgWinding.CounterClockwise && area < 0.0f)
                     {
-                        nvg__polyReverse(pts, ipts, path.count);
-                        p0 = pts[ipts + path.count - 1];
+                        nvg__polyReverse(pts, ipts, path.Count);
+                        p0 = pts[ipts + path.Count - 1];
                         p1 = pts[ip1];
                     }
-                    if (path.winding == (int)NvgWinding.Clockwise && area > 0.0f)
+                    if (path.Winding == (int)NvgWinding.Clockwise && area > 0.0f)
                     {
-                        nvg__polyReverse(pts, ipts, path.count);
-                        p0 = pts[ipts + path.count - 1];
+                        nvg__polyReverse(pts, ipts, path.Count);
+                        p0 = pts[ipts + path.Count - 1];
                         p1 = pts[ip1];
                     }
                 }
 
-                for (i = 0; i < path.count; i++)
+                for (i = 0; i < path.Count; i++)
                 {
                     // Calculate segment direction and length
-                    p0.dx = p1.x - p0.x;
-                    p0.dy = p1.y - p0.y;
-                    p0.len = nvg__normalize(ref p0.dx, ref p0.dy);
+                    p0.Dx = p1.X - p0.X;
+                    p0.Dy = p1.Y - p0.Y;
+                    p0.Len = nvg__normalize(ref p0.Dx, ref p0.Dy);
                     // Update bounds
-                    cache.bounds[0] = nvg__minf(cache.bounds[0], p0.x);
-                    cache.bounds[1] = nvg__minf(cache.bounds[1], p0.y);
-                    cache.bounds[2] = nvg__maxf(cache.bounds[2], p0.x);
-                    cache.bounds[3] = nvg__maxf(cache.bounds[3], p0.y);
+                    cache.Bounds[0] = nvg__minf(cache.Bounds[0], p0.X);
+                    cache.Bounds[1] = nvg__minf(cache.Bounds[1], p0.Y);
+                    cache.Bounds[2] = nvg__maxf(cache.Bounds[2], p0.X);
+                    cache.Bounds[3] = nvg__maxf(cache.Bounds[3], p0.Y);
                     // Advance
                     p0 = p1;
                     ip1 += 1;
@@ -1496,7 +1496,7 @@ namespace NanoVGDotNet
             }
         }
 
-        public static void nvgTransformMultiply(float[] t, float[] s)
+        public static void NvgTransformMultiply(float[] t, float[] s)
         {
             var t0 = t[0] * s[0] + t[1] * s[2];
             var t2 = t[2] * s[0] + t[3] * s[2];
@@ -1509,80 +1509,80 @@ namespace NanoVGDotNet
             t[4] = t4;
         }
 
-        public static void nvgLineJoin(NVGcontext ctx, int join)
+        public static void NvgLineJoin(NvGcontext ctx, int join)
         {
             var state = nvg__getState(ctx);
-            state.lineJoin = join;
+            state.LineJoin = join;
         }
 
-        public static void nvgMoveTo(NVGcontext ctx, float x, float y)
+        public static void NvgMoveTo(NvGcontext ctx, float x, float y)
         {
             var vals = new float[] { (float)NvgCommands.MoveTo, x, y };
             nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
-        public static void nvgBezierTo(NVGcontext ctx, float c1x, float c1y, float c2x, float c2y, float x, float y)
+        public static void NvgBezierTo(NvGcontext ctx, float c1X, float c1Y, float c2X, float c2Y, float x, float y)
         {
-            var vals = new float[] { (float)NvgCommands.BezierTo, c1x, c1y, c2x, c2y, x, y };
+            var vals = new float[] { (float)NvgCommands.BezierTo, c1X, c1Y, c2X, c2Y, x, y };
             nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
-        public static void nvgLineTo(NVGcontext ctx, float x, float y)
+        public static void NvgLineTo(NvGcontext ctx, float x, float y)
         {
             var vals = new float[] { (float)NvgCommands.LineTo, x, y };
             nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
-        public static void nvgLineCap(NVGcontext ctx, int cap)
+        public static void NvgLineCap(NvGcontext ctx, int cap)
         {
             var state = nvg__getState(ctx);
-            state.lineCap = cap;
+            state.LineCap = cap;
         }
 
-        public static void nvgFillPaint(NVGcontext ctx, NVGpaint paint)
+        public static void NvgFillPaint(NvGcontext ctx, NvGpaint paint)
         {
             var state = nvg__getState(ctx);
-            state.fill = paint.Clone();
-            nvgTransformMultiply(state.fill.xform, state.xform);
+            state.Fill = paint.Clone();
+            NvgTransformMultiply(state.Fill.Xform, state.Xform);
         }
 
-        public static void nvgFillColor(NVGcontext ctx, NVGcolor color)
+        public static void NvgFillColor(NvGcontext ctx, NvGcolor color)
         {
             var state = nvg__getState(ctx);
-            nvg__setPaintColor(ref state.fill, color);
+            nvg__setPaintColor(ref state.Fill, color);
         }
 
-        public static void nvgStrokePaint(NVGcontext ctx, NVGpaint paint)
+        public static void NvgStrokePaint(NvGcontext ctx, NvGpaint paint)
         {
             var state = nvg__getState(ctx);
-            state.stroke = paint.Clone();
-            nvgTransformMultiply(state.stroke.xform, state.xform);
+            state.Stroke = paint.Clone();
+            NvgTransformMultiply(state.Stroke.Xform, state.Xform);
         }
 
-        public static void nvgStrokeColor(NVGcontext ctx, NVGcolor color)
+        public static void NvgStrokeColor(NvGcontext ctx, NvGcolor color)
         {
             var state = nvg__getState(ctx);
-            nvg__setPaintColor(ref state.stroke, color);
+            nvg__setPaintColor(ref state.Stroke, color);
         }
 
         // State setting
-        public static void nvgStrokeWidth(NVGcontext ctx, float width)
+        public static void NvgStrokeWidth(NvGcontext ctx, float width)
         {
             var state = nvg__getState(ctx);
-            state.strokeWidth = width;
+            state.StrokeWidth = width;
         }
 
-        static void nvg__vset(ref NVGvertex vtx, float x, float y, float u, float v)
+        static void nvg__vset(ref NvGvertex vtx, float x, float y, float u, float v)
         {
-            vtx.x = x;
-            vtx.y = y;
-            vtx.u = u;
-            vtx.v = v;
+            vtx.X = x;
+            vtx.Y = y;
+            vtx.U = u;
+            vtx.V = v;
         }
 
-        static void nvg__calculateJoins(NVGcontext ctx, float w, int lineJoin, float miterLimit)
+        static void nvg__calculateJoins(NvGcontext ctx, float w, int lineJoin, float miterLimit)
         {
-            var cache = ctx.cache;
+            var cache = ctx.Cache;
             int i, j;
             var iw = 0.0f;
 
@@ -1590,33 +1590,33 @@ namespace NanoVGDotNet
                 iw = 1.0f / w;
 
             // Calculate which joins needs extra vertices to append, and gather vertex count.
-            for (i = 0; i < cache.npaths; i++)
+            for (i = 0; i < cache.Npaths; i++)
             {
-                var path = cache.paths[i];
+                var path = cache.Paths[i];
 
-                var ipts = path.first;
-                var pts = cache.points;
+                var ipts = path.First;
+                var pts = cache.Points;
 
-                var p0 = pts[ipts + path.count - 1];
+                var p0 = pts[ipts + path.Count - 1];
 
                 var ip1 = ipts;
                 var p1 = pts[ip1 + 0];
 
                 var nleft = 0;
 
-                path.nbevel = 0;
+                path.Nbevel = 0;
 
-                for (j = 0; j < path.count; j++)
+                for (j = 0; j < path.Count; j++)
                 {
                     float dlx0, dly0, dlx1, dly1, dmr2, cross, limit;
-                    dlx0 = p0.dy;
-                    dly0 = -p0.dx;
-                    dlx1 = p1.dy;
-                    dly1 = -p1.dx;
+                    dlx0 = p0.Dy;
+                    dly0 = -p0.Dx;
+                    dlx1 = p1.Dy;
+                    dly1 = -p1.Dx;
                     // Calculate extrusions
-                    p1.dmx = (dlx0 + dlx1) * 0.5f;
-                    p1.dmy = (dly0 + dly1) * 0.5f;
-                    dmr2 = p1.dmx * p1.dmx + p1.dmy * p1.dmy;
+                    p1.Dmx = (dlx0 + dlx1) * 0.5f;
+                    p1.Dmy = (dly0 + dly1) * 0.5f;
+                    dmr2 = p1.Dmx * p1.Dmx + p1.Dmy * p1.Dmy;
                     if (dmr2 > 0.000001f)
                     {
                         var scale = 1.0f / dmr2;
@@ -1624,142 +1624,142 @@ namespace NanoVGDotNet
                         {
                             scale = 600.0f;
                         }
-                        p1.dmx *= scale;
-                        p1.dmy *= scale;
+                        p1.Dmx *= scale;
+                        p1.Dmy *= scale;
                     }
 
                     // Clear flags, but keep the corner.
-                    p1.flags = (byte)(((p1.flags &
+                    p1.Flags = (byte)(((p1.Flags &
                     (int)NvgPointFlags.Corner) != 0) ? (int)NvgPointFlags.Corner : 0);
 
                     // Keep track of left turns.
-                    cross = p1.dx * p0.dy - p0.dx * p1.dy;
+                    cross = p1.Dx * p0.Dy - p0.Dx * p1.Dy;
                     if (cross > 0.0f)
                     {
                         nleft++;
-                        p1.flags |= (int)NvgPointFlags.Left;
+                        p1.Flags |= (int)NvgPointFlags.Left;
                     }
 
                     // Calculate if we should use bevel or miter for inner join.
-                    limit = nvg__maxf(1.01f, nvg__minf(p0.len, p1.len) * iw);
+                    limit = nvg__maxf(1.01f, nvg__minf(p0.Len, p1.Len) * iw);
                     if ((dmr2 * limit * limit) < 1.0f)
-                        p1.flags |= (int)NvgPointFlags.InnerBevel;
+                        p1.Flags |= (int)NvgPointFlags.InnerBevel;
 
                     // Check to see if the corner needs to be beveled.
-                    if ((p1.flags & (int)NvgPointFlags.Corner) != 0)
+                    if ((p1.Flags & (int)NvgPointFlags.Corner) != 0)
                     {
                         if ((dmr2 * miterLimit * miterLimit) < 1.0f ||
-                            lineJoin == (int)NvgLineCap.Bevel ||
-                            lineJoin == (int)NvgLineCap.Round)
+                            lineJoin == (int)NanoVGDotNet.NvgLineCap.Bevel ||
+                            lineJoin == (int)NanoVGDotNet.NvgLineCap.Round)
                         {
-                            p1.flags |= (int)NvgPointFlags.Bevel;
+                            p1.Flags |= (int)NvgPointFlags.Bevel;
                         }
                     }
 
-                    if ((p1.flags & ((int)NvgPointFlags.Bevel | (int)NvgPointFlags.InnerBevel)) != 0)
-                        path.nbevel++;
+                    if ((p1.Flags & ((int)NvgPointFlags.Bevel | (int)NvgPointFlags.InnerBevel)) != 0)
+                        path.Nbevel++;
 
                     p0 = p1;
                     ip1 += 1;
                     p1 = pts[ip1];
                 }
 
-                path.convex = (nleft == path.count) ? 1 : 0;
+                path.Convex = (nleft == path.Count) ? 1 : 0;
             }
         }
 
-        static NVGvertex[] nvg__allocTempVerts(NVGcontext ctx, int nverts)
+        static NvGvertex[] nvg__allocTempVerts(NvGcontext ctx, int nverts)
         {
-            if (nverts > ctx.cache.cverts)
+            if (nverts > ctx.Cache.Cverts)
             {
                 var cverts = (nverts + 0xff) & ~0xff; // Round up to prevent allocations when things change just slightly.
                                                       //verts = (NVGvertex*)realloc(ctx->cache->verts, sizeof(NVGvertex)*cverts);
-                Array.Resize<NVGvertex>(ref ctx.cache.verts, cverts);
-                ctx.cache.cverts = cverts;
+                Array.Resize<NvGvertex>(ref ctx.Cache.Verts, cverts);
+                ctx.Cache.Cverts = cverts;
             }
 
-            return ctx.cache.verts;
+            return ctx.Cache.Verts;
         }
 
-        static void nvg__chooseBevel(int bevel, NVGpoint[] p0, int ip0, NVGpoint[] p1, int ip1, float w,
+        static void nvg__chooseBevel(int bevel, NvGpoint[] p0, int ip0, NvGpoint[] p1, int ip1, float w,
                                      ref float x0, ref float y0, ref float x1, ref float y1)
         {
             if (bevel != 0)
             {
-                x0 = p1[ip1].x + p0[ip0].dy * w;
-                y0 = p1[ip1].y - p0[ip0].dx * w;
-                x1 = p1[ip1].x + p1[ip1].dy * w;
-                y1 = p1[ip1].y - p1[ip1].dx * w;
+                x0 = p1[ip1].X + p0[ip0].Dy * w;
+                y0 = p1[ip1].Y - p0[ip0].Dx * w;
+                x1 = p1[ip1].X + p1[ip1].Dy * w;
+                y1 = p1[ip1].Y - p1[ip1].Dx * w;
             }
             else
             {
-                x0 = p1[ip1].x + p1[ip1].dmx * w;
-                y0 = p1[ip1].y + p1[ip1].dmy * w;
-                x1 = p1[ip1].x + p1[ip1].dmx * w;
-                y1 = p1[ip1].y + p1[ip1].dmy * w;
+                x0 = p1[ip1].X + p1[ip1].Dmx * w;
+                y0 = p1[ip1].Y + p1[ip1].Dmy * w;
+                x1 = p1[ip1].X + p1[ip1].Dmx * w;
+                y1 = p1[ip1].Y + p1[ip1].Dmy * w;
             }
         }
 
-        static void nvg__chooseBevel(int bevel, NVGpoint p0, NVGpoint p1, float w,
+        static void nvg__chooseBevel(int bevel, NvGpoint p0, NvGpoint p1, float w,
                                      ref float x0, ref float y0, ref float x1, ref float y1)
         {
             if (bevel != 0)
             {
-                x0 = p1.x + p0.dy * w;
-                y0 = p1.y - p0.dx * w;
-                x1 = p1.x + p1.dy * w;
-                y1 = p1.y - p1.dx * w;
+                x0 = p1.X + p0.Dy * w;
+                y0 = p1.Y - p0.Dx * w;
+                x1 = p1.X + p1.Dy * w;
+                y1 = p1.Y - p1.Dx * w;
             }
             else
             {
-                x0 = p1.x + p1.dmx * w;
-                y0 = p1.y + p1.dmy * w;
-                x1 = p1.x + p1.dmx * w;
-                y1 = p1.y + p1.dmy * w;
+                x0 = p1.X + p1.Dmx * w;
+                y0 = p1.Y + p1.Dmy * w;
+                x1 = p1.X + p1.Dmx * w;
+                y1 = p1.Y + p1.Dmy * w;
             }
         }
 
-        static void nvg__bevelJoin(NVGvertex[] dst, ref int idst,
-                                   NVGpoint p0, NVGpoint p1, float lw, float rw, float lu, float ru, float fringe)
+        static void nvg__bevelJoin(NvGvertex[] dst, ref int idst,
+                                   NvGpoint p0, NvGpoint p1, float lw, float rw, float lu, float ru, float fringe)
         {
             float rx0 = 0, ry0 = 0, rx1 = 0, ry1 = 0;
             float lx0 = 0, ly0 = 0, lx1 = 0, ly1 = 0;
-            var dlx0 = p0.dy;
-            var dly0 = -p0.dx;
-            var dlx1 = p1.dy;
-            var dly1 = -p1.dx;
+            var dlx0 = p0.Dy;
+            var dly0 = -p0.Dx;
+            var dlx1 = p1.Dy;
+            var dly1 = -p1.Dx;
             //NVG_NOTUSED(fringe);
 
-            if ((p1.flags & (int)NvgPointFlags.Left) != 0)
+            if ((p1.Flags & (int)NvgPointFlags.Left) != 0)
             {
-                nvg__chooseBevel(p1.flags & (int)NvgPointFlags.InnerBevel,
+                nvg__chooseBevel(p1.Flags & (int)NvgPointFlags.InnerBevel,
                     p0, p1, lw, ref lx0, ref ly0, ref lx1, ref ly1);
 
                 nvg__vset(ref dst[idst], lx0, ly0, lu, 1);
                 idst++;
-                nvg__vset(ref dst[idst], p1.x - dlx0 * rw, p1.y - dly0 * rw, ru, 1);
+                nvg__vset(ref dst[idst], p1.X - dlx0 * rw, p1.Y - dly0 * rw, ru, 1);
                 idst++;
 
-                if ((p1.flags & (int)NvgPointFlags.Bevel) != 0)
+                if ((p1.Flags & (int)NvgPointFlags.Bevel) != 0)
                 {
                     nvg__vset(ref dst[idst], lx0, ly0, lu, 1);
                     idst++;
-                    nvg__vset(ref dst[idst], p1.x - dlx0 * rw, p1.y - dly0 * rw, ru, 1);
+                    nvg__vset(ref dst[idst], p1.X - dlx0 * rw, p1.Y - dly0 * rw, ru, 1);
                     idst++;
 
                     nvg__vset(ref dst[idst], lx1, ly1, lu, 1);
                     idst++;
-                    nvg__vset(ref dst[idst], p1.x - dlx1 * rw, p1.y - dly1 * rw, ru, 1);
+                    nvg__vset(ref dst[idst], p1.X - dlx1 * rw, p1.Y - dly1 * rw, ru, 1);
                     idst++;
                 }
                 else
                 {
-                    rx0 = p1.x - p1.dmx * rw;
-                    ry0 = p1.y - p1.dmy * rw;
+                    rx0 = p1.X - p1.Dmx * rw;
+                    ry0 = p1.Y - p1.Dmy * rw;
 
-                    nvg__vset(ref dst[idst], p1.x, p1.y, 0.5f, 1);
+                    nvg__vset(ref dst[idst], p1.X, p1.Y, 0.5f, 1);
                     idst++;
-                    nvg__vset(ref dst[idst], p1.x - dlx0 * rw, p1.y - dly0 * rw, ru, 1);
+                    nvg__vset(ref dst[idst], p1.X - dlx0 * rw, p1.Y - dly0 * rw, ru, 1);
                     idst++;
 
                     nvg__vset(ref dst[idst], rx0, ry0, ru, 1);
@@ -1767,48 +1767,48 @@ namespace NanoVGDotNet
                     nvg__vset(ref dst[idst], rx0, ry0, ru, 1);
                     idst++;
 
-                    nvg__vset(ref dst[idst], p1.x, p1.y, 0.5f, 1);
+                    nvg__vset(ref dst[idst], p1.X, p1.Y, 0.5f, 1);
                     idst++;
-                    nvg__vset(ref dst[idst], p1.x - dlx1 * rw, p1.y - dly1 * rw, ru, 1);
+                    nvg__vset(ref dst[idst], p1.X - dlx1 * rw, p1.Y - dly1 * rw, ru, 1);
                     idst++;
                 }
 
                 nvg__vset(ref dst[idst], lx1, ly1, lu, 1);
                 idst++;
-                nvg__vset(ref dst[idst], p1.x - dlx1 * rw, p1.y - dly1 * rw, ru, 1);
+                nvg__vset(ref dst[idst], p1.X - dlx1 * rw, p1.Y - dly1 * rw, ru, 1);
                 idst++;
 
             }
             else
             {
-                nvg__chooseBevel(p1.flags & (int)NvgPointFlags.InnerBevel,
+                nvg__chooseBevel(p1.Flags & (int)NvgPointFlags.InnerBevel,
                     p0, p1, -rw, ref rx0, ref ry0, ref rx1, ref ry1);
 
-                nvg__vset(ref dst[idst], p1.x + dlx0 * lw, p1.y + dly0 * lw, lu, 1);
+                nvg__vset(ref dst[idst], p1.X + dlx0 * lw, p1.Y + dly0 * lw, lu, 1);
                 idst++;
                 nvg__vset(ref dst[idst], rx0, ry0, ru, 1);
                 idst++;
 
-                if ((p1.flags & (int)NvgPointFlags.Bevel) != 0)
+                if ((p1.Flags & (int)NvgPointFlags.Bevel) != 0)
                 {
-                    nvg__vset(ref dst[idst], p1.x + dlx0 * lw, p1.y + dly0 * lw, lu, 1);
+                    nvg__vset(ref dst[idst], p1.X + dlx0 * lw, p1.Y + dly0 * lw, lu, 1);
                     idst++;
                     nvg__vset(ref dst[idst], rx0, ry0, ru, 1);
                     idst++;
 
-                    nvg__vset(ref dst[idst], p1.x + dlx1 * lw, p1.y + dly1 * lw, lu, 1);
+                    nvg__vset(ref dst[idst], p1.X + dlx1 * lw, p1.Y + dly1 * lw, lu, 1);
                     idst++;
                     nvg__vset(ref dst[idst], rx1, ry1, ru, 1);
                     idst++;
                 }
                 else
                 {
-                    lx0 = p1.x + p1.dmx * lw;
-                    ly0 = p1.y + p1.dmy * lw;
+                    lx0 = p1.X + p1.Dmx * lw;
+                    ly0 = p1.Y + p1.Dmy * lw;
 
-                    nvg__vset(ref dst[idst], p1.x + dlx0 * lw, p1.y + dly0 * lw, lu, 1);
+                    nvg__vset(ref dst[idst], p1.X + dlx0 * lw, p1.Y + dly0 * lw, lu, 1);
                     idst++;
-                    nvg__vset(ref dst[idst], p1.x, p1.y, 0.5f, 1);
+                    nvg__vset(ref dst[idst], p1.X, p1.Y, 0.5f, 1);
                     idst++;
 
                     nvg__vset(ref dst[idst], lx0, ly0, lu, 1);
@@ -1816,13 +1816,13 @@ namespace NanoVGDotNet
                     nvg__vset(ref dst[idst], lx0, ly0, lu, 1);
                     idst++;
 
-                    nvg__vset(ref dst[idst], p1.x + dlx1 * lw, p1.y + dly1 * lw, lu, 1);
+                    nvg__vset(ref dst[idst], p1.X + dlx1 * lw, p1.Y + dly1 * lw, lu, 1);
                     idst++;
-                    nvg__vset(ref dst[idst], p1.x, p1.y, 0.5f, 1);
+                    nvg__vset(ref dst[idst], p1.X, p1.Y, 0.5f, 1);
                     idst++;
                 }
 
-                nvg__vset(ref dst[idst], p1.x + dlx1 * lw, p1.y + dly1 * lw, lu, 1);
+                nvg__vset(ref dst[idst], p1.X + dlx1 * lw, p1.Y + dly1 * lw, lu, 1);
                 idst++;
                 nvg__vset(ref dst[idst], rx1, ry1, ru, 1);
                 idst++;
@@ -1831,48 +1831,48 @@ namespace NanoVGDotNet
             //return dst[idst];
         }
 
-        static void nvg__bevelJoin(NVGvertex[] dst, ref int idst,
-                                   NVGpoint[] p0, int ip0, NVGpoint[] p1, int ip1,
+        static void nvg__bevelJoin(NvGvertex[] dst, ref int idst,
+                                   NvGpoint[] p0, int ip0, NvGpoint[] p1, int ip1,
                                    float lw, float rw, float lu, float ru, float fringe)
         {
             float rx0 = 0, ry0 = 0, rx1 = 0, ry1 = 0;
             float lx0 = 0, ly0 = 0, lx1 = 0, ly1 = 0;
-            var dlx0 = p0[ip0].dy;
-            var dly0 = -p0[ip0].dx;
-            var dlx1 = p1[ip1].dy;
-            var dly1 = -p1[ip1].dx;
+            var dlx0 = p0[ip0].Dy;
+            var dly0 = -p0[ip0].Dx;
+            var dlx1 = p1[ip1].Dy;
+            var dly1 = -p1[ip1].Dx;
             //NVG_NOTUSED(fringe);
 
-            if ((p1[ip1].flags & (int)NvgPointFlags.Left) != 0)
+            if ((p1[ip1].Flags & (int)NvgPointFlags.Left) != 0)
             {
-                nvg__chooseBevel(p1[ip1].flags & (int)NvgPointFlags.InnerBevel,
+                nvg__chooseBevel(p1[ip1].Flags & (int)NvgPointFlags.InnerBevel,
                     p0, ip0, p1, ip1, lw, ref lx0, ref ly0, ref lx1, ref ly1);
 
                 nvg__vset(ref dst[idst], lx0, ly0, lu, 1);
                 idst++;
-                nvg__vset(ref dst[idst], p1[ip1].x - dlx0 * rw, p1[ip1].y - dly0 * rw, ru, 1);
+                nvg__vset(ref dst[idst], p1[ip1].X - dlx0 * rw, p1[ip1].Y - dly0 * rw, ru, 1);
                 idst++;
 
-                if ((p1[ip1].flags & (int)NvgPointFlags.Bevel) != 0)
+                if ((p1[ip1].Flags & (int)NvgPointFlags.Bevel) != 0)
                 {
                     nvg__vset(ref dst[idst], lx0, ly0, lu, 1);
                     idst++;
-                    nvg__vset(ref dst[idst], p1[ip1].x - dlx0 * rw, p1[ip1].y - dly0 * rw, ru, 1);
+                    nvg__vset(ref dst[idst], p1[ip1].X - dlx0 * rw, p1[ip1].Y - dly0 * rw, ru, 1);
                     idst++;
 
                     nvg__vset(ref dst[idst], lx1, ly1, lu, 1);
                     idst++;
-                    nvg__vset(ref dst[idst], p1[ip1].x - dlx1 * rw, p1[ip1].y - dly1 * rw, ru, 1);
+                    nvg__vset(ref dst[idst], p1[ip1].X - dlx1 * rw, p1[ip1].Y - dly1 * rw, ru, 1);
                     idst++;
                 }
                 else
                 {
-                    rx0 = p1[ip1].x - p1[ip1].dmx * rw;
-                    ry0 = p1[ip1].y - p1[ip1].dmy * rw;
+                    rx0 = p1[ip1].X - p1[ip1].Dmx * rw;
+                    ry0 = p1[ip1].Y - p1[ip1].Dmy * rw;
 
-                    nvg__vset(ref dst[idst], p1[ip1].x, p1[ip1].y, 0.5f, 1);
+                    nvg__vset(ref dst[idst], p1[ip1].X, p1[ip1].Y, 0.5f, 1);
                     idst++;
-                    nvg__vset(ref dst[idst], p1[ip1].x - dlx0 * rw, p1[ip1].y - dly0 * rw, ru, 1);
+                    nvg__vset(ref dst[idst], p1[ip1].X - dlx0 * rw, p1[ip1].Y - dly0 * rw, ru, 1);
                     idst++;
 
                     nvg__vset(ref dst[idst], rx0, ry0, ru, 1);
@@ -1880,48 +1880,48 @@ namespace NanoVGDotNet
                     nvg__vset(ref dst[idst], rx0, ry0, ru, 1);
                     idst++;
 
-                    nvg__vset(ref dst[idst], p1[ip1].x, p1[ip1].y, 0.5f, 1);
+                    nvg__vset(ref dst[idst], p1[ip1].X, p1[ip1].Y, 0.5f, 1);
                     idst++;
-                    nvg__vset(ref dst[idst], p1[ip1].x - dlx1 * rw, p1[ip1].y - dly1 * rw, ru, 1);
+                    nvg__vset(ref dst[idst], p1[ip1].X - dlx1 * rw, p1[ip1].Y - dly1 * rw, ru, 1);
                     idst++;
                 }
 
                 nvg__vset(ref dst[idst], lx1, ly1, lu, 1);
                 idst++;
-                nvg__vset(ref dst[idst], p1[ip1].x - dlx1 * rw, p1[ip1].y - dly1 * rw, ru, 1);
+                nvg__vset(ref dst[idst], p1[ip1].X - dlx1 * rw, p1[ip1].Y - dly1 * rw, ru, 1);
                 idst++;
 
             }
             else
             {
-                nvg__chooseBevel(p1[ip1].flags & (int)NvgPointFlags.InnerBevel,
+                nvg__chooseBevel(p1[ip1].Flags & (int)NvgPointFlags.InnerBevel,
                     p0, ip0, p1, ip1, -rw, ref rx0, ref ry0, ref rx1, ref ry1);
 
-                nvg__vset(ref dst[idst], p1[ip1].x + dlx0 * lw, p1[ip1].y + dly0 * lw, lu, 1);
+                nvg__vset(ref dst[idst], p1[ip1].X + dlx0 * lw, p1[ip1].Y + dly0 * lw, lu, 1);
                 idst++;
                 nvg__vset(ref dst[idst], rx0, ry0, ru, 1);
                 idst++;
 
-                if ((p1[ip1].flags & (int)NvgPointFlags.Bevel) != 0)
+                if ((p1[ip1].Flags & (int)NvgPointFlags.Bevel) != 0)
                 {
-                    nvg__vset(ref dst[idst], p1[ip1].x + dlx0 * lw, p1[ip1].y + dly0 * lw, lu, 1);
+                    nvg__vset(ref dst[idst], p1[ip1].X + dlx0 * lw, p1[ip1].Y + dly0 * lw, lu, 1);
                     idst++;
                     nvg__vset(ref dst[idst], rx0, ry0, ru, 1);
                     idst++;
 
-                    nvg__vset(ref dst[idst], p1[ip1].x + dlx1 * lw, p1[ip1].y + dly1 * lw, lu, 1);
+                    nvg__vset(ref dst[idst], p1[ip1].X + dlx1 * lw, p1[ip1].Y + dly1 * lw, lu, 1);
                     idst++;
                     nvg__vset(ref dst[idst], rx1, ry1, ru, 1);
                     idst++;
                 }
                 else
                 {
-                    lx0 = p1[ip1].x + p1[ip1].dmx * lw;
-                    ly0 = p1[ip1].y + p1[ip1].dmy * lw;
+                    lx0 = p1[ip1].X + p1[ip1].Dmx * lw;
+                    ly0 = p1[ip1].Y + p1[ip1].Dmy * lw;
 
-                    nvg__vset(ref dst[idst], p1[ip1].x + dlx0 * lw, p1[ip1].y + dly0 * lw, lu, 1);
+                    nvg__vset(ref dst[idst], p1[ip1].X + dlx0 * lw, p1[ip1].Y + dly0 * lw, lu, 1);
                     idst++;
-                    nvg__vset(ref dst[idst], p1[ip1].x, p1[ip1].y, 0.5f, 1);
+                    nvg__vset(ref dst[idst], p1[ip1].X, p1[ip1].Y, 0.5f, 1);
                     idst++;
 
                     nvg__vset(ref dst[idst], lx0, ly0, lu, 1);
@@ -1929,13 +1929,13 @@ namespace NanoVGDotNet
                     nvg__vset(ref dst[idst], lx0, ly0, lu, 1);
                     idst++;
 
-                    nvg__vset(ref dst[idst], p1[ip1].x + dlx1 * lw, p1[ip1].y + dly1 * lw, lu, 1);
+                    nvg__vset(ref dst[idst], p1[ip1].X + dlx1 * lw, p1[ip1].Y + dly1 * lw, lu, 1);
                     idst++;
-                    nvg__vset(ref dst[idst], p1[ip1].x, p1[ip1].y, 0.5f, 1);
+                    nvg__vset(ref dst[idst], p1[ip1].X, p1[ip1].Y, 0.5f, 1);
                     idst++;
                 }
 
-                nvg__vset(ref dst[idst], p1[ip1].x + dlx1 * lw, p1[ip1].y + dly1 * lw, lu, 1);
+                nvg__vset(ref dst[idst], p1[ip1].X + dlx1 * lw, p1[ip1].Y + dly1 * lw, lu, 1);
                 idst++;
                 nvg__vset(ref dst[idst], rx1, ry1, ru, 1);
                 idst++;
@@ -1944,46 +1944,46 @@ namespace NanoVGDotNet
             //return dst[idst];
         }
 
-        static int nvg__expandFill(NVGcontext ctx, float w, int lineJoin, float miterLimit)
+        static int nvg__expandFill(NvGcontext ctx, float w, int lineJoin, float miterLimit)
         {
-            var cache = ctx.cache;
-            NVGvertex[] verts;
+            var cache = ctx.Cache;
+            NvGvertex[] verts;
             var iverts = 0;
-            NVGvertex[] dst;
+            NvGvertex[] dst;
             var idst = 0;
             int cverts, i, j;
             var convex = false;
-            var aa = ctx.fringeWidth;
+            var aa = ctx.FringeWidth;
             var fringe = w > 0.0f;
 
             nvg__calculateJoins(ctx, w, lineJoin, miterLimit);
 
             // Calculate max vertex usage.
             cverts = 0;
-            for (i = 0; i < cache.npaths; i++)
+            for (i = 0; i < cache.Npaths; i++)
             {
-                var path = cache.paths[i];
-                cverts += path.count + path.nbevel + 1;
+                var path = cache.Paths[i];
+                cverts += path.Count + path.Nbevel + 1;
                 if (fringe)
-                    cverts += (path.count + path.nbevel * 5 + 1) * 2; // plus one for loop
+                    cverts += (path.Count + path.Nbevel * 5 + 1) * 2; // plus one for loop
             }
 
             verts = nvg__allocTempVerts(ctx, cverts);
             if (verts == null)
                 return 0;
 
-            convex = cache.npaths == 1 && cache.paths[0].convex != 0;
+            convex = cache.Npaths == 1 && cache.Paths[0].Convex != 0;
 
-            NVGpath path2;
+            NvGpath path2;
 
-            for (i = 0; i < cache.npaths; i++)
+            for (i = 0; i < cache.Npaths; i++)
             {
-                path2 = cache.paths[i];
-                var pts = cache.points;
-                var ipts = path2.first;
-                NVGpoint p0;
+                path2 = cache.Paths[i];
+                var pts = cache.Points;
+                var ipts = path2.First;
+                NvGpoint p0;
                 var ip0 = 0;
-                NVGpoint p1;
+                NvGpoint p1;
                 var ip1 = 0;
                 float rw, lw, woff;
                 float ru, lu;
@@ -1992,38 +1992,38 @@ namespace NanoVGDotNet
                 woff = 0.5f * aa;
                 dst = verts;
                 idst = iverts;
-                path2.fill = dst;
-                path2.ifill = idst;
+                path2.Fill = dst;
+                path2.Ifill = idst;
 
                 if (fringe)
                 {
                     // Looping
-                    ip0 = ipts + path2.count - 1;
+                    ip0 = ipts + path2.Count - 1;
                     p0 = pts[ip0];
                     ip1 = ipts + 0;
                     p1 = pts[ip1];
 
-                    for (j = 0; j < path2.count; ++j)
+                    for (j = 0; j < path2.Count; ++j)
                     {
-                        if ((p1.flags & (int)NvgPointFlags.Bevel) != 0)
+                        if ((p1.Flags & (int)NvgPointFlags.Bevel) != 0)
                         {
-                            var dlx0 = p0.dy;
-                            var dly0 = -p0.dx;
-                            var dlx1 = p1.dy;
-                            var dly1 = -p1.dx;
-                            if ((p1.flags & (int)NvgPointFlags.Left) != 0)
+                            var dlx0 = p0.Dy;
+                            var dly0 = -p0.Dx;
+                            var dlx1 = p1.Dy;
+                            var dly1 = -p1.Dx;
+                            if ((p1.Flags & (int)NvgPointFlags.Left) != 0)
                             {
-                                var lx = p1.x + p1.dmx * woff;
-                                var ly = p1.y + p1.dmy * woff;
+                                var lx = p1.X + p1.Dmx * woff;
+                                var ly = p1.Y + p1.Dmy * woff;
                                 nvg__vset(ref dst[idst], lx, ly, 0.5f, 1);
                                 idst++;
                             }
                             else
                             {
-                                var lx0 = p1.x + dlx0 * woff;
-                                var ly0 = p1.y + dly0 * woff;
-                                var lx1 = p1.x + dlx1 * woff;
-                                var ly1 = p1.y + dly1 * woff;
+                                var lx0 = p1.X + dlx0 * woff;
+                                var ly0 = p1.Y + dly0 * woff;
+                                var lx1 = p1.X + dlx1 * woff;
+                                var ly1 = p1.Y + dly1 * woff;
                                 nvg__vset(ref dst[idst], lx0, ly0, 0.5f, 1);
                                 idst++;
                                 nvg__vset(ref dst[idst], lx1, ly1, 0.5f, 1);
@@ -2032,7 +2032,7 @@ namespace NanoVGDotNet
                         }
                         else
                         {
-                            nvg__vset(ref dst[idst], p1.x + (p1.dmx * woff), p1.y + (p1.dmy * woff), 0.5f, 1);
+                            nvg__vset(ref dst[idst], p1.X + (p1.Dmx * woff), p1.Y + (p1.Dmy * woff), 0.5f, 1);
                             idst++;
                         }
                         p0 = p1;
@@ -2042,14 +2042,14 @@ namespace NanoVGDotNet
                 }
                 else
                 {
-                    for (j = 0; j < path2.count; ++j)
+                    for (j = 0; j < path2.Count; ++j)
                     {
-                        nvg__vset(ref dst[idst], pts[j + ipts].x, pts[j + ipts].y, 0.5f, 1);
+                        nvg__vset(ref dst[idst], pts[j + ipts].X, pts[j + ipts].Y, 0.5f, 1);
                         idst++;
                     }
                 }
 
-                path2.nfill = (int)(idst - iverts);
+                path2.Nfill = (int)(idst - iverts);
                 verts = dst;
                 iverts = idst;
 
@@ -2062,8 +2062,8 @@ namespace NanoVGDotNet
                     ru = 1;
                     idst = iverts;
                     dst = verts;
-                    path2.stroke = dst;
-                    path2.istroke = idst;
+                    path2.Stroke = dst;
+                    path2.Istroke = idst;
 
                     // Create only half a fringe for convex shapes so that
                     // the shape can be rendered without stenciling.
@@ -2074,23 +2074,23 @@ namespace NanoVGDotNet
                     }
 
                     // Looping
-                    ip0 = ipts + path2.count - 1;
+                    ip0 = ipts + path2.Count - 1;
                     p0 = pts[ip0];
                     ip1 = 0 + ipts;
                     p1 = pts[ip1];
 
-                    for (j = 0; j < path2.count; ++j)
+                    for (j = 0; j < path2.Count; ++j)
                     {
-                        if ((p1.flags &
+                        if ((p1.Flags &
                             ((int)NvgPointFlags.Bevel | (int)NvgPointFlags.InnerBevel)) != 0)
                         {
-                            nvg__bevelJoin(dst, ref idst, p0, p1, lw, rw, lu, ru, ctx.fringeWidth);
+                            nvg__bevelJoin(dst, ref idst, p0, p1, lw, rw, lu, ru, ctx.FringeWidth);
                         }
                         else
                         {
-                            nvg__vset(ref dst[idst], p1.x + (p1.dmx * lw), p1.y + (p1.dmy * lw), lu, 1);
+                            nvg__vset(ref dst[idst], p1.X + (p1.Dmx * lw), p1.Y + (p1.Dmy * lw), lu, 1);
                             idst++;
-                            nvg__vset(ref dst[idst], p1.x - (p1.dmx * rw), p1.y - (p1.dmy * rw), ru, 1);
+                            nvg__vset(ref dst[idst], p1.X - (p1.Dmx * rw), p1.Y - (p1.Dmy * rw), ru, 1);
                             idst++;
                         }
                         p0 = p1;
@@ -2099,19 +2099,19 @@ namespace NanoVGDotNet
                     }
 
                     // Loop it
-                    nvg__vset(ref dst[idst], verts[0 + iverts].x, verts[0 + iverts].y, lu, 1);
+                    nvg__vset(ref dst[idst], verts[0 + iverts].X, verts[0 + iverts].Y, lu, 1);
                     idst++;
-                    nvg__vset(ref dst[idst], verts[1 + iverts].x, verts[1 + iverts].y, ru, 1);
+                    nvg__vset(ref dst[idst], verts[1 + iverts].X, verts[1 + iverts].Y, ru, 1);
                     idst++;
 
-                    path2.nstroke = (int)(idst - iverts);
+                    path2.Nstroke = (int)(idst - iverts);
                     iverts = idst;
                     verts = dst;
                 }
                 else
                 {
-                    path2.stroke = null;
-                    path2.nstroke = 0;
+                    path2.Stroke = null;
+                    path2.Nstroke = 0;
                 }
 
 #if ONLY_FOR_DEBUG
@@ -2129,7 +2129,7 @@ namespace NanoVGDotNet
             return 1;
         }
 
-        public static void nvgTransformScale(float[] t, float sx, float sy)
+        public static void NvgTransformScale(float[] t, float sx, float sy)
         {
             t[0] = sx;
             t[1] = 0.0f;
@@ -2139,12 +2139,12 @@ namespace NanoVGDotNet
             t[5] = 0.0f;
         }
 
-        public static int nvgTransformInverse(float[] inv, float[] t)
+        public static int NvgTransformInverse(float[] inv, float[] t)
         {
             double invdet, det = (double)t[0] * t[3] - (double)t[2] * t[1];
             if (det > -1e-6 && det < 1e-6)
             {
-                nvgTransformIdentity(inv);
+                NvgTransformIdentity(inv);
                 return 0;
             }
             invdet = 1.0 / det;
@@ -2157,38 +2157,38 @@ namespace NanoVGDotNet
             return 1;
         }
 
-        public static void nvgFill(NVGcontext ctx)
+        public static void NvgFill(NvGcontext ctx)
         {
             var state = nvg__getState(ctx);
-            NVGpath path;
-            var fillPaint = state.fill.Clone();
+            NvGpath path;
+            var fillPaint = state.Fill.Clone();
             int i;
 
             nvg__flattenPaths(ctx);
 
-            if (ctx.params_.edgeAntiAlias != 0)
-                nvg__expandFill(ctx, ctx.fringeWidth, (int)NvgLineCap.Miter, 2.4f);
+            if (ctx.Params.EdgeAntiAlias != 0)
+                nvg__expandFill(ctx, ctx.FringeWidth, (int)NanoVGDotNet.NvgLineCap.Miter, 2.4f);
             else
-                nvg__expandFill(ctx, 0.0f, (int)NvgLineCap.Miter, 2.4f);
+                nvg__expandFill(ctx, 0.0f, (int)NanoVGDotNet.NvgLineCap.Miter, 2.4f);
 
             // Apply global alpha
-            fillPaint.innerColor.a *= state.alpha;
-            fillPaint.outerColor.a *= state.alpha;
+            fillPaint.InnerColor.A *= state.Alpha;
+            fillPaint.OuterColor.A *= state.Alpha;
 
-            ctx.params_.renderFill(ctx.params_.userPtr, ref fillPaint, ref state.scissor, ctx.fringeWidth,
-                ctx.cache.bounds, ctx.cache.paths, ctx.cache.npaths);
+            ctx.Params.RenderFill(ctx.Params.UserPtr, ref fillPaint, ref state.Scissor, ctx.FringeWidth,
+                ctx.Cache.Bounds, ctx.Cache.Paths, ctx.Cache.Npaths);
 
             // Count triangles
-            for (i = 0; i < ctx.cache.npaths; i++)
+            for (i = 0; i < ctx.Cache.Npaths; i++)
             {
-                path = ctx.cache.paths[i];
-                ctx.fillTriCount += path.nfill - 2;
-                ctx.fillTriCount += path.nstroke - 2;
-                ctx.drawCallCount += 2;
+                path = ctx.Cache.Paths[i];
+                ctx.FillTriCount += path.Nfill - 2;
+                ctx.FillTriCount += path.Nstroke - 2;
+                ctx.DrawCallCount += 2;
             }
         }
 
-        public static void nvgRect(NVGcontext ctx, float x, float y, float w, float h)
+        public static void NvgRect(NvGcontext ctx, float x, float y, float w, float h)
         {
             float[] vals =
             {
@@ -2218,25 +2218,25 @@ namespace NanoVGDotNet
             return dx * dx + dy * dy;
         }
 
-        public static void nvgArcTo(NVGcontext ctx, float x1, float y1, float x2, float y2, float radius)
+        public static void NvgArcTo(NvGcontext ctx, float x1, float y1, float x2, float y2, float radius)
         {
-            float x0 = ctx.commandx;
-            float y0 = ctx.commandy;
+            float x0 = ctx.Commandx;
+            float y0 = ctx.Commandy;
             float dx0, dy0, dx1, dy1, a, d, cx, cy, a0, a1;
             int dir;
 
-            if (ctx.ncommands == 0)
+            if (ctx.Ncommands == 0)
             {
                 return;
             }
 
             // Handle degenerate cases.
-            if (nvg__ptEquals(x0, y0, x1, y1, ctx.distTol) ||
-                nvg__ptEquals(x1, y1, x2, y2, ctx.distTol) ||
-                nvg__distPtSeg(x1, y1, x0, y0, x2, y2) < ctx.distTol * ctx.distTol ||
-                radius < ctx.distTol)
+            if (nvg__ptEquals(x0, y0, x1, y1, ctx.DistTol) ||
+                nvg__ptEquals(x1, y1, x2, y2, ctx.DistTol) ||
+                nvg__distPtSeg(x1, y1, x0, y0, x2, y2) < ctx.DistTol * ctx.DistTol ||
+                radius < ctx.DistTol)
             {
-                nvgLineTo(ctx, x1, y1);
+                NvgLineTo(ctx, x1, y1);
                 return;
             }
 
@@ -2254,7 +2254,7 @@ namespace NanoVGDotNet
 
             if (d > 10000.0f)
             {
-                nvgLineTo(ctx, x1, y1);
+                NvgLineTo(ctx, x1, y1);
                 return;
             }
 
@@ -2277,13 +2277,13 @@ namespace NanoVGDotNet
                 //		printf("CCW c=(%f, %f) a0=%f° a1=%f°\n", cx, cy, a0/NVG_PI*180.0f, a1/NVG_PI*180.0f);
             }
 
-            nvgArc(ctx, cx, cy, radius, a0, a1, dir);
+            NvgArc(ctx, cx, cy, radius, a0, a1, dir);
         }
 
-        public static void nvgQuadTo(NVGcontext ctx, float cx, float cy, float x, float y)
+        public static void NvgQuadTo(NvGcontext ctx, float cx, float cy, float x, float y)
         {
-            float x0 = ctx.commandx;
-            float y0 = ctx.commandy;
+            float x0 = ctx.Commandx;
+            float y0 = ctx.Commandy;
             float[] vals = { (int)NvgCommands.BezierTo,
                 x0 + 2.0f/3.0f*(cx - x0), y0 + 2.0f/3.0f*(cy - y0),
                 x + 2.0f/3.0f*(cx - x), y + 2.0f/3.0f*(cy - y),
@@ -2292,44 +2292,44 @@ namespace NanoVGDotNet
             nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
-        public static void nvgArc(NVGcontext ctx, float cx, float cy, float r, float a0, float a1, int dir)
+        public static void NvgArc(NvGcontext ctx, float cx, float cy, float r, float a0, float a1, int dir)
         {
             float a = 0, da = 0, hda = 0, kappa = 0;
             float dx = 0, dy = 0, x = 0, y = 0, tanx = 0, tany = 0;
             float px = 0, py = 0, ptanx = 0, ptany = 0;
             var vals = new float[3 + 5 * 7 + 100];
             int i, ndivs, nvals;
-            var move = ctx.ncommands > 0 ? (int)NvgCommands.LineTo : (int)NvgCommands.MoveTo;
+            var move = ctx.Ncommands > 0 ? (int)NvgCommands.LineTo : (int)NvgCommands.MoveTo;
 
             // Clamp angles
             da = a1 - a0;
             if (dir == (int)NvgWinding.Clockwise)
             {
-                if (nvg__absf(da) >= NVG_PI * 2)
+                if (nvg__absf(da) >= NvgPi * 2)
                 {
-                    da = NVG_PI * 2;
+                    da = NvgPi * 2;
                 }
                 else
                 {
                     while (da < 0.0f)
-                        da += NVG_PI * 2;
+                        da += NvgPi * 2;
                 }
             }
             else
             {
-                if (nvg__absf(da) >= NVG_PI * 2)
+                if (nvg__absf(da) >= NvgPi * 2)
                 {
-                    da = -NVG_PI * 2;
+                    da = -NvgPi * 2;
                 }
                 else
                 {
                     while (da > 0.0f)
-                        da -= NVG_PI * 2;
+                        da -= NvgPi * 2;
                 }
             }
 
             // Split arc into max 90 degree segments.
-            ndivs = nvg__maxi(1, nvg__mini((int)(nvg__absf(da) / (NVG_PI * 0.5f) + 0.5f), 5));
+            ndivs = nvg__maxi(1, nvg__mini((int)(nvg__absf(da) / (NvgPi * 0.5f) + 0.5f), 5));
             hda = (da / (float)ndivs) / 2.0f;
             kappa = nvg__absf(4.0f / 3.0f * (1.0f - nvg__cosf(hda)) / nvg__sinf(hda));
 
@@ -2372,11 +2372,11 @@ namespace NanoVGDotNet
             nvg__appendCommands(ctx, vals, nvals);
         }
 
-        public static void nvgRoundedRect(NVGcontext ctx, float x, float y, float w, float h, float r)
+        public static void NvgRoundedRect(NvGcontext ctx, float x, float y, float w, float h, float r)
         {
             if (r < 0.1f)
             {
-                nvgRect(ctx, x, y, w, h);
+                NvgRect(ctx, x, y, w, h);
                 return;
             }
             else
@@ -2386,53 +2386,53 @@ namespace NanoVGDotNet
                 {
                     (float)NvgCommands.MoveTo, x, y + ry,
                     (float)NvgCommands.LineTo, x, y + h - ry,
-                    (float)NvgCommands.BezierTo, x, y + h - ry * (1 - NVG_KAPPA90), x + rx * (1 - NVG_KAPPA90), y + h, x + rx, y + h,
+                    (float)NvgCommands.BezierTo, x, y + h - ry * (1 - NvgKappa90), x + rx * (1 - NvgKappa90), y + h, x + rx, y + h,
                     (float)NvgCommands.LineTo, x + w - rx, y + h,
-                    (float)NvgCommands.BezierTo, x + w - rx * (1 - NVG_KAPPA90), y + h, x + w, y + h - ry * (1 - NVG_KAPPA90), x + w, y + h - ry,
+                    (float)NvgCommands.BezierTo, x + w - rx * (1 - NvgKappa90), y + h, x + w, y + h - ry * (1 - NvgKappa90), x + w, y + h - ry,
                     (float)NvgCommands.LineTo, x + w, y + ry,
-                    (float)NvgCommands.BezierTo, x + w, y + ry * (1 - NVG_KAPPA90), x + w - rx * (1 - NVG_KAPPA90), y, x + w - rx, y,
+                    (float)NvgCommands.BezierTo, x + w, y + ry * (1 - NvgKappa90), x + w - rx * (1 - NvgKappa90), y, x + w - rx, y,
                     (float)NvgCommands.LineTo, x + rx, y,
-                    (float)NvgCommands.BezierTo, x + rx * (1 - NVG_KAPPA90), y, x, y + ry * (1 - NVG_KAPPA90), x, y + ry,
+                    (float)NvgCommands.BezierTo, x + rx * (1 - NvgKappa90), y, x, y + ry * (1 - NvgKappa90), x, y + ry,
                     (float)NvgCommands.Close
                 };
                 nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
             }
         }
 
-        public static void nvgRoundedRectVarying(NVGcontext ctx, float x, float y, float w, float h, float radTopLeft, float radTopRight, float radBottomRight, float radBottomLeft)
+        public static void NvgRoundedRectVarying(NvGcontext ctx, float x, float y, float w, float h, float radTopLeft, float radTopRight, float radBottomRight, float radBottomLeft)
         {
             if (radTopLeft < 0.1f && radTopRight < 0.1f && radBottomRight < 0.1f && radBottomLeft < 0.1f)
             {
-                nvgRect(ctx, x, y, w, h);
+                NvgRect(ctx, x, y, w, h);
                 return;
             }
 
             float halfw = nvg__absf(w) * 0.5f;
             float halfh = nvg__absf(h) * 0.5f;
-            float rxBL = nvg__minf(radBottomLeft, halfw) * nvg__signf(w), ryBL = nvg__minf(radBottomLeft, halfh) * nvg__signf(h);
-            float rxBR = nvg__minf(radBottomRight, halfw) * nvg__signf(w), ryBR = nvg__minf(radBottomRight, halfh) * nvg__signf(h);
-            float rxTR = nvg__minf(radTopRight, halfw) * nvg__signf(w), ryTR = nvg__minf(radTopRight, halfh) * nvg__signf(h);
-            float rxTL = nvg__minf(radTopLeft, halfw) * nvg__signf(w), ryTL = nvg__minf(radTopLeft, halfh) * nvg__signf(h);
+            float rxBl = nvg__minf(radBottomLeft, halfw) * nvg__signf(w), ryBl = nvg__minf(radBottomLeft, halfh) * nvg__signf(h);
+            float rxBr = nvg__minf(radBottomRight, halfw) * nvg__signf(w), ryBr = nvg__minf(radBottomRight, halfh) * nvg__signf(h);
+            float rxTr = nvg__minf(radTopRight, halfw) * nvg__signf(w), ryTr = nvg__minf(radTopRight, halfh) * nvg__signf(h);
+            float rxTl = nvg__minf(radTopLeft, halfw) * nvg__signf(w), ryTl = nvg__minf(radTopLeft, halfh) * nvg__signf(h);
             float[] vals = {
-                (float)NvgCommands.MoveTo, x, y + ryTL,
-                (float)NvgCommands.LineTo, x, y + h - ryBL,
-                (float)NvgCommands.BezierTo, x, y + h - ryBL*(1 - NVG_KAPPA90), x + rxBL*(1 - NVG_KAPPA90), y + h, x + rxBL, y + h,
-                (float)NvgCommands.LineTo, x + w - rxBR, y + h,
-                (float)NvgCommands.BezierTo, x + w - rxBR*(1 - NVG_KAPPA90), y + h, x + w, y + h - ryBR*(1 - NVG_KAPPA90), x + w, y + h - ryBR,
-                (float)NvgCommands.LineTo, x + w, y + ryTR,
-                (float)NvgCommands.BezierTo, x + w, y + ryTR*(1 - NVG_KAPPA90), x + w - rxTR*(1 - NVG_KAPPA90), y, x + w - rxTR, y,
-                (float)NvgCommands.LineTo, x + rxTL, y,
-                (float)NvgCommands.BezierTo, x + rxTL*(1 - NVG_KAPPA90), y, x, y + ryTL*(1 - NVG_KAPPA90), x, y + ryTL,
+                (float)NvgCommands.MoveTo, x, y + ryTl,
+                (float)NvgCommands.LineTo, x, y + h - ryBl,
+                (float)NvgCommands.BezierTo, x, y + h - ryBl*(1 - NvgKappa90), x + rxBl*(1 - NvgKappa90), y + h, x + rxBl, y + h,
+                (float)NvgCommands.LineTo, x + w - rxBr, y + h,
+                (float)NvgCommands.BezierTo, x + w - rxBr*(1 - NvgKappa90), y + h, x + w, y + h - ryBr*(1 - NvgKappa90), x + w, y + h - ryBr,
+                (float)NvgCommands.LineTo, x + w, y + ryTr,
+                (float)NvgCommands.BezierTo, x + w, y + ryTr*(1 - NvgKappa90), x + w - rxTr*(1 - NvgKappa90), y, x + w - rxTr, y,
+                (float)NvgCommands.LineTo, x + rxTl, y,
+                (float)NvgCommands.BezierTo, x + rxTl*(1 - NvgKappa90), y, x, y + ryTl*(1 - NvgKappa90), x, y + ryTl,
                 (float)NvgCommands.Close
             };
             nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
-        public static NVGpaint nvgLinearGradient(NVGcontext ctx,
+        public static NvGpaint NvgLinearGradient(NvGcontext ctx,
                                                  float sx, float sy, float ex, float ey,
-                                                 NVGcolor icol, NVGcolor ocol)
+                                                 NvGcolor icol, NvGcolor ocol)
         {
-            var p = new NVGpaint();
+            var p = new NvGpaint();
             float dx, dy, d;
             const float large = (float)1e5;
             //NVG_NOTUSED(ctx);
@@ -2453,22 +2453,22 @@ namespace NanoVGDotNet
                 dy = 1;
             }
 
-            p.xform[0] = dy;
-            p.xform[1] = -dx;
-            p.xform[2] = dx;
-            p.xform[3] = dy;
-            p.xform[4] = sx - dx * large;
-            p.xform[5] = sy - dy * large;
+            p.Xform[0] = dy;
+            p.Xform[1] = -dx;
+            p.Xform[2] = dx;
+            p.Xform[3] = dy;
+            p.Xform[4] = sx - dx * large;
+            p.Xform[5] = sy - dy * large;
 
-            p.extent[0] = large;
-            p.extent[1] = large + d * 0.5f;
+            p.Extent[0] = large;
+            p.Extent[1] = large + d * 0.5f;
 
-            p.radius = 0.0f;
+            p.Radius = 0.0f;
 
-            p.feather = nvg__maxf(1.0f, d);
+            p.Feather = nvg__maxf(1.0f, d);
 
-            p.innerColor = icol;
-            p.outerColor = ocol;
+            p.InnerColor = icol;
+            p.OuterColor = ocol;
 
             return p;
         }
@@ -2478,63 +2478,63 @@ namespace NanoVGDotNet
             return ((int)(a / d + 0.5f)) * d;
         }
 
-        public static NVGpaint nvgRadialGradient(NVGcontext ctx,
+        public static NvGpaint NvgRadialGradient(NvGcontext ctx,
                                                  float cx, float cy, float inr, float outr,
-                                                 NVGcolor icol, NVGcolor ocol)
+                                                 NvGcolor icol, NvGcolor ocol)
         {
-            var p = new NVGpaint();
+            var p = new NvGpaint();
             var r = (inr + outr) * 0.5f;
             var f = (outr - inr);
             //NVG_NOTUSED(ctx);
             //memset(&p, 0, sizeof(p));
 
-            nvgTransformIdentity(p.xform);
-            p.xform[4] = cx;
-            p.xform[5] = cy;
+            NvgTransformIdentity(p.Xform);
+            p.Xform[4] = cx;
+            p.Xform[5] = cy;
 
-            p.extent[0] = r;
-            p.extent[1] = r;
+            p.Extent[0] = r;
+            p.Extent[1] = r;
 
-            p.radius = r;
+            p.Radius = r;
 
-            p.feather = nvg__maxf(1.0f, f);
+            p.Feather = nvg__maxf(1.0f, f);
 
-            p.innerColor = icol;
-            p.outerColor = ocol;
+            p.InnerColor = icol;
+            p.OuterColor = ocol;
 
             return p;
         }
 
-        public static void nvgEllipse(NVGcontext ctx, float cx, float cy, float rx, float ry)
+        public static void NvgEllipse(NvGcontext ctx, float cx, float cy, float rx, float ry)
         {
             float[] vals =
             {
                 (float)NvgCommands.MoveTo, cx - rx, cy,
-                (float)NvgCommands.BezierTo, cx - rx, cy + ry * NVG_KAPPA90, cx - rx * NVG_KAPPA90, cy + ry, cx, cy + ry,
-                (float)NvgCommands.BezierTo, cx + rx * NVG_KAPPA90, cy + ry, cx + rx, cy + ry * NVG_KAPPA90, cx + rx, cy,
-                (float)NvgCommands.BezierTo, cx + rx, cy - ry * NVG_KAPPA90, cx + rx * NVG_KAPPA90, cy - ry, cx, cy - ry,
-                (float)NvgCommands.BezierTo, cx - rx * NVG_KAPPA90, cy - ry, cx - rx, cy - ry * NVG_KAPPA90, cx - rx, cy,
+                (float)NvgCommands.BezierTo, cx - rx, cy + ry * NvgKappa90, cx - rx * NvgKappa90, cy + ry, cx, cy + ry,
+                (float)NvgCommands.BezierTo, cx + rx * NvgKappa90, cy + ry, cx + rx, cy + ry * NvgKappa90, cx + rx, cy,
+                (float)NvgCommands.BezierTo, cx + rx, cy - ry * NvgKappa90, cx + rx * NvgKappa90, cy - ry, cx, cy - ry,
+                (float)NvgCommands.BezierTo, cx - rx * NvgKappa90, cy - ry, cx - rx, cy - ry * NvgKappa90, cx - rx, cy,
                 (float)NvgCommands.Close
             };
             nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
-        public static void nvgCircle(NVGcontext ctx, float cx, float cy, float r)
+        public static void NvgCircle(NvGcontext ctx, float cx, float cy, float r)
         {
-            nvgEllipse(ctx, cx, cy, r, r);
+            NvgEllipse(ctx, cx, cy, r, r);
         }
 
-        public static int nvgTextGlyphPositions(NVGcontext ctx, float x, float y, string string_,
-                                                NVGglyphPosition[] positions, int maxPositions)
+        public static int NvgTextGlyphPositions(NvGcontext ctx, float x, float y, string string_,
+                                                NvGglyphPosition[] positions, int maxPositions)
         {
             var state = nvg__getState(ctx);
-            var scale = nvg__getFontScale(state) * ctx.devicePxRatio;
+            var scale = nvg__getFontScale(state) * ctx.DevicePxRatio;
             var invscale = 1.0f / scale;
             FONStextIter iter = new FONStextIter(), prevIter = new FONStextIter();
             var q = new FONSquad();
             var npos = 0;
 
-            if (state.fontId == FontStash.FONS_INVALID)
+            if (state.FontId == FontStash.FONS_INVALID)
                 return 0;
 
             //if (end == NULL)
@@ -2543,26 +2543,26 @@ namespace NanoVGDotNet
             //if (string_ == end)
             //	return 0;
 
-            FontStash.fonsSetSize(ref ctx.fs, state.fontSize * scale);
-            FontStash.fonsSetSpacing(ref ctx.fs, state.letterSpacing * scale);
-            FontStash.fonsSetBlur(ref ctx.fs, state.fontBlur * scale);
-            FontStash.fonsSetAlign(ctx.fs, (FONSalign)state.textAlign);
-            FontStash.fonsSetFont(ref ctx.fs, state.fontId);
+            FontStash.fonsSetSize(ref ctx.Fs, state.FontSize * scale);
+            FontStash.fonsSetSpacing(ref ctx.Fs, state.LetterSpacing * scale);
+            FontStash.fonsSetBlur(ref ctx.Fs, state.FontBlur * scale);
+            FontStash.fonsSetAlign(ctx.Fs, (FONSalign)state.TextAlign);
+            FontStash.fonsSetFont(ref ctx.Fs, state.FontId);
 
-            FontStash.fonsTextIterInit(ctx.fs, ref iter, x * scale, y * scale, string_);
+            FontStash.fonsTextIterInit(ctx.Fs, ref iter, x * scale, y * scale, string_);
             prevIter = iter;
-            while (FontStash.fonsTextIterNext(ctx.fs, ref iter, ref q) != 0)
+            while (FontStash.fonsTextIterNext(ctx.Fs, ref iter, ref q) != 0)
             {
                 if (iter.prevGlyphIndex < 0 && nvg__allocTextAtlas(ctx) > 0)
                 { // can not retrieve glyph?
                     iter = prevIter;
-                    FontStash.fonsTextIterNext(ctx.fs, ref iter, ref q); // try again
+                    FontStash.fonsTextIterNext(ctx.Fs, ref iter, ref q); // try again
                 }
                 prevIter = iter;
-                positions[npos].str = iter.iStr;
-                positions[npos].x = iter.x * invscale;
-                positions[npos].minx = nvg__minf(iter.x, q.x0) * invscale;
-                positions[npos].maxx = nvg__maxf(iter.nextx, q.x1) * invscale;
+                positions[npos].Str = iter.iStr;
+                positions[npos].X = iter.x * invscale;
+                positions[npos].Minx = nvg__minf(iter.x, q.x0) * invscale;
+                positions[npos].Maxx = nvg__maxf(iter.nextx, q.x1) * invscale;
                 npos++;
                 if (npos >= maxPositions)
                     break;
@@ -2571,25 +2571,25 @@ namespace NanoVGDotNet
             return npos;
         }
 
-        public static void nvgTextBox(NVGcontext ctx, float x, float y, float breakRowWidth, string string_)
+        public static void NvgTextBox(NvGcontext ctx, float x, float y, float breakRowWidth, string string_)
         {
             var state = nvg__getState(ctx);
-            var rows = new NVGtextRow[2];
+            var rows = new NvGtextRow[2];
             int nrows = 0, i;
-            var oldAlign = state.textAlign;
-            var haling = state.textAlign & ((int)NvgAlign.Left | (int)NvgAlign.Center | (int)NvgAlign.Right);
-            var valign = state.textAlign & ((int)NvgAlign.Top | (int)NvgAlign.Middle | (int)NvgAlign.Bottom | (int)NvgAlign.Baseline);
+            var oldAlign = state.TextAlign;
+            var haling = state.TextAlign & ((int)NvgAlign.Left | (int)NvgAlign.Center | (int)NvgAlign.Right);
+            var valign = state.TextAlign & ((int)NvgAlign.Top | (int)NvgAlign.Middle | (int)NvgAlign.Bottom | (int)NvgAlign.Baseline);
             float lineh = 0;
             float fnull = 0;
 
-            if (state.fontId == FontStash.FONS_INVALID)
+            if (state.FontId == FontStash.FONS_INVALID)
                 return;
 
-            nvgTextMetrics(ctx, ref fnull, ref fnull, ref lineh);
+            NvgTextMetrics(ctx, ref fnull, ref fnull, ref lineh);
 
-            state.textAlign = (int)NvgAlign.Left | valign;
+            state.TextAlign = (int)NvgAlign.Left | valign;
 
-            while ((nrows = nvgTextBreakLines(ctx, string_, breakRowWidth, rows, 2)) > 0)
+            while ((nrows = NvgTextBreakLines(ctx, string_, breakRowWidth, rows, 2)) > 0)
             {
                 for (i = 0; i < nrows; i++)
                 {
@@ -2597,68 +2597,68 @@ namespace NanoVGDotNet
                     var row = rows[i];
                     if ((haling & (int)NvgAlign.Left) != 0)
                     {
-                        str = string_.Substring(row.start, row.end - row.start);
-                        nvgText(ctx, x, y, str);
+                        str = string_.Substring(row.Start, row.End - row.Start);
+                        NvgText(ctx, x, y, str);
                     }
                     else if ((haling & (int)NvgAlign.Center) != 0)
                     {
-                        str = string_.Substring(row.start, row.end - row.start);
-                        nvgText(ctx, x + breakRowWidth * 0.5f - row.width * 0.5f, y, str);
+                        str = string_.Substring(row.Start, row.End - row.Start);
+                        NvgText(ctx, x + breakRowWidth * 0.5f - row.Width * 0.5f, y, str);
                     }
                     else if ((haling & (int)NvgAlign.Right) != 0)
                     {
-                        str = string_.Substring(row.start, row.end - row.start);
-                        nvgText(ctx, x + breakRowWidth - row.width, y, str);
+                        str = string_.Substring(row.Start, row.End - row.Start);
+                        NvgText(ctx, x + breakRowWidth - row.Width, y, str);
                     }
-                    y += lineh * state.lineHeight;
+                    y += lineh * state.LineHeight;
                 }
-                string_ = string_.Substring(rows[nrows - 1].next);
+                string_ = string_.Substring(rows[nrows - 1].Next);
 
                 if (string_.Length == 1)
                     string_ = "";
             }
 
-            state.textAlign = oldAlign;
+            state.TextAlign = oldAlign;
         }
 
-        public static void nvgTextBoxBounds(NVGcontext ctx, float x, float y, float breakRowWidth, string string_, float[] bounds)
+        public static void NvgTextBoxBounds(NvGcontext ctx, float x, float y, float breakRowWidth, string string_, float[] bounds)
         {
             var state = nvg__getState(ctx);
-            var rows = new NVGtextRow[2];
-            var scale = nvg__getFontScale(state) * ctx.devicePxRatio;
+            var rows = new NvGtextRow[2];
+            var scale = nvg__getFontScale(state) * ctx.DevicePxRatio;
             var invscale = 1.0f / scale;
             int nrows = 0, i;
-            var oldAlign = state.textAlign;
-            var haling = state.textAlign & ((int)NvgAlign.Left | (int)NvgAlign.Center | (int)NvgAlign.Right);
-            var valign = state.textAlign & ((int)NvgAlign.Top | (int)NvgAlign.Middle | (int)NvgAlign.Bottom | (int)NvgAlign.Baseline);
+            var oldAlign = state.TextAlign;
+            var haling = state.TextAlign & ((int)NvgAlign.Left | (int)NvgAlign.Center | (int)NvgAlign.Right);
+            var valign = state.TextAlign & ((int)NvgAlign.Top | (int)NvgAlign.Middle | (int)NvgAlign.Bottom | (int)NvgAlign.Baseline);
             float lineh = 0, rminy = 0, rmaxy = 0;
             float minx, miny, maxx, maxy;
             float fnull = 0;
 
-            if (state.fontId == FontStash.FONS_INVALID)
+            if (state.FontId == FontStash.FONS_INVALID)
             {
                 if (bounds != null)
                     bounds[0] = bounds[1] = bounds[2] = bounds[3] = 0.0f;
                 return;
             }
 
-            NanoVG.nvgTextMetrics(ctx, ref fnull, ref fnull, ref lineh);
+            NanoVg.NvgTextMetrics(ctx, ref fnull, ref fnull, ref lineh);
 
-            state.textAlign = (int)NvgAlign.Left | valign;
+            state.TextAlign = (int)NvgAlign.Left | valign;
 
             minx = maxx = x;
             miny = maxy = y;
 
-            FontStash.fonsSetSize(ref ctx.fs, state.fontSize * scale);
-            FontStash.fonsSetSpacing(ref ctx.fs, state.letterSpacing * scale);
-            FontStash.fonsSetBlur(ref ctx.fs, state.fontBlur * scale);
-            FontStash.fonsSetAlign(ctx.fs, (FONSalign)state.textAlign);
-            FontStash.fonsSetFont(ref ctx.fs, state.fontId);
-            FontStash.fonsLineBounds(ctx.fs, 0, ref rminy, ref rmaxy);
+            FontStash.fonsSetSize(ref ctx.Fs, state.FontSize * scale);
+            FontStash.fonsSetSpacing(ref ctx.Fs, state.LetterSpacing * scale);
+            FontStash.fonsSetBlur(ref ctx.Fs, state.FontBlur * scale);
+            FontStash.fonsSetAlign(ctx.Fs, (FONSalign)state.TextAlign);
+            FontStash.fonsSetFont(ref ctx.Fs, state.FontId);
+            FontStash.fonsLineBounds(ctx.Fs, 0, ref rminy, ref rmaxy);
             rminy *= invscale;
             rmaxy *= invscale;
 
-            while ((nrows = nvgTextBreakLines(ctx, string_, breakRowWidth, rows, 2)) > 0)
+            while ((nrows = NvgTextBreakLines(ctx, string_, breakRowWidth, rows, 2)) > 0)
             {
                 for (i = 0; i < nrows; i++)
                 {
@@ -2668,26 +2668,26 @@ namespace NanoVGDotNet
                     if ((haling & (int)NvgAlign.Left) != 0)
                         dx = 0;
                     else if ((haling & (int)NvgAlign.Center) != 0)
-                        dx = breakRowWidth * 0.5f - row.width * 0.5f;
+                        dx = breakRowWidth * 0.5f - row.Width * 0.5f;
                     else if ((haling & (int)NvgAlign.Right) != 0)
-                        dx = breakRowWidth - row.width;
-                    rminx = x + row.minx + dx;
-                    rmaxx = x + row.maxx + dx;
+                        dx = breakRowWidth - row.Width;
+                    rminx = x + row.Minx + dx;
+                    rmaxx = x + row.Maxx + dx;
                     minx = nvg__minf(minx, rminx);
                     maxx = nvg__maxf(maxx, rmaxx);
                     // Vertical bounds.
                     miny = nvg__minf(miny, y + rminy);
                     maxy = nvg__maxf(maxy, y + rmaxy);
 
-                    y += lineh * state.lineHeight;
+                    y += lineh * state.LineHeight;
                 }
-                string_ = string_.Substring(rows[nrows - 1].next);
+                string_ = string_.Substring(rows[nrows - 1].Next);
 
                 if (string_.Length == 1)
                     string_ = "";
             }
 
-            state.textAlign = oldAlign;
+            state.TextAlign = oldAlign;
 
             if (bounds != null)
             {
@@ -2698,27 +2698,27 @@ namespace NanoVGDotNet
             }
         }
 
-        public static float nvgTextBounds(NVGcontext ctx, float x, float y, string string_, float[] bounds)
+        public static float NvgTextBounds(NvGcontext ctx, float x, float y, string string_, float[] bounds)
         {
             var state = nvg__getState(ctx);
-            var scale = nvg__getFontScale(state) * ctx.devicePxRatio;
+            var scale = nvg__getFontScale(state) * ctx.DevicePxRatio;
             var invscale = 1.0f / scale;
             float width;
 
-            if (state.fontId == FontStash.FONS_INVALID)
+            if (state.FontId == FontStash.FONS_INVALID)
                 return 0;
 
-            FontStash.fonsSetSize(ref ctx.fs, state.fontSize * scale);
-            FontStash.fonsSetSpacing(ref ctx.fs, state.letterSpacing * scale);
-            FontStash.fonsSetBlur(ref ctx.fs, state.fontBlur * scale);
-            FontStash.fonsSetAlign(ctx.fs, (FONSalign)state.textAlign);
-            FontStash.fonsSetFont(ref ctx.fs, state.fontId);
+            FontStash.fonsSetSize(ref ctx.Fs, state.FontSize * scale);
+            FontStash.fonsSetSpacing(ref ctx.Fs, state.LetterSpacing * scale);
+            FontStash.fonsSetBlur(ref ctx.Fs, state.FontBlur * scale);
+            FontStash.fonsSetAlign(ctx.Fs, (FONSalign)state.TextAlign);
+            FontStash.fonsSetFont(ref ctx.Fs, state.FontId);
 
-            width = FontStash.fonsTextBounds(ref ctx.fs, x * scale, y * scale, string_, bounds);
+            width = FontStash.fonsTextBounds(ref ctx.Fs, x * scale, y * scale, string_, bounds);
             if (bounds != null)
             {
                 // Use line bounds for height.
-                FontStash.fonsLineBounds(ctx.fs, y * scale, ref bounds[1], ref bounds[3]);
+                FontStash.fonsLineBounds(ctx.Fs, y * scale, ref bounds[1], ref bounds[3]);
                 bounds[0] *= invscale;
                 bounds[1] *= invscale;
                 bounds[2] *= invscale;
@@ -2727,32 +2727,32 @@ namespace NanoVGDotNet
             return width * invscale;
         }
 
-        public static void nvgTextMetrics(NVGcontext ctx, ref float ascender, ref float descender, ref float lineh)
+        public static void NvgTextMetrics(NvGcontext ctx, ref float ascender, ref float descender, ref float lineh)
         {
             var state = nvg__getState(ctx);
-            var scale = nvg__getFontScale(state) * ctx.devicePxRatio;
+            var scale = nvg__getFontScale(state) * ctx.DevicePxRatio;
             var invscale = 1.0f / scale;
 
-            if (state.fontId == FontStash.FONS_INVALID)
+            if (state.FontId == FontStash.FONS_INVALID)
                 return;
 
-            FontStash.fonsSetSize(ref ctx.fs, state.fontSize * scale);
-            FontStash.fonsSetSpacing(ref ctx.fs, state.letterSpacing * scale);
-            FontStash.fonsSetBlur(ref ctx.fs, state.fontBlur * scale);
-            FontStash.fonsSetAlign(ctx.fs, (FONSalign)state.textAlign);
-            FontStash.fonsSetFont(ref ctx.fs, state.fontId);
+            FontStash.fonsSetSize(ref ctx.Fs, state.FontSize * scale);
+            FontStash.fonsSetSpacing(ref ctx.Fs, state.LetterSpacing * scale);
+            FontStash.fonsSetBlur(ref ctx.Fs, state.FontBlur * scale);
+            FontStash.fonsSetAlign(ctx.Fs, (FONSalign)state.TextAlign);
+            FontStash.fonsSetFont(ref ctx.Fs, state.FontId);
 
-            FontStash.fonsVertMetrics(ref ctx.fs, ref ascender, ref descender, ref lineh);
+            FontStash.fonsVertMetrics(ref ctx.Fs, ref ascender, ref descender, ref lineh);
             ascender *= invscale;
             descender *= invscale;
             lineh *= invscale;
         }
 
-        public static int nvgTextBreakLines(NVGcontext ctx, string string_,
-                                            float breakRowWidth, NVGtextRow[] rows, int maxRows)
+        public static int NvgTextBreakLines(NvGcontext ctx, string string_,
+                                            float breakRowWidth, NvGtextRow[] rows, int maxRows)
         {
             var state = nvg__getState(ctx);
-            var scale = nvg__getFontScale(state) * ctx.devicePxRatio;
+            var scale = nvg__getFontScale(state) * ctx.DevicePxRatio;
             var invscale = 1.0f / scale;
             FONStextIter iter = new FONStextIter(), prevIter = new FONStextIter();
             var q = new FONSquad();
@@ -2769,7 +2769,7 @@ namespace NanoVGDotNet
             var breakEnd = -1;
             float breakWidth = 0;
             float breakMaxX = 0;
-            int type_ = (int)NvgCodepointType.Space, ptype = (int)NvgCodepointType.Space;
+            int type = (int)NvgCodepointType.Space, ptype = (int)NvgCodepointType.Space;
             uint pcodepoint = 0;
 
             if (string_ == null)
@@ -2778,26 +2778,26 @@ namespace NanoVGDotNet
 
             if (maxRows == 0)
                 return 0;
-            if (state.fontId == FontStash.FONS_INVALID)
+            if (state.FontId == FontStash.FONS_INVALID)
                 return 0;
 
-            FontStash.fonsSetSize(ref ctx.fs, state.fontSize * scale);
-            FontStash.fonsSetSpacing(ref ctx.fs, state.letterSpacing * scale);
-            FontStash.fonsSetBlur(ref ctx.fs, state.fontBlur * scale);
-            FontStash.fonsSetAlign(ctx.fs, (FONSalign)state.textAlign);
-            FontStash.fonsSetFont(ref ctx.fs, state.fontId);
+            FontStash.fonsSetSize(ref ctx.Fs, state.FontSize * scale);
+            FontStash.fonsSetSpacing(ref ctx.Fs, state.LetterSpacing * scale);
+            FontStash.fonsSetBlur(ref ctx.Fs, state.FontBlur * scale);
+            FontStash.fonsSetAlign(ctx.Fs, (FONSalign)state.TextAlign);
+            FontStash.fonsSetFont(ref ctx.Fs, state.FontId);
 
             breakRowWidth *= scale;
 
-            FontStash.fonsTextIterInit(ctx.fs, ref iter, 0, 0, string_);
+            FontStash.fonsTextIterInit(ctx.Fs, ref iter, 0, 0, string_);
             prevIter = iter;
-            while (FontStash.fonsTextIterNext(ctx.fs, ref iter, ref q) != 0)
+            while (FontStash.fonsTextIterNext(ctx.Fs, ref iter, ref q) != 0)
             {
                 // can not retrieve glyph?
                 if (iter.prevGlyphIndex < 0 && nvg__allocTextAtlas(ctx) > 0)
                 {
                     iter = prevIter;
-                    FontStash.fonsTextIterNext(ctx.fs, ref iter, ref q); // try again
+                    FontStash.fonsTextIterNext(ctx.Fs, ref iter, ref q); // try again
                 }
                 prevIter = iter;
                 switch (iter.codepoint)
@@ -2807,36 +2807,36 @@ namespace NanoVGDotNet
                     case 12:        // \f
                     case 32:        // space
                     case 0x00a0:    // NBSP
-                        type_ = (int)NvgCodepointType.Space;
+                        type = (int)NvgCodepointType.Space;
                         break;
                     case 10:        // \n
-                        type_ = pcodepoint == 13 ? (int)NvgCodepointType.Space : (int)NvgCodepointType.Newline;
+                        type = pcodepoint == 13 ? (int)NvgCodepointType.Space : (int)NvgCodepointType.Newline;
                         break;
                     case 13:        // \r
-                        type_ = pcodepoint == 10 ? (int)NvgCodepointType.Space : (int)NvgCodepointType.Newline;
+                        type = pcodepoint == 10 ? (int)NvgCodepointType.Space : (int)NvgCodepointType.Newline;
                         break;
                     case 0x0085:    // NEL
-                        type_ = (int)NvgCodepointType.Newline;
+                        type = (int)NvgCodepointType.Newline;
                         break;
                     default:
-                        type_ = (int)NvgCodepointType.Char;
+                        type = (int)NvgCodepointType.Char;
                         break;
                 }
 
-                if (type_ == (int)NvgCodepointType.Newline)
+                if (type == (int)NvgCodepointType.Newline)
                 {
                     // Always handle new lines.
-                    rows[nrows].start = rowStart >= 0 ? rowStart : iter.iStr;
-                    var rs = string_.Substring(rows[nrows].start);
+                    rows[nrows].Start = rowStart >= 0 ? rowStart : iter.iStr;
+                    var rs = string_.Substring(rows[nrows].Start);
 
-                    rows[nrows].end = rowEnd >= 0 ? rowEnd : iter.iStr;
-                    var re = string_.Substring(rows[nrows].end);
+                    rows[nrows].End = rowEnd >= 0 ? rowEnd : iter.iStr;
+                    var re = string_.Substring(rows[nrows].End);
 
-                    rows[nrows].width = rowWidth * invscale;
-                    rows[nrows].minx = rowMinX * invscale;
-                    rows[nrows].maxx = rowMaxX * invscale;
-                    rows[nrows].next = iter.iNext;
-                    var inx = string_.Substring(rows[nrows].next);
+                    rows[nrows].Width = rowWidth * invscale;
+                    rows[nrows].Minx = rowMinX * invscale;
+                    rows[nrows].Maxx = rowMaxX * invscale;
+                    rows[nrows].Next = iter.iNext;
+                    var inx = string_.Substring(rows[nrows].Next);
 
                     nrows++;
                     if (nrows >= maxRows)
@@ -2856,7 +2856,7 @@ namespace NanoVGDotNet
                     if (rowStart < 0)
                     {
                         // Skip white space until the beginning of the line
-                        if (type_ == (int)NvgCodepointType.Char)
+                        if (type == (int)NvgCodepointType.Char)
                         {
                             // The current char is the row so far
                             rowStartX = iter.x;
@@ -2885,21 +2885,21 @@ namespace NanoVGDotNet
                         var nextWidth = iter.nextx - rowStartX;
 
                         // track last non-white space character
-                        if (type_ == (int)NvgCodepointType.Char)
+                        if (type == (int)NvgCodepointType.Char)
                         {
                             rowEnd = iter.iNext;
                             rowWidth = iter.nextx - rowStartX;
                             rowMaxX = q.x1 - rowStartX;
                         }
                         // track last end of a word
-                        if (ptype == (int)NvgCodepointType.Char && type_ == (int)NvgCodepointType.Space)
+                        if (ptype == (int)NvgCodepointType.Char && type == (int)NvgCodepointType.Space)
                         {
                             breakEnd = iter.iStr;
                             breakWidth = rowWidth;
                             breakMaxX = rowMaxX;
                         }
                         // track last beginning of a word
-                        if (ptype == (int)NvgCodepointType.Space && type_ == (int)NvgCodepointType.Char)
+                        if (ptype == (int)NvgCodepointType.Space && type == (int)NvgCodepointType.Char)
                         {
                             wordStart = iter.iStr;
                             wordStartX = iter.x;
@@ -2907,18 +2907,18 @@ namespace NanoVGDotNet
                         }
 
                         // Break to new line when a character is beyond break width.
-                        if (type_ == (int)NvgCodepointType.Char && nextWidth > breakRowWidth)
+                        if (type == (int)NvgCodepointType.Char && nextWidth > breakRowWidth)
                         {
                             // The run length is too long, need to break to new line.
                             if (breakEnd == rowStart)
                             {
                                 // The current word is longer than the row length, just break it from here.
-                                rows[nrows].start = rowStart;
-                                rows[nrows].end = iter.iStr;
-                                rows[nrows].width = rowWidth * invscale;
-                                rows[nrows].minx = rowMinX * invscale;
-                                rows[nrows].maxx = rowMaxX * invscale;
-                                rows[nrows].next = iter.iStr;
+                                rows[nrows].Start = rowStart;
+                                rows[nrows].End = iter.iStr;
+                                rows[nrows].Width = rowWidth * invscale;
+                                rows[nrows].Minx = rowMinX * invscale;
+                                rows[nrows].Maxx = rowMaxX * invscale;
+                                rows[nrows].Next = iter.iStr;
                                 nrows++;
                                 if (nrows >= maxRows)
                                     return nrows;
@@ -2935,12 +2935,12 @@ namespace NanoVGDotNet
                             else
                             {
                                 // Break the line from the end of the last word, and start new line from the beginning of the new.
-                                rows[nrows].start = rowStart;
-                                rows[nrows].end = breakEnd;
-                                rows[nrows].width = breakWidth * invscale;
-                                rows[nrows].minx = rowMinX * invscale;
-                                rows[nrows].maxx = breakMaxX * invscale;
-                                rows[nrows].next = wordStart;
+                                rows[nrows].Start = rowStart;
+                                rows[nrows].End = breakEnd;
+                                rows[nrows].Width = breakWidth * invscale;
+                                rows[nrows].Minx = rowMinX * invscale;
+                                rows[nrows].Maxx = breakMaxX * invscale;
+                                rows[nrows].Next = wordStart;
                                 nrows++;
                                 if (nrows >= maxRows)
                                     return nrows;
@@ -2961,124 +2961,124 @@ namespace NanoVGDotNet
                 }
 
                 pcodepoint = iter.codepoint;
-                ptype = type_;
+                ptype = type;
             }
 
             // Break the line from the end of the last word, and start new line from the beginning of the new.
             if (rowStart >= 0)
             {
-                rows[nrows].start = rowStart;
-                rows[nrows].end = rowEnd;
-                rows[nrows].width = rowWidth * invscale;
-                rows[nrows].minx = rowMinX * invscale;
-                rows[nrows].maxx = rowMaxX * invscale;
-                rows[nrows].next = end;
+                rows[nrows].Start = rowStart;
+                rows[nrows].End = rowEnd;
+                rows[nrows].Width = rowWidth * invscale;
+                rows[nrows].Minx = rowMinX * invscale;
+                rows[nrows].Maxx = rowMaxX * invscale;
+                rows[nrows].Next = end;
                 nrows++;
             }
 
             return nrows;
         }
 
-        public static void nvgTextLineHeight(NVGcontext ctx, float lineHeight)
+        public static void NvgTextLineHeight(NvGcontext ctx, float lineHeight)
         {
             var state = nvg__getState(ctx);
-            state.lineHeight = lineHeight;
+            state.LineHeight = lineHeight;
         }
 
-        public static void nvgTextAlign(NVGcontext ctx, int align)
+        public static void NvgTextAlign(NvGcontext ctx, int align)
         {
             var state = nvg__getState(ctx);
-            state.textAlign = align;
+            state.TextAlign = align;
         }
 
-        static float nvg__getFontScale(NVGstate state)
+        static float nvg__getFontScale(NvGstate state)
         {
-            return nvg__minf(nvg__quantize(nvg__getAverageScale(state.xform), 0.01f), 4.0f);
+            return nvg__minf(nvg__quantize(nvg__getAverageScale(state.Xform), 0.01f), 4.0f);
         }
 
-        public static void nvgImageSize(NVGcontext ctx, int image, ref int w, ref int h)
+        public static void NvgImageSize(NvGcontext ctx, int image, ref int w, ref int h)
         {
-            ctx.params_.renderGetTextureSize(ctx.params_.userPtr, image, ref w, ref h);
+            ctx.Params.RenderGetTextureSize(ctx.Params.UserPtr, image, ref w, ref h);
         }
 
-        public static NVGpaint nvgImagePattern(NVGcontext ctx,
+        public static NvGpaint NvgImagePattern(NvGcontext ctx,
                                                float cx, float cy, float w, float h, float angle,
                                                int image, float alpha)
         {
-            var p = new NVGpaint();
+            var p = new NvGpaint();
             //NVG_NOTUSED(ctx);
             //memset(&p, 0, sizeof(p));
 
-            nvgTransformRotate(p.xform, angle);
-            p.xform[4] = cx;
-            p.xform[5] = cy;
+            NvgTransformRotate(p.Xform, angle);
+            p.Xform[4] = cx;
+            p.Xform[5] = cy;
 
-            p.extent[0] = w;
-            p.extent[1] = h;
+            p.Extent[0] = w;
+            p.Extent[1] = h;
 
-            p.image = image;
+            p.Image = image;
 
-            p.innerColor = p.outerColor = nvgRGBAf(1, 1, 1, alpha);
+            p.InnerColor = p.OuterColor = NvgRgbAf(1, 1, 1, alpha);
 
             return p;
         }
 
-        static int nvg__allocTextAtlas(NVGcontext ctx)
+        static int nvg__allocTextAtlas(NvGcontext ctx)
         {
             int iw = 0, ih = 0;
             nvg__flushTextTexture(ctx);
-            if (ctx.fontImageIdx >= NVG_MAX_FONTIMAGES - 1)
+            if (ctx.FontImageIdx >= NvgMaxFontimages - 1)
                 return 0;
             // if next fontImage already have a texture
-            if (ctx.fontImages[ctx.fontImageIdx + 1] != 0)
-                nvgImageSize(ctx, ctx.fontImages[ctx.fontImageIdx + 1], ref iw, ref ih);
+            if (ctx.FontImages[ctx.FontImageIdx + 1] != 0)
+                NvgImageSize(ctx, ctx.FontImages[ctx.FontImageIdx + 1], ref iw, ref ih);
             else
             { // calculate the new font image size and create it.
-                nvgImageSize(ctx, ctx.fontImages[ctx.fontImageIdx], ref iw, ref ih);
+                NvgImageSize(ctx, ctx.FontImages[ctx.FontImageIdx], ref iw, ref ih);
                 if (iw > ih)
                     ih *= 2;
                 else
                     iw *= 2;
-                if (iw > NVG_MAX_FONTIMAGE_SIZE || ih > NVG_MAX_FONTIMAGE_SIZE)
-                    iw = ih = NVG_MAX_FONTIMAGE_SIZE;
-                ctx.fontImages[ctx.fontImageIdx + 1] = ctx.params_.renderCreateTexture(ctx.params_.userPtr,
+                if (iw > NvgMaxFontimageSize || ih > NvgMaxFontimageSize)
+                    iw = ih = NvgMaxFontimageSize;
+                ctx.FontImages[ctx.FontImageIdx + 1] = ctx.Params.RenderCreateTexture(ctx.Params.UserPtr,
                     (int)NvgTexture.Alpha, iw, ih, 0, null);
             }
-            ++ctx.fontImageIdx;
-            FontStash.fonsResetAtlas(ctx.fs, iw, ih);
+            ++ctx.FontImageIdx;
+            FontStash.fonsResetAtlas(ctx.Fs, iw, ih);
             return 1;
         }
 
-        public static float nvgText(NVGcontext ctx, float x, float y, string string_)
+        public static float NvgText(NvGcontext ctx, float x, float y, string string_)
         {
             var state = nvg__getState(ctx);
             FONStextIter iter = new FONStextIter(), prevIter = new FONStextIter();
             var q = new FONSquad();
-            NVGvertex[] verts;
-            var scale = nvg__getFontScale(state) * ctx.devicePxRatio;
+            NvGvertex[] verts;
+            var scale = nvg__getFontScale(state) * ctx.DevicePxRatio;
             var invscale = 1.0f / scale;
             var cverts = 0;
             var nverts = 0;
 
             var end = string_.Length;
 
-            if (state.fontId == FontStash.FONS_INVALID)
+            if (state.FontId == FontStash.FONS_INVALID)
                 return x;
 
-            FontStash.fonsSetSize(ref ctx.fs, state.fontSize * scale);
-            FontStash.fonsSetSpacing(ref ctx.fs, state.letterSpacing * scale);
-            FontStash.fonsSetBlur(ref ctx.fs, state.fontBlur * scale);
-            FontStash.fonsSetAlign(ctx.fs, (FONSalign)state.textAlign);
-            FontStash.fonsSetFont(ref ctx.fs, state.fontId);
+            FontStash.fonsSetSize(ref ctx.Fs, state.FontSize * scale);
+            FontStash.fonsSetSpacing(ref ctx.Fs, state.LetterSpacing * scale);
+            FontStash.fonsSetBlur(ref ctx.Fs, state.FontBlur * scale);
+            FontStash.fonsSetAlign(ctx.Fs, (FONSalign)state.TextAlign);
+            FontStash.fonsSetFont(ref ctx.Fs, state.FontId);
 
             cverts = nvg__maxi(2, end) * 6; // conservative estimate.
             verts = nvg__allocTempVerts(ctx, cverts);
             if (verts == null)
                 return x;
 
-            FontStash.fonsTextIterInit(ctx.fs, ref iter, x * scale, y * scale, string_);
+            FontStash.fonsTextIterInit(ctx.Fs, ref iter, x * scale, y * scale, string_);
             prevIter = iter;
-            while (FontStash.fonsTextIterNext(ctx.fs, ref iter, ref q) != 0)
+            while (FontStash.fonsTextIterNext(ctx.Fs, ref iter, ref q) != 0)
             {
                 var c = new float[4 * 2];
                 if (iter.prevGlyphIndex == -1)
@@ -3091,16 +3091,16 @@ namespace NanoVGDotNet
                         nverts = 0;
                     }
                     iter = prevIter;
-                    FontStash.fonsTextIterNext(ctx.fs, ref iter, ref q); // try again
+                    FontStash.fonsTextIterNext(ctx.Fs, ref iter, ref q); // try again
                     if (iter.prevGlyphIndex == -1) // still can not find glyph?
                         break;
                 }
                 prevIter = iter;
                 // Transform corners.
-                nvgTransformPoint(ref c[0], ref c[1], state.xform, q.x0 * invscale, q.y0 * invscale);
-                nvgTransformPoint(ref c[2], ref c[3], state.xform, q.x1 * invscale, q.y0 * invscale);
-                nvgTransformPoint(ref c[4], ref c[5], state.xform, q.x1 * invscale, q.y1 * invscale);
-                nvgTransformPoint(ref c[6], ref c[7], state.xform, q.x0 * invscale, q.y1 * invscale);
+                NvgTransformPoint(ref c[0], ref c[1], state.Xform, q.x0 * invscale, q.y0 * invscale);
+                NvgTransformPoint(ref c[2], ref c[3], state.Xform, q.x1 * invscale, q.y0 * invscale);
+                NvgTransformPoint(ref c[4], ref c[5], state.Xform, q.x1 * invscale, q.y1 * invscale);
+                NvgTransformPoint(ref c[6], ref c[7], state.Xform, q.x0 * invscale, q.y1 * invscale);
                 // Create triangles
                 if (nverts + 6 <= cverts)
                 {
@@ -3129,53 +3129,53 @@ namespace NanoVGDotNet
             return iter.x;
         }
 
-        static void nvg__renderText(NVGcontext ctx, NVGvertex[] verts, int nverts)
+        static void nvg__renderText(NvGcontext ctx, NvGvertex[] verts, int nverts)
         {
             var state = nvg__getState(ctx);
             // last change
-            var paint = state.fill.Clone();
+            var paint = state.Fill.Clone();
 
             // Render triangles.
-            paint.image = ctx.fontImages[ctx.fontImageIdx];
+            paint.Image = ctx.FontImages[ctx.FontImageIdx];
 
             // Apply global alpha
-            paint.innerColor.a *= state.alpha;
-            paint.outerColor.a *= state.alpha;
+            paint.InnerColor.A *= state.Alpha;
+            paint.OuterColor.A *= state.Alpha;
 
-            ctx.params_.renderTriangles(ctx.params_.userPtr, ref paint, ref state.scissor, verts, nverts);
+            ctx.Params.RenderTriangles(ctx.Params.UserPtr, ref paint, ref state.Scissor, verts, nverts);
 
-            ctx.drawCallCount++;
-            ctx.textTriCount += nverts / 3;
+            ctx.DrawCallCount++;
+            ctx.TextTriCount += nverts / 3;
         }
 
-        static void nvg__flushTextTexture(NVGcontext ctx)
+        static void nvg__flushTextTexture(NvGcontext ctx)
         {
             var dirty = new int[4];
 
-            if (FontStash.fonsValidateTexture(ctx.fs, dirty) != 0)
+            if (FontStash.fonsValidateTexture(ctx.Fs, dirty) != 0)
             {
-                var fontImage = ctx.fontImages[ctx.fontImageIdx];
+                var fontImage = ctx.FontImages[ctx.FontImageIdx];
                 // Update texture
                 if (fontImage != 0)
                 {
                     int iw = 0, ih = 0;
-                    var data = FontStash.fonsGetTextureData(ctx.fs, ref iw, ref ih);
+                    var data = FontStash.fonsGetTextureData(ctx.Fs, ref iw, ref ih);
                     var x = dirty[0];
                     var y = dirty[1];
                     var w = dirty[2] - dirty[0];
                     var h = dirty[3] - dirty[1];
-                    ctx.params_.renderUpdateTexture(ctx.params_.userPtr, fontImage, x, y, w, h, data);
+                    ctx.Params.RenderUpdateTexture(ctx.Params.UserPtr, fontImage, x, y, w, h, data);
                 }
             }
         }
 
-        public static void nvgGlobalAlpha(NVGcontext ctx, float alpha)
+        public static void NvgGlobalAlpha(NvGcontext ctx, float alpha)
         {
             var state = nvg__getState(ctx);
-            state.alpha = alpha;
+            state.Alpha = alpha;
         }
 
-        static void nvgTransformIdentity(float[] t)
+        static void NvgTransformIdentity(float[] t)
         {
             t[0] = 1.0f;
             t[1] = 0.0f;
@@ -3200,10 +3200,10 @@ namespace NanoVGDotNet
             return m1;
         }
 
-        public static NVGcolor nvgHSLA(float h, float s, float l, byte a)
+        public static NvGcolor NvgHsla(float h, float s, float l, byte a)
         {
             float m1, m2;
-            NVGcolor col;
+            NvGcolor col;
             h = nvg__modf(h, 1.0f);
             if (h < 0.0f)
                 h += 1.0f;
@@ -3211,34 +3211,34 @@ namespace NanoVGDotNet
             l = nvg__clampf(l, 0.0f, 1.0f);
             m2 = l <= 0.5f ? (l * (1 + s)) : (l + s - l * s);
             m1 = 2 * l - m2;
-            col.r = nvg__clampf(nvg__hue(h + 1.0f / 3.0f, m1, m2), 0.0f, 1.0f);
-            col.g = nvg__clampf(nvg__hue(h, m1, m2), 0.0f, 1.0f);
-            col.b = nvg__clampf(nvg__hue(h - 1.0f / 3.0f, m1, m2), 0.0f, 1.0f);
-            col.a = a / 255.0f;
+            col.R = nvg__clampf(nvg__hue(h + 1.0f / 3.0f, m1, m2), 0.0f, 1.0f);
+            col.G = nvg__clampf(nvg__hue(h, m1, m2), 0.0f, 1.0f);
+            col.B = nvg__clampf(nvg__hue(h - 1.0f / 3.0f, m1, m2), 0.0f, 1.0f);
+            col.A = a / 255.0f;
             return col;
         }
 
-        public static int nvgAddFallbackFontId(NVGcontext ctx, int baseFont, int fallbackFont)
+        public static int NvgAddFallbackFontId(NvGcontext ctx, int baseFont, int fallbackFont)
         {
             if (baseFont == -1 || fallbackFont == -1)
                 return 0;
-            return FontStash.fonsAddFallbackFont(ctx.fs, baseFont, fallbackFont);
+            return FontStash.fonsAddFallbackFont(ctx.Fs, baseFont, fallbackFont);
         }
 
-        public static void nvgBeginFrame(NVGcontext ctx, int windowWidth, int windowHeight, float devicePixelRatio)
+        public static void NvgBeginFrame(NvGcontext ctx, int windowWidth, int windowHeight, float devicePixelRatio)
         {
-            ctx.nstates = 0;
-            nvgSave(ctx);
-            nvgReset(ctx);
+            ctx.Nstates = 0;
+            NvgSave(ctx);
+            NvgReset(ctx);
 
             nvg__setDevicePixelRatio(ref ctx, devicePixelRatio);
 
-            ctx.params_.renderViewport(ctx.params_.userPtr, windowWidth, windowHeight, devicePixelRatio);
+            ctx.Params.RenderViewport(ctx.Params.UserPtr, windowWidth, windowHeight, devicePixelRatio);
 
-            ctx.drawCallCount = 0;
-            ctx.fillTriCount = 0;
-            ctx.strokeTriCount = 0;
-            ctx.textTriCount = 0;
+            ctx.DrawCallCount = 0;
+            ctx.FillTriCount = 0;
+            ctx.StrokeTriCount = 0;
+            ctx.TextTriCount = 0;
         }
 
         /// <summary>
@@ -3248,9 +3248,9 @@ namespace NanoVGDotNet
         /// <param name="ctx">NanoVG context.</param>
         /// <param name="internalFontName">Internal font name.</param>
         /// <param name="fileName">File name of *.ttf font file (can include a path).</param>
-        public static int nvgCreateFont(NVGcontext ctx, string internalFontName, string fileName)
+        public static int NvgCreateFont(NvGcontext ctx, string internalFontName, string fileName)
         {
-            return FontStash.fonsAddFont(ctx.fs, internalFontName, fileName);
+            return FontStash.fonsAddFont(ctx.Fs, internalFontName, fileName);
         }
 
         public static byte[] ImageToByteArray(System.Drawing.Image imageIn)
@@ -3260,14 +3260,14 @@ namespace NanoVGDotNet
             return ms.ToArray();
         }
 
-        static int nvgCreateImageRGBA(ref NVGcontext ctx, int w, int h, int imageFlags, byte[] data)
+        static int NvgCreateImageRgba(ref NvGcontext ctx, int w, int h, int imageFlags, byte[] data)
         {
-            return ctx.params_.renderCreateTexture(ctx.params_.userPtr, (int)NvgTexture.Rgba, w, h, imageFlags, data);
+            return ctx.Params.RenderCreateTexture(ctx.Params.UserPtr, (int)NvgTexture.Rgba, w, h, imageFlags, data);
         }
 
-        static int nvgCreateImageRGBA(ref NVGcontext ctx, int w, int h, int imageFlags, Bitmap bmp)
+        static int NvgCreateImageRgba(ref NvGcontext ctx, int w, int h, int imageFlags, Bitmap bmp)
         {
-            return ctx.params_.renderCreateTexture2(ctx.params_.userPtr, (int)NvgTexture.Rgba, w, h, imageFlags, bmp);
+            return ctx.Params.RenderCreateTexture2(ctx.Params.UserPtr, (int)NvgTexture.Rgba, w, h, imageFlags, bmp);
         }
 
         /// <summary>
@@ -3307,7 +3307,7 @@ namespace NanoVGDotNet
             return rawImage;
         }
 
-        public static int nvgCreateImage(ref NVGcontext ctx, string filename, int imageFlags)
+        public static int NvgCreateImage(ref NvGcontext ctx, string filename, int imageFlags)
         {
             //int w, h, n;
             var image = 0;
@@ -3330,7 +3330,7 @@ namespace NanoVGDotNet
                     return 0;
                 }
             }
-            image = nvgCreateImageRGBA(ref ctx, bmp.Width, bmp.Height, imageFlags, bmp);
+            image = NvgCreateImageRgba(ref ctx, bmp.Width, bmp.Height, imageFlags, bmp);
             //stbi_image_free(img);
             return image;
         }
@@ -3338,306 +3338,306 @@ namespace NanoVGDotNet
 
     #region Auxiliary-classes-structs
 
-    public class NVGpoint
+    public class NvGpoint
     {
-        public float x, y;
-        public float dx, dy;
-        public float len;
-        public float dmx, dmy;
-        public byte flags;
+        public float X, Y;
+        public float Dx, Dy;
+        public float Len;
+        public float Dmx, Dmy;
+        public byte Flags;
 
         public override string ToString()
         {
             return string.Format("[NVGpoint]x={0}, y={1}, dx={2}, dy={3}, len={4}, dmx={5}, dmy={6}",
-                x, y, dx, dy, len);
+                X, Y, Dx, Dy, Len);
         }
 
-        public NVGpoint Clone()
+        public NvGpoint Clone()
         {
-            var newpoint = new NVGpoint();
+            var newpoint = new NvGpoint();
 
-            newpoint.x = this.x;
-            newpoint.y = this.y;
-            newpoint.dx = this.dx;
-            newpoint.dy = this.dy;
-            newpoint.len = this.len;
-            newpoint.dmx = this.dmx;
-            newpoint.dmy = this.dmy;
-            newpoint.flags = this.flags;
+            newpoint.X = this.X;
+            newpoint.Y = this.Y;
+            newpoint.Dx = this.Dx;
+            newpoint.Dy = this.Dy;
+            newpoint.Len = this.Len;
+            newpoint.Dmx = this.Dmx;
+            newpoint.Dmy = this.Dmy;
+            newpoint.Flags = this.Flags;
 
             return newpoint;
         }
     }
 
-    public struct NVGvertex
+    public struct NvGvertex
     {
-        public float x;
-        public float y;
-        public float u;
-        public float v;
+        public float X;
+        public float Y;
+        public float U;
+        public float V;
 
         public override string ToString()
         {
-            return $"[NVGvertex] x={x} y={y} u={u} v={v}";
+            return $"[NVGvertex] x={X} y={Y} u={U} v={V}";
         }
     }
 
-    public class NVGpath
+    public class NvGpath
     {
-        public int first;
-        public int count;
-        public byte closed;
-        public int nbevel;
-        public NVGvertex[] fill;
-        public int ifill;
-        public int nfill;
-        public NVGvertex[] stroke;
-        public int istroke;
-        public int nstroke;
-        public int winding;
-        public int convex;
+        public int First;
+        public int Count;
+        public byte Closed;
+        public int Nbevel;
+        public NvGvertex[] Fill;
+        public int Ifill;
+        public int Nfill;
+        public NvGvertex[] Stroke;
+        public int Istroke;
+        public int Nstroke;
+        public int Winding;
+        public int Convex;
     }
 
-    public class NVGpathCache
+    public class NvGpathCache
     {
-        public NVGpoint[] points;
-        public int npoints;
-        public int cpoints;
-        public NVGpath[] paths;
-        public int npaths;
-        public int cpaths;
-        public NVGvertex[] verts;
-        public int nverts;
-        public int cverts;
+        public NvGpoint[] Points;
+        public int Npoints;
+        public int Cpoints;
+        public NvGpath[] Paths;
+        public int Npaths;
+        public int Cpaths;
+        public NvGvertex[] Verts;
+        public int Nverts;
+        public int Cverts;
         //[4];
-        public float[] bounds;
+        public float[] Bounds;
 
-        public NVGpathCache()
+        public NvGpathCache()
         {
-            bounds = new float[4];
+            Bounds = new float[4];
         }
     }
 
-    public struct NVGparams
+    public struct NvGparams
     {
-        public object userPtr;
-        public int edgeAntiAlias;
-        public RenderCreateHandler renderCreate;
+        public object UserPtr;
+        public int EdgeAntiAlias;
+        public RenderCreateHandler RenderCreate;
 
-        public RenderCreateTextureHandler renderCreateTexture;
-        public RenderCreateTextureHandler2 renderCreateTexture2;
-        public RenderViewportHandler renderViewport;
-        public RenderFlushHandler renderFlush;
-        public RenderFillHandler renderFill;
-        public RenderStrokeHandler renderStroke;
-        public RenderTrianglesHandler renderTriangles;
-        public RenderUpdateTextureHandler renderUpdateTexture;
-        public RenderGetTextureSizeHandler renderGetTextureSize;
-        public RenderDeleteTexture renderDeleteTexture;
-        public RenderCancel renderCancel;
-        public RenderDelete renderDelete;
+        public RenderCreateTextureHandler RenderCreateTexture;
+        public RenderCreateTextureHandler2 RenderCreateTexture2;
+        public RenderViewportHandler RenderViewport;
+        public RenderFlushHandler RenderFlush;
+        public RenderFillHandler RenderFill;
+        public RenderStrokeHandler RenderStroke;
+        public RenderTrianglesHandler RenderTriangles;
+        public RenderUpdateTextureHandler RenderUpdateTexture;
+        public RenderGetTextureSizeHandler RenderGetTextureSize;
+        public RenderDeleteTexture RenderDeleteTexture;
+        public RenderCancel RenderCancel;
+        public RenderDelete RenderDelete;
     }
 
-    public class NVGcontext
+    public class NvGcontext
     {
-        public NVGparams params_;
-        public float[] commands;
-        public int ccommands;
-        public int ncommands;
-        public float commandx, commandy;
+        public NvGparams Params;
+        public float[] Commands;
+        public int Ccommands;
+        public int Ncommands;
+        public float Commandx, Commandy;
         //[NVG_MAX_STATES];
-        public NVGstate[] states;
-        public int nstates;
-        public NVGpathCache cache;
-        public float tessTol;
-        public float distTol;
-        public float fringeWidth;
-        public float devicePxRatio;
-        public FONScontext fs;
+        public NvGstate[] States;
+        public int Nstates;
+        public NvGpathCache Cache;
+        public float TessTol;
+        public float DistTol;
+        public float FringeWidth;
+        public float DevicePxRatio;
+        public FONScontext Fs;
         //[NVG_MAX_FONTIMAGES];
-        public int[] fontImages;
-        public int fontImageIdx;
-        public int drawCallCount;
-        public int fillTriCount;
-        public int strokeTriCount;
-        public int textTriCount;
+        public int[] FontImages;
+        public int FontImageIdx;
+        public int DrawCallCount;
+        public int FillTriCount;
+        public int StrokeTriCount;
+        public int TextTriCount;
 
-        public NVGcontext()
+        public NvGcontext()
         {
-            states = new NVGstate[NanoVG.NVG_MAX_STATES];
-            for (var cont = 0; cont < states.Length; cont++)
-                states[cont] = new NVGstate();
-            fontImages = new int[NanoVG.NVG_MAX_FONTIMAGES];
+            States = new NvGstate[NanoVg.NvgMaxStates];
+            for (var cont = 0; cont < States.Length; cont++)
+                States[cont] = new NvGstate();
+            FontImages = new int[NanoVg.NvgMaxFontimages];
         }
     }
 
-    public struct NVGcompositeOperationState
+    public struct NvGcompositeOperationState
     {
-        public int srcRGB;
-        public int dstRGB;
-        public int srcAlpha;
-        public int dstAlpha;
+        public int SrcRgb;
+        public int DstRgb;
+        public int SrcAlpha;
+        public int DstAlpha;
     }
 
     //[StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct Rgba
     {
         //[FieldOffset(0)]
-        public float r;
+        public float R;
         //[FieldOffset(4)]
-        public float g;
+        public float G;
         //[FieldOffset(8)]
-        public float b;
+        public float B;
         //[FieldOffset(16)]
-        public float a;
+        public float A;
     }
 
-    public struct NVGcolor
+    public struct NvGcolor
     {
-        public float r;
-        public float g;
-        public float b;
-        public float a;
+        public float R;
+        public float G;
+        public float B;
+        public float A;
 
         public override string ToString()
         {
-            return $"[NVGcolor: r={r}, g={g}, b={b}, a={a}]";
+            return $"[NVGcolor: r={R}, g={G}, b={B}, a={A}]";
         }
     }
 
-    public class NVGscissor
+    public class NvGscissor
     {
         //[6];
-        public float[] xform;
+        public float[] Xform;
         //[2];
-        public float[] extent;
+        public float[] Extent;
 
-        public NVGscissor()
+        public NvGscissor()
         {
-            xform = new float[6];
-            extent = new float[2];
+            Xform = new float[6];
+            Extent = new float[2];
         }
 
-        public NVGscissor Clone()
+        public NvGscissor Clone()
         {
-            var newScissor = new NVGscissor();
+            var newScissor = new NvGscissor();
 
-            Array.Copy(this.xform, newScissor.xform, this.xform.Length);
-            Array.Copy(this.extent, newScissor.extent, this.extent.Length);
+            Array.Copy(this.Xform, newScissor.Xform, this.Xform.Length);
+            Array.Copy(this.Extent, newScissor.Extent, this.Extent.Length);
 
             return newScissor;
         }
     }
 
-    public class NVGstate
+    public class NvGstate
     {
-        public NVGcompositeOperationState compositeOperation;
-        public NVGpaint fill;
-        public NVGpaint stroke;
-        public float strokeWidth;
-        public float miterLimit;
-        public int lineJoin;
-        public int lineCap;
-        public float alpha;
+        public NvGcompositeOperationState CompositeOperation;
+        public NvGpaint Fill;
+        public NvGpaint Stroke;
+        public float StrokeWidth;
+        public float MiterLimit;
+        public int LineJoin;
+        public int LineCap;
+        public float Alpha;
         //[6];
-        public float[] xform;
-        public NVGscissor scissor;
-        public float fontSize;
-        public float letterSpacing;
-        public float lineHeight;
-        public float fontBlur;
-        public int textAlign;
-        public int fontId;
+        public float[] Xform;
+        public NvGscissor Scissor;
+        public float FontSize;
+        public float LetterSpacing;
+        public float LineHeight;
+        public float FontBlur;
+        public int TextAlign;
+        public int FontId;
 
-        public NVGstate()
+        public NvGstate()
         {
-            xform = new float[6];
-            scissor = new NVGscissor();
-            fill = new NVGpaint();
-            stroke = new NVGpaint();
+            Xform = new float[6];
+            Scissor = new NvGscissor();
+            Fill = new NvGpaint();
+            Stroke = new NvGpaint();
         }
 
-        public NVGstate Clone()
+        public NvGstate Clone()
         {
-            var newState = new NVGstate();
-            newState.compositeOperation = this.compositeOperation;
-            newState.fill = this.fill.Clone();
-            newState.stroke = this.stroke.Clone();
-            newState.strokeWidth = this.strokeWidth;
-            newState.miterLimit = this.miterLimit;
-            newState.lineJoin = this.lineJoin;
-            newState.lineCap = this.lineCap;
-            newState.alpha = this.alpha;
+            var newState = new NvGstate();
+            newState.CompositeOperation = this.CompositeOperation;
+            newState.Fill = this.Fill.Clone();
+            newState.Stroke = this.Stroke.Clone();
+            newState.StrokeWidth = this.StrokeWidth;
+            newState.MiterLimit = this.MiterLimit;
+            newState.LineJoin = this.LineJoin;
+            newState.LineCap = this.LineCap;
+            newState.Alpha = this.Alpha;
 
-            Array.Copy(this.xform, newState.xform, this.xform.Length);
+            Array.Copy(this.Xform, newState.Xform, this.Xform.Length);
 
-            newState.scissor = this.scissor.Clone();
-            newState.fontSize = this.fontSize;
-            newState.letterSpacing = this.letterSpacing;
-            newState.lineHeight = this.lineHeight;
-            newState.fontBlur = this.fontBlur;
-            newState.textAlign = this.textAlign;
-            newState.fontId = this.fontId;
+            newState.Scissor = this.Scissor.Clone();
+            newState.FontSize = this.FontSize;
+            newState.LetterSpacing = this.LetterSpacing;
+            newState.LineHeight = this.LineHeight;
+            newState.FontBlur = this.FontBlur;
+            newState.TextAlign = this.TextAlign;
+            newState.FontId = this.FontId;
 
             return newState;
         }
     }
 
-    public class NVGpaint
+    public class NvGpaint
     {
         //[6];
-        public float[] xform;
+        public float[] Xform;
         //[2];
-        public float[] extent;
-        public float radius;
-        public float feather;
-        public NVGcolor innerColor;
-        public NVGcolor outerColor;
-        public int image;
+        public float[] Extent;
+        public float Radius;
+        public float Feather;
+        public NvGcolor InnerColor;
+        public NvGcolor OuterColor;
+        public int Image;
 
-        public NVGpaint()
+        public NvGpaint()
         {
-            xform = new float[6];
-            extent = new float[2];
+            Xform = new float[6];
+            Extent = new float[2];
         }
 
-        public NVGpaint Clone()
+        public NvGpaint Clone()
         {
-            var newPaint = new NVGpaint();
+            var newPaint = new NvGpaint();
 
-            Array.Copy(this.xform, newPaint.xform, this.xform.Length);
-            Array.Copy(this.extent, newPaint.extent, this.extent.Length);
-            newPaint.radius = this.radius;
-            newPaint.feather = this.feather;
-            newPaint.innerColor = this.innerColor;
-            newPaint.outerColor = this.outerColor;
-            newPaint.image = this.image;
+            Array.Copy(this.Xform, newPaint.Xform, this.Xform.Length);
+            Array.Copy(this.Extent, newPaint.Extent, this.Extent.Length);
+            newPaint.Radius = this.Radius;
+            newPaint.Feather = this.Feather;
+            newPaint.InnerColor = this.InnerColor;
+            newPaint.OuterColor = this.OuterColor;
+            newPaint.Image = this.Image;
 
             return newPaint;
         }
     }
 
-    public struct NVGtextRow
+    public struct NvGtextRow
     {
-        public int start;
+        public int Start;
         // Pointer to the input text where the row starts.
-        public int end;
+        public int End;
         // Pointer to the input text where the row ends (one past the last character).
-        public int next;
+        public int Next;
         // Pointer to the beginning of the next row.
-        public float width;
+        public float Width;
         // Logical width of the row.
-        public float minx, maxx;
+        public float Minx, Maxx;
         // Actual bounds of the row. Logical with and bounds can differ because of kerning and some parts over extending.
     }
 
-    public struct NVGglyphPosition
+    public struct NvGglyphPosition
     {
-        public int str;
+        public int Str;
         // Position of the glyph in the input string.
-        public float x;
+        public float X;
         // The x-coordinate of the logical glyph position.
-        public float minx, maxx;
+        public float Minx, Maxx;
         // The bounds of the glyph shape.
     }
     #endregion Auxiliary-classes-structs

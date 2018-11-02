@@ -1,13 +1,13 @@
 namespace NanoVGDotNet
 {
-    public class GLNVGcall
+    public class GlnvGcall
     {
-        public int type;
-        public int image;
-        public int pathOffset;
-        public int pathCount;
-        public int triangleOffset;
-        public int triangleCount;
-        public int uniformOffset;
+        public int Type;
+        public int Image;
+        public int PathOffset;
+        public int PathCount;
+        public int TriangleOffset;
+        public int TriangleCount;
+        public int UniformOffset;
     }
 }

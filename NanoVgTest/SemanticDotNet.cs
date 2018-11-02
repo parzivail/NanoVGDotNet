@@ -17,17 +17,17 @@ namespace NanoVgTest
             public float FontSize { get; set; } = 17;
             public float IconPadding { get; set; } = 5;
 
-            public NVGcolor FontDefaultColor { get; set; } = NanoVG.nvgRGBA(0, 0, 0, 153);
-            public NVGcolor FontHoverColor { get; set; } = NanoVG.nvgRGBA(0, 0, 0, 204);
-            public NVGcolor FontFocusColor { get; set; } = NanoVG.nvgRGBA(0, 0, 0, 242);
+            public NvGcolor FontDefaultColor { get; set; } = NanoVg.NvgRgba(0, 0, 0, 153);
+            public NvGcolor FontHoverColor { get; set; } = NanoVg.NvgRgba(0, 0, 0, 204);
+            public NvGcolor FontFocusColor { get; set; } = NanoVg.NvgRgba(0, 0, 0, 242);
 
             public float ButtonHeight { get; set; } = 36;
 
             public float BorderRadius { get; set; } = 4;
 
-            public NVGcolor PrimaryDefaultColor { get; set; } = NanoVG.nvgRGBA(224, 225, 226, 255);
-            public NVGcolor PrimaryHoverColor { get; set; } = NanoVG.nvgRGBA(202, 203, 205, 255);
-            public NVGcolor PrimaryFocusColor { get; set; } = NanoVG.nvgRGBA(186, 187, 188, 255);
+            public NvGcolor PrimaryDefaultColor { get; set; } = NanoVg.NvgRgba(224, 225, 226, 255);
+            public NvGcolor PrimaryHoverColor { get; set; } = NanoVg.NvgRgba(202, 203, 205, 255);
+            public NvGcolor PrimaryFocusColor { get; set; } = NanoVg.NvgRgba(186, 187, 188, 255);
         }
 
         public enum SWidgetState
@@ -50,142 +50,142 @@ namespace NanoVgTest
         public static readonly SStyle StyleDefault = new SStyle();
         public static readonly SStyle StyleConnectedBtn = new SStyle
         {
-            PrimaryDefaultColor = NanoVG.nvgRGBA(214, 215, 216, 255),
-            PrimaryHoverColor = NanoVG.nvgRGBA(192, 193, 195, 255),
-            PrimaryFocusColor = NanoVG.nvgRGBA(176, 177, 178, 255)
+            PrimaryDefaultColor = NanoVg.NvgRgba(214, 215, 216, 255),
+            PrimaryHoverColor = NanoVg.NvgRgba(192, 193, 195, 255),
+            PrimaryFocusColor = NanoVg.NvgRgba(176, 177, 178, 255)
         };
 
         public static SStyle Style { get; set; } = StyleDefault;
 
-        public static void SdnTextButton(NVGcontext ctx, float x, float y, float w, float h, string text, SWidgetState state = SWidgetState.Default, SConnectedSide connection = SConnectedSide.None)
+        public static void SdnTextButton(NvGcontext ctx, float x, float y, float w, float h, string text, SWidgetState state = SWidgetState.Default, SConnectedSide connection = SConnectedSide.None)
         {
             Button(ctx, x, y, w, h, Style.FontSans, text, state, connection);
         }
 
-        public static void SdnIconButton(NVGcontext ctx, float x, float y, float w, float h, string icon, SWidgetState state = SWidgetState.Default, SConnectedSide connection = SConnectedSide.None)
+        public static void SdnIconButton(NvGcontext ctx, float x, float y, float w, float h, string icon, SWidgetState state = SWidgetState.Default, SConnectedSide connection = SConnectedSide.None)
         {
             Button(ctx, x, y, w, h, Style.FontIcon, icon, state);
         }
 
-        public static void SdnCheckbox(NVGcontext ctx, float x, float y, float size, bool @checked, string label,
+        public static void SdnCheckbox(NvGcontext ctx, float x, float y, float size, bool @checked, string label,
             SWidgetState state = SWidgetState.Default)
         {
-            NanoVG.nvgSave(ctx);
+            NanoVg.NvgSave(ctx);
 
             SetPrimaryStrokeColor(ctx, state);
 
-            NanoVG.nvgStrokeWidth(ctx, 2);
+            NanoVg.NvgStrokeWidth(ctx, 2);
 
-            NanoVG.nvgBeginPath(ctx);
-            NanoVG.nvgRoundedRect(ctx, x, y, size, size, Style.BorderRadius);
-            NanoVG.nvgStroke(ctx);
+            NanoVg.NvgBeginPath(ctx);
+            NanoVg.NvgRoundedRect(ctx, x, y, size, size, Style.BorderRadius);
+            NanoVg.NvgStroke(ctx);
 
             if (@checked)
             {
-                NanoVG.nvgTextAlign(ctx, (int)NvgAlign.Top | (int)NvgAlign.Left);
-                NanoVG.nvgFontFace(ctx, Style.FontIcon);
-                NanoVG.nvgFontSize(ctx, size);
+                NanoVg.NvgTextAlign(ctx, (int)NvgAlign.Top | (int)NvgAlign.Left);
+                NanoVg.NvgFontFace(ctx, Style.FontIcon);
+                NanoVg.NvgFontSize(ctx, size);
 
                 var ib = new float[4];
-                NanoVG.nvgTextBounds(ctx, 0, 0, MaterialDesignIcons.Check, ib);
+                NanoVg.NvgTextBounds(ctx, 0, 0, MaterialDesignIcons.Check, ib);
                 var ifw = ib[2] - ib[0];
                 var ifh = ib[3] - ib[1];
 
-                NanoVG.nvgFillColor(ctx, Style.FontDefaultColor);
-                NanoVG.nvgText(ctx, Round(x + (size - ifw) / 2), Round(y + (size - ifh) / 2 + 1), MaterialDesignIcons.Check);
+                NanoVg.NvgFillColor(ctx, Style.FontDefaultColor);
+                NanoVg.NvgText(ctx, Round(x + (size - ifw) / 2), Round(y + (size - ifh) / 2 + 1), MaterialDesignIcons.Check);
             }
 
             SetFontStyle(ctx, state);
 
-            NanoVG.nvgFontFace(ctx, Style.FontSans);
+            NanoVg.NvgFontFace(ctx, Style.FontSans);
             var b = new float[4];
-            NanoVG.nvgTextBounds(ctx, 0, 0, label, b);
+            NanoVg.NvgTextBounds(ctx, 0, 0, label, b);
             var fw = b[2] - b[0];
             var fh = b[3] - b[1];
             
-            NanoVG.nvgText(ctx, Round(x + size + 10), Round(y + (size - fh) / 2 + 1), label);
+            NanoVg.NvgText(ctx, Round(x + size + 10), Round(y + (size - fh) / 2 + 1), label);
 
-            NanoVG.nvgRestore(ctx);
+            NanoVg.NvgRestore(ctx);
         }
 
-        private static void Button(NVGcontext ctx, float x, float y, float w, float h, string font, string text, SWidgetState state = SWidgetState.Default, SConnectedSide connection = SConnectedSide.None)
+        private static void Button(NvGcontext ctx, float x, float y, float w, float h, string font, string text, SWidgetState state = SWidgetState.Default, SConnectedSide connection = SConnectedSide.None)
         {
-            NanoVG.nvgSave(ctx);
+            NanoVg.NvgSave(ctx);
 
             SetPrimaryFillColor(ctx, state);
             DrawFilledRect(ctx, x, y, w, h, connection);
 
             SetFontStyle(ctx, state);
 
-            NanoVG.nvgFontFace(ctx, font);
+            NanoVg.NvgFontFace(ctx, font);
             var b = new float[4];
-            NanoVG.nvgTextBounds(ctx, 0, 0, text, b);
+            NanoVg.NvgTextBounds(ctx, 0, 0, text, b);
             var fw = b[2] - b[0];
             var fh = b[3] - b[1];
             
-            NanoVG.nvgText(ctx, Round(x + (w - fw) / 2), Round(y + (h - fh) / 2), text);
+            NanoVg.NvgText(ctx, Round(x + (w - fw) / 2), Round(y + (h - fh) / 2), text);
 
-            NanoVG.nvgRestore(ctx);
+            NanoVg.NvgRestore(ctx);
         }
 
-        private static void TextBox(NVGcontext ctx, float x, float y, float w, float h, string font, string text, SWidgetState state = SWidgetState.Default, SConnectedSide connection = SConnectedSide.None)
+        private static void TextBox(NvGcontext ctx, float x, float y, float w, float h, string font, string text, SWidgetState state = SWidgetState.Default, SConnectedSide connection = SConnectedSide.None)
         {
-            NanoVG.nvgSave(ctx);
+            NanoVg.NvgSave(ctx);
 
             SetPrimaryStrokeColor(ctx, state);
             DrawStrokedRect(ctx, x, y, w, h, connection);
 
             SetFontStyle(ctx, state);
 
-            NanoVG.nvgFontFace(ctx, font);
+            NanoVg.NvgFontFace(ctx, font);
             var b = new float[4];
-            NanoVG.nvgTextBounds(ctx, 0, 0, text, b);
+            NanoVg.NvgTextBounds(ctx, 0, 0, text, b);
             var fw = b[2] - b[0];
             var fh = b[3] - b[1];
 
-            NanoVG.nvgScissor(ctx, x + 1, y + 1, w - 2, h - 2);
+            NanoVg.NvgScissor(ctx, x + 1, y + 1, w - 2, h - 2);
             
-            NanoVG.nvgText(ctx, Round(x + (w - fw) / 2), Round(y + (h - fh) / 2), text);
+            NanoVg.NvgText(ctx, Round(x + (w - fw) / 2), Round(y + (h - fh) / 2), text);
 
-            NanoVG.nvgResetScissor(ctx);
+            NanoVg.NvgResetScissor(ctx);
 
-            NanoVG.nvgRestore(ctx);
+            NanoVg.NvgRestore(ctx);
         }
 
-        public static void SdnIconTextButton(NVGcontext ctx, float x, float y, float w, float h, string icon, string text, SWidgetState state = SWidgetState.Default, SConnectedSide connection = SConnectedSide.None)
+        public static void SdnIconTextButton(NvGcontext ctx, float x, float y, float w, float h, string icon, string text, SWidgetState state = SWidgetState.Default, SConnectedSide connection = SConnectedSide.None)
         {
-            NanoVG.nvgSave(ctx);
+            NanoVg.NvgSave(ctx);
 
             SetPrimaryFillColor(ctx, state);
             DrawFilledRect(ctx, x, y, w, h, connection);
 
             SetFontStyle(ctx, state);
 
-            NanoVG.nvgFontFace(ctx, Style.FontIcon);
+            NanoVg.NvgFontFace(ctx, Style.FontIcon);
             var ib = new float[4];
-            NanoVG.nvgTextBounds(ctx, 0, 0, icon, ib);
+            NanoVg.NvgTextBounds(ctx, 0, 0, icon, ib);
             var ifw = ib[2] - ib[0];
 
-            NanoVG.nvgFontFace(ctx, Style.FontSans);
+            NanoVg.NvgFontFace(ctx, Style.FontSans);
             var sb = new float[4];
-            NanoVG.nvgTextBounds(ctx, 0, 0, text, sb);
+            NanoVg.NvgTextBounds(ctx, 0, 0, text, sb);
             var sfw = sb[2] - sb[0];
             var sfh = sb[3] - sb[1];
 
             var fw = ifw + sfw + Style.IconPadding;
 
-            NanoVG.nvgFontFace(ctx, Style.FontIcon);
-            NanoVG.nvgText(ctx, Round(x + (w - fw) / 2), Round(y + (h - sfh) / 2), icon);
+            NanoVg.NvgFontFace(ctx, Style.FontIcon);
+            NanoVg.NvgText(ctx, Round(x + (w - fw) / 2), Round(y + (h - sfh) / 2), icon);
 
-            NanoVG.nvgFontFace(ctx, Style.FontSans);
-            NanoVG.nvgText(ctx, Round(x + ifw + Style.IconPadding + (w - fw) / 2), Round(y + (h - sfh) / 2), text);
+            NanoVg.NvgFontFace(ctx, Style.FontSans);
+            NanoVg.NvgText(ctx, Round(x + ifw + Style.IconPadding + (w - fw) / 2), Round(y + (h - sfh) / 2), text);
 
-            NanoVG.nvgRestore(ctx);
+            NanoVg.NvgRestore(ctx);
         }
 
-        public static void SdnSplitIconTextButton(NVGcontext ctx, float x, float y, float splitWidth, float w, float h, string icon, string text, SWidgetState state = SWidgetState.Default, SConnectedSide connection = SConnectedSide.None)
+        public static void SdnSplitIconTextButton(NvGcontext ctx, float x, float y, float splitWidth, float w, float h, string icon, string text, SWidgetState state = SWidgetState.Default, SConnectedSide connection = SConnectedSide.None)
         {
-            NanoVG.nvgSave(ctx);
+            NanoVg.NvgSave(ctx);
 
             WithStyle(StyleConnectedBtn, () =>
             {
@@ -198,38 +198,38 @@ namespace NanoVgTest
 
             SetFontStyle(ctx, state);
 
-            NanoVG.nvgFontFace(ctx, Style.FontIcon);
+            NanoVg.NvgFontFace(ctx, Style.FontIcon);
             var ib = new float[4];
-            NanoVG.nvgTextBounds(ctx, 0, 0, icon, ib);
+            NanoVg.NvgTextBounds(ctx, 0, 0, icon, ib);
             var ifw = ib[2] - ib[0];
             var ifh = ib[3] - ib[1];
 
-            NanoVG.nvgFontFace(ctx, Style.FontSans);
+            NanoVg.NvgFontFace(ctx, Style.FontSans);
             var sb = new float[4];
-            NanoVG.nvgTextBounds(ctx, 0, 0, text, sb);
+            NanoVg.NvgTextBounds(ctx, 0, 0, text, sb);
             var sfw = sb[2] - sb[0];
             var sfh = sb[3] - sb[1];
 
-            NanoVG.nvgFontFace(ctx, Style.FontIcon);
-            NanoVG.nvgText(ctx, Round(x + (splitWidth - ifw) / 2), Round(y + (h - ifh) / 2), icon);
+            NanoVg.NvgFontFace(ctx, Style.FontIcon);
+            NanoVg.NvgText(ctx, Round(x + (splitWidth - ifw) / 2), Round(y + (h - ifh) / 2), icon);
 
-            NanoVG.nvgFontFace(ctx, Style.FontSans);
-            NanoVG.nvgText(ctx, Round(x + splitWidth + (w - sfw) / 2), Round(y + (h - sfh) / 2), text);
+            NanoVg.NvgFontFace(ctx, Style.FontSans);
+            NanoVg.NvgText(ctx, Round(x + splitWidth + (w - sfw) / 2), Round(y + (h - sfh) / 2), text);
 
-            NanoVG.nvgRestore(ctx);
+            NanoVg.NvgRestore(ctx);
         }
 
-        private static void DrawFilledRect(NVGcontext ctx, float x, float y, float w, float h, SConnectedSide connection)
+        private static void DrawFilledRect(NvGcontext ctx, float x, float y, float w, float h, SConnectedSide connection)
         {
             DrawRect(ctx, x, y, w, h, connection, true);
         }
 
-        private static void DrawStrokedRect(NVGcontext ctx, float x, float y, float w, float h, SConnectedSide connection)
+        private static void DrawStrokedRect(NvGcontext ctx, float x, float y, float w, float h, SConnectedSide connection)
         {
             DrawRect(ctx, x, y, w, h, connection, false);
         }
 
-        private static void DrawRect(NVGcontext ctx, float x, float y, float w, float h, SConnectedSide connection, bool fill)
+        private static void DrawRect(NvGcontext ctx, float x, float y, float w, float h, SConnectedSide connection, bool fill)
         {
             var tl = connection.HasFlag(SConnectedSide.Top) || connection.HasFlag(SConnectedSide.Left) ? 0 : Style.BorderRadius;
             var tr = connection.HasFlag(SConnectedSide.Top) || connection.HasFlag(SConnectedSide.Right) ? 0 : Style.BorderRadius;
@@ -240,12 +240,12 @@ namespace NanoVgTest
                 ? 0
                 : Style.BorderRadius;
 
-            NanoVG.nvgBeginPath(ctx);
-            NanoVG.nvgRoundedRectVarying(ctx, x, y, w, h, tl, tr, br, bl);
+            NanoVg.NvgBeginPath(ctx);
+            NanoVg.NvgRoundedRectVarying(ctx, x, y, w, h, tl, tr, br, bl);
             if (fill)
-                NanoVG.nvgFill(ctx);
+                NanoVg.NvgFill(ctx);
             else
-                NanoVG.nvgStroke(ctx);
+                NanoVg.NvgStroke(ctx);
         }
 
         public static void WithStyle(SStyle style, Action withStyle)
@@ -256,10 +256,10 @@ namespace NanoVgTest
             Style = orig;
         }
 
-        private static void SetFontStyle(NVGcontext ctx, SWidgetState state)
+        private static void SetFontStyle(NvGcontext ctx, SWidgetState state)
         {
-            NanoVG.nvgFontSize(ctx, Style.FontSize);
-            NanoVG.nvgTextAlign(ctx, (int)NvgAlign.Top | (int)NvgAlign.Left);
+            NanoVg.NvgFontSize(ctx, Style.FontSize);
+            NanoVg.NvgTextAlign(ctx, (int)NvgAlign.Top | (int)NvgAlign.Left);
             SetFontColor(ctx, state);
         }
 
@@ -268,54 +268,54 @@ namespace NanoVgTest
             return (float)Math.Round(x);
         }
 
-        private static void SetPrimaryFillColor(NVGcontext ctx, SWidgetState state)
+        private static void SetPrimaryFillColor(NvGcontext ctx, SWidgetState state)
         {
             switch (state)
             {
                 case SWidgetState.Default:
-                    NanoVG.nvgFillColor(ctx, Style.PrimaryDefaultColor);
+                    NanoVg.NvgFillColor(ctx, Style.PrimaryDefaultColor);
                     break;
                 case SWidgetState.Hover:
-                    NanoVG.nvgFillColor(ctx, Style.PrimaryHoverColor);
+                    NanoVg.NvgFillColor(ctx, Style.PrimaryHoverColor);
                     break;
                 case SWidgetState.Focus:
-                    NanoVG.nvgFillColor(ctx, Style.PrimaryFocusColor);
+                    NanoVg.NvgFillColor(ctx, Style.PrimaryFocusColor);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
         }
 
-        private static void SetPrimaryStrokeColor(NVGcontext ctx, SWidgetState state)
+        private static void SetPrimaryStrokeColor(NvGcontext ctx, SWidgetState state)
         {
             switch (state)
             {
                 case SWidgetState.Default:
-                    NanoVG.nvgStrokeColor(ctx, Style.PrimaryDefaultColor);
+                    NanoVg.NvgStrokeColor(ctx, Style.PrimaryDefaultColor);
                     break;
                 case SWidgetState.Hover:
-                    NanoVG.nvgStrokeColor(ctx, Style.PrimaryHoverColor);
+                    NanoVg.NvgStrokeColor(ctx, Style.PrimaryHoverColor);
                     break;
                 case SWidgetState.Focus:
-                    NanoVG.nvgStrokeColor(ctx, Style.PrimaryFocusColor);
+                    NanoVg.NvgStrokeColor(ctx, Style.PrimaryFocusColor);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
         }
 
-        private static void SetFontColor(NVGcontext ctx, SWidgetState state)
+        private static void SetFontColor(NvGcontext ctx, SWidgetState state)
         {
             switch (state)
             {
                 case SWidgetState.Default:
-                    NanoVG.nvgFillColor(ctx, Style.FontDefaultColor);
+                    NanoVg.NvgFillColor(ctx, Style.FontDefaultColor);
                     break;
                 case SWidgetState.Hover:
-                    NanoVG.nvgFillColor(ctx, Style.FontHoverColor);
+                    NanoVg.NvgFillColor(ctx, Style.FontHoverColor);
                     break;
                 case SWidgetState.Focus:
-                    NanoVG.nvgFillColor(ctx, Style.FontFocusColor);
+                    NanoVg.NvgFillColor(ctx, Style.FontFocusColor);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);

@@ -43,39 +43,39 @@ namespace NanoVGDotNet
 {
 	public static class PerfGraph
 	{
-		public const int GRAPH_HISTORY_COUNT = 100;
+		public const int GraphHistoryCount = 100;
 
-		static int style;
-		static string name;
-		static float[] values;
-		static int head;
+		static int _style;
+		static string _name;
+		static float[] _values;
+		static int _head;
 
 		public static void InitGraph(int style, string name)
 		{
-			PerfGraph.style = style;
-			PerfGraph.name = name;
-			values = new float[GRAPH_HISTORY_COUNT];
-			head = 0;
+			PerfGraph._style = style;
+			PerfGraph._name = name;
+			_values = new float[GraphHistoryCount];
+			_head = 0;
 		}
 
 		public static void UpdateGraph(float frameTime)
 		{
-			head = (head + 1) % GRAPH_HISTORY_COUNT;
-			values[head] = frameTime;
+			_head = (_head + 1) % GraphHistoryCount;
+			_values[_head] = frameTime;
 		}
 
 		public static float GetGraphAverage()
 		{
 			int i;
 			float avg = 0;
-			for (i = 0; i < GRAPH_HISTORY_COUNT; i++)
+			for (i = 0; i < GraphHistoryCount; i++)
 			{
-				avg += values[i];
+				avg += _values[i];
 			}
-			return avg / (float)GRAPH_HISTORY_COUNT;
+			return avg / (float)GraphHistoryCount;
 		}
 
-		public static void RenderGraph(NVGcontext vg, float x, float y)
+		public static void RenderGraph(NvGcontext vg, float x, float y)
 		{
 			int i;
 			float avg, w, h;
@@ -86,95 +86,95 @@ namespace NanoVGDotNet
 			w = 200;
 			h = 35;
 
-			NanoVG.nvgBeginPath(vg);
-			NanoVG.nvgRect(vg, x, y, w, h);
-			NanoVG.nvgFillColor(vg, NanoVG.nvgRGBA(0, 0, 0, 128));
-			NanoVG.nvgFill(vg);
+			NanoVg.NvgBeginPath(vg);
+			NanoVg.NvgRect(vg, x, y, w, h);
+			NanoVg.NvgFillColor(vg, NanoVg.NvgRgba(0, 0, 0, 128));
+			NanoVg.NvgFill(vg);
 
-			NanoVG.nvgBeginPath(vg);
-			NanoVG.nvgMoveTo(vg, x, y + h);
-			if (style == (int)GraphRenderStyle.Fps)
+			NanoVg.NvgBeginPath(vg);
+			NanoVg.NvgMoveTo(vg, x, y + h);
+			if (_style == (int)GraphRenderStyle.Fps)
 			{
-				for (i = 0; i < GRAPH_HISTORY_COUNT; i++)
+				for (i = 0; i < GraphHistoryCount; i++)
 				{
-					var v = 1.0f / (0.00001f + values[(head + i) % GRAPH_HISTORY_COUNT]);
+					var v = 1.0f / (0.00001f + _values[(_head + i) % GraphHistoryCount]);
 					float vx, vy;
 					if (v > 80.0f)
 						v = 80.0f;
-					vx = x + ((float)i / (GRAPH_HISTORY_COUNT - 1)) * w;
+					vx = x + ((float)i / (GraphHistoryCount - 1)) * w;
 					vy = y + h - ((v / 80.0f) * h);
-					NanoVG.nvgLineTo(vg, vx, vy);
+					NanoVg.NvgLineTo(vg, vx, vy);
 				}
 			}
-			else if (style == (int)GraphRenderStyle.Percent)
+			else if (_style == (int)GraphRenderStyle.Percent)
 			{
-				for (i = 0; i < GRAPH_HISTORY_COUNT; i++)
+				for (i = 0; i < GraphHistoryCount; i++)
 				{
-					var v = values[(head + i) % GRAPH_HISTORY_COUNT] * 1.0f;
+					var v = _values[(_head + i) % GraphHistoryCount] * 1.0f;
 					float vx, vy;
 					if (v > 100.0f)
 						v = 100.0f;
-					vx = x + ((float)i / (GRAPH_HISTORY_COUNT - 1)) * w;
+					vx = x + ((float)i / (GraphHistoryCount - 1)) * w;
 					vy = y + h - ((v / 100.0f) * h);
-					NanoVG.nvgLineTo(vg, vx, vy);
+					NanoVg.NvgLineTo(vg, vx, vy);
 				}
 			}
 			else
 			{
-				for (i = 0; i < GRAPH_HISTORY_COUNT; i++)
+				for (i = 0; i < GraphHistoryCount; i++)
 				{
-					var v = values[(head + i) % GRAPH_HISTORY_COUNT] * 1000.0f;
+					var v = _values[(_head + i) % GraphHistoryCount] * 1000.0f;
 					float vx, vy;
 					if (v > 20.0f)
 						v = 20.0f;
-					vx = x + ((float)i / (GRAPH_HISTORY_COUNT - 1)) * w;
+					vx = x + ((float)i / (GraphHistoryCount - 1)) * w;
 					vy = y + h - ((v / 20.0f) * h);
-					NanoVG.nvgLineTo(vg, vx, vy);
+					NanoVg.NvgLineTo(vg, vx, vy);
 				}
 			}
-			NanoVG.nvgLineTo(vg, x + w, y + h);
-			NanoVG.nvgFillColor(vg, NanoVG.nvgRGBA(255, 192, 0, 128));
-			NanoVG.nvgFill(vg);
+			NanoVg.NvgLineTo(vg, x + w, y + h);
+			NanoVg.NvgFillColor(vg, NanoVg.NvgRgba(255, 192, 0, 128));
+			NanoVg.NvgFill(vg);
 
-			NanoVG.nvgFontFace(vg, "sans");
+			NanoVg.NvgFontFace(vg, "sans");
 
-			if (name[0] != '\0')
+			if (_name[0] != '\0')
 			{
-				NanoVG.nvgFontSize(vg, 14.0f);
-				NanoVG.nvgTextAlign(vg, (int)(NvgAlign.Left | NvgAlign.Top));
-				NanoVG.nvgFillColor(vg, NanoVG.nvgRGBA(240, 240, 240, 192));
-				NanoVG.nvgText(vg, x + 3, y + 1, name);
+				NanoVg.NvgFontSize(vg, 14.0f);
+				NanoVg.NvgTextAlign(vg, (int)(NvgAlign.Left | NvgAlign.Top));
+				NanoVg.NvgFillColor(vg, NanoVg.NvgRgba(240, 240, 240, 192));
+				NanoVg.NvgText(vg, x + 3, y + 1, _name);
 			}
 
-			if (style == (int)GraphRenderStyle.Fps)
+			if (_style == (int)GraphRenderStyle.Fps)
 			{
-				NanoVG.nvgFontSize(vg, 18.0f);
-				NanoVG.nvgTextAlign(vg, (int)(NvgAlign.Right | NvgAlign.Top));
-				NanoVG.nvgFillColor(vg, NanoVG.nvgRGBA(240, 240, 240, 255));
+				NanoVg.NvgFontSize(vg, 18.0f);
+				NanoVg.NvgTextAlign(vg, (int)(NvgAlign.Right | NvgAlign.Top));
+				NanoVg.NvgFillColor(vg, NanoVg.NvgRgba(240, 240, 240, 255));
 				str = $"{1.0f / avg:0.00} FPS";
-				NanoVG.nvgText(vg, x + w - 3, y + 1, str);
+				NanoVg.NvgText(vg, x + w - 3, y + 1, str);
 
-				NanoVG.nvgFontSize(vg, 15.0f);
-				NanoVG.nvgTextAlign(vg, (int)(NvgAlign.Right | NvgAlign.Bottom));
-				NanoVG.nvgFillColor(vg, NanoVG.nvgRGBA(240, 240, 240, 160));
+				NanoVg.NvgFontSize(vg, 15.0f);
+				NanoVg.NvgTextAlign(vg, (int)(NvgAlign.Right | NvgAlign.Bottom));
+				NanoVg.NvgFillColor(vg, NanoVg.NvgRgba(240, 240, 240, 160));
 				str = $"{avg * 1000.0f:0.00} ms";
-				NanoVG.nvgText(vg, x + w - 3, y + h - 1, str);
+				NanoVg.NvgText(vg, x + w - 3, y + h - 1, str);
 			}
-			else if (style == (int)GraphRenderStyle.Percent)
+			else if (_style == (int)GraphRenderStyle.Percent)
 			{
-				NanoVG.nvgFontSize(vg, 18.0f);
-				NanoVG.nvgTextAlign(vg, (int)(NvgAlign.Right | NvgAlign.Top));
-				NanoVG.nvgFillColor(vg, NanoVG.nvgRGBA(240, 240, 240, 255));
+				NanoVg.NvgFontSize(vg, 18.0f);
+				NanoVg.NvgTextAlign(vg, (int)(NvgAlign.Right | NvgAlign.Top));
+				NanoVg.NvgFillColor(vg, NanoVg.NvgRgba(240, 240, 240, 255));
 				str = $"{avg * 1.0f:0.0} %";
-				NanoVG.nvgText(vg, x + w - 3, y + 1, str);
+				NanoVg.NvgText(vg, x + w - 3, y + 1, str);
 			}
 			else
 			{
-				NanoVG.nvgFontSize(vg, 18.0f);
-				NanoVG.nvgTextAlign(vg, (int)(NvgAlign.Right | NvgAlign.Top));
-				NanoVG.nvgFillColor(vg, NanoVG.nvgRGBA(240, 240, 240, 255));
+				NanoVg.NvgFontSize(vg, 18.0f);
+				NanoVg.NvgTextAlign(vg, (int)(NvgAlign.Right | NvgAlign.Top));
+				NanoVg.NvgFillColor(vg, NanoVg.NvgRgba(240, 240, 240, 255));
 				str = $"{avg * 1000.0f:0.00} ms";
-				NanoVG.nvgText(vg, x + w - 3, y + 1, str);
+				NanoVg.NvgText(vg, x + w - 3, y + 1, str);
 			}
 		}
 	}
