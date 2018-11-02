@@ -69,8 +69,8 @@
     <Compile Include="NvgWinding.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NvgCommands.cs" />
-    <Compile Include="glNanoVG.cs" />
-    <Compile Include="nanoVG.cs" />
+    <Compile Include="GlNanoVg.cs" />
+    <Compile Include="NanoVg.cs" />
     <Compile Include="PerfGraph.cs" />
     <Compile Include="RenderCancel.cs" />
     <Compile Include="RenderCreateHandler.cs" />
