@@ -22,7 +22,7 @@ namespace NanoVgTest
         private uint _depthTexture;
         private uint _fboHandle;
 
-        public NvGcontext Nvg = new NvGcontext();
+        public NvgContext Nvg = new NvgContext();
         public KeyboardState Keyboard;
         public MouseState Mouse;
 

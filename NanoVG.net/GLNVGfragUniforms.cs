@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace NanoVGDotNet
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class GlnvGfragUniforms
+    public class GlNvgFragUniforms
     {
         // matrices are actually 3 vec4s
 
@@ -15,9 +15,9 @@ namespace NanoVGDotNet
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)]
         public float[] paintMat;
         //[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        public NvGcolor innerCol;
+        public NvgColor innerCol;
         //[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        public NvGcolor outerCol;
+        public NvgColor outerCol;
         // float[2]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
         public float[] scissorExt;
@@ -49,12 +49,12 @@ namespace NanoVGDotNet
             set { type_ = value; }
         }
 
-        public GlnvGfragUniforms()
+        public GlNvgFragUniforms()
         {
             scissorMat = new float[12];
             paintMat = new float[12];
-            innerCol = new NvGcolor();
-            outerCol = new NvGcolor();
+            innerCol = new NvgColor();
+            outerCol = new NvgColor();
             scissorExt = new float[2];
             scissorScale = new float[2];
             extent = new float[2];
@@ -77,7 +77,7 @@ namespace NanoVGDotNet
         }
 
         /// <summary>
-        /// Gets the size of the <see cref="GlnvGfragUniforms"/> in bytes.
+        /// Gets the size of the <see cref="GlNvgFragUniforms"/> in bytes.
         /// </summary>
         /// <value>The size of the GLNVGfragUniforms struct.</value>
         public static uint GetSize
@@ -86,7 +86,7 @@ namespace NanoVGDotNet
             {
                 // 176 bytes
                 //return (uint)(12 + 12 + 4 + 4 + 2 + 2 + 2 + 6) * 4;
-                return (uint)Marshal.SizeOf(typeof(GlnvGfragUniforms));
+                return (uint)Marshal.SizeOf(typeof(GlNvgFragUniforms));
             }
         }
     }

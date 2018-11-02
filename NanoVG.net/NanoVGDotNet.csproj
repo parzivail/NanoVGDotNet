@@ -32,7 +32,6 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DemoData.cs" />
     <Compile Include="GLNVGcall.cs" />
     <Compile Include="GlNvgCallType.cs" />
     <Compile Include="GLNVGcontext.cs" />
@@ -53,7 +52,7 @@
     <Compile Include="NvgCreateFlags.cs" />
     <Compile Include="NvGglyphPosition.cs" />
     <Compile Include="NvgImageFlags.cs" />
-    <Compile Include="NvgImageFlagsGl.cs" />
+    <Compile Include="GlNvgImageFlags.cs" />
     <Compile Include="NvgLineCap.cs" />
     <Compile Include="NvGpaint.cs" />
     <Compile Include="NvGparams.cs" />
@@ -75,8 +74,8 @@
     <Compile Include="PerfGraph.cs" />
     <Compile Include="RenderCancel.cs" />
     <Compile Include="RenderCreateHandler.cs" />
-    <Compile Include="RenderCreateTextureHandler.cs" />
-    <Compile Include="RenderCreateTextureHandler2.cs" />
+    <Compile Include="RenderCreateTextureHandlerByte.cs" />
+    <Compile Include="RenderCreateTextureHandlerBmp.cs" />
     <Compile Include="RenderDelete.cs" />
     <Compile Include="RenderDeleteTexture.cs" />
     <Compile Include="RenderFillHandler.cs" />

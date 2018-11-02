@@ -2,11 +2,11 @@ using System;
 
 namespace NanoVGDotNet
 {
-    public class NvGstate
+    public class NvgState
     {
-        public NvGcompositeOperationState CompositeOperation;
-        public NvGpaint Fill;
-        public NvGpaint Stroke;
+        public NvgCompositeOperationState CompositeOperation;
+        public NvgPaint Fill;
+        public NvgPaint Stroke;
         public float StrokeWidth;
         public float MiterLimit;
         public int LineJoin;
@@ -14,7 +14,7 @@ namespace NanoVGDotNet
         public float Alpha;
         //[6];
         public float[] Xform;
-        public NvGscissor Scissor;
+        public NvgScissor Scissor;
         public float FontSize;
         public float LetterSpacing;
         public float LineHeight;
@@ -22,17 +22,17 @@ namespace NanoVGDotNet
         public int TextAlign;
         public int FontId;
 
-        public NvGstate()
+        public NvgState()
         {
             Xform = new float[6];
-            Scissor = new NvGscissor();
-            Fill = new NvGpaint();
-            Stroke = new NvGpaint();
+            Scissor = new NvgScissor();
+            Fill = new NvgPaint();
+            Stroke = new NvgPaint();
         }
 
-        public NvGstate Clone()
+        public NvgState Clone()
         {
-            var newState = new NvGstate();
+            var newState = new NvgState();
             newState.CompositeOperation = CompositeOperation;
             newState.Fill = Fill.Clone();
             newState.Stroke = Stroke.Clone();

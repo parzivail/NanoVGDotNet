@@ -1,6 +1,6 @@
 namespace NanoVGDotNet
 {
-    public struct NvGvertex
+    public struct NvgVertex
     {
         public float X;
         public float Y;

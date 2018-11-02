@@ -1,6 +1,6 @@
 namespace NanoVGDotNet
 {
-    public class GlnvGcall
+    public class GlNvgCall
     {
         public int Type;
         public int Image;

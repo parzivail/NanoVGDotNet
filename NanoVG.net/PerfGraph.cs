@@ -72,7 +72,7 @@ namespace NanoVGDotNet
 			return avg / GraphHistoryCount;
 		}
 
-		public static void RenderGraph(NvGcontext vg, float x, float y)
+		public static void RenderGraph(NvgContext vg, float x, float y)
 		{
 			int i;
 			float avg, w, h;

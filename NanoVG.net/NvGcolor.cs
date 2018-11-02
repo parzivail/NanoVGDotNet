@@ -1,6 +1,6 @@
 namespace NanoVGDotNet
 {
-    public struct NvGcolor
+    public struct NvgColor
     {
         public float R;
         public float G;

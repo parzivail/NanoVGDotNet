@@ -2,7 +2,7 @@ using System;
 
 namespace NanoVGDotNet
 {
-    public class NvGpaint
+    public class NvgPaint
     {
         //[6];
         public float[] Xform;
@@ -10,19 +10,19 @@ namespace NanoVGDotNet
         public float[] Extent;
         public float Radius;
         public float Feather;
-        public NvGcolor InnerColor;
-        public NvGcolor OuterColor;
+        public NvgColor InnerColor;
+        public NvgColor OuterColor;
         public int Image;
 
-        public NvGpaint()
+        public NvgPaint()
         {
             Xform = new float[6];
             Extent = new float[2];
         }
 
-        public NvGpaint Clone()
+        public NvgPaint Clone()
         {
-            var newPaint = new NvGpaint();
+            var newPaint = new NvgPaint();
 
             Array.Copy(Xform, newPaint.Xform, Xform.Length);
             Array.Copy(Extent, newPaint.Extent, Extent.Length);

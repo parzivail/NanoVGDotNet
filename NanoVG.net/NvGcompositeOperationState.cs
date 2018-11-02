@@ -1,6 +1,6 @@
 namespace NanoVGDotNet
 {
-    public struct NvGcompositeOperationState
+    public struct NvgCompositeOperationState
     {
         public int SrcRgb;
         public int DstRgb;

@@ -1,6 +1,6 @@
 namespace NanoVGDotNet
 {
-    public class GlnvGshader
+    public class GlNvgShader
     {
         public int Prog;
         public int Frag;
@@ -8,7 +8,7 @@ namespace NanoVGDotNet
         //[GLNVG_MAX_LOCS];
         public int[] Loc;
 
-        public GlnvGshader()
+        public GlNvgShader()
         {
             Loc = new int[(int)GlNvgUniformLoc.MaxLocs];
         }

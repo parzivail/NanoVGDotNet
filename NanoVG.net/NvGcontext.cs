@@ -2,17 +2,17 @@ using FontStashDotNet;
 
 namespace NanoVGDotNet
 {
-    public class NvGcontext
+    public class NvgContext
     {
-        public NvGparams Params;
+        public NvgParams Params;
         public float[] Commands;
         public int Ccommands;
         public int Ncommands;
         public float Commandx, Commandy;
         //[NVG_MAX_STATES];
-        public NvGstate[] States;
+        public NvgState[] States;
         public int Nstates;
-        public NvGpathCache Cache;
+        public NvgPathCache Cache;
         public float TessTol;
         public float DistTol;
         public float FringeWidth;
@@ -26,11 +26,11 @@ namespace NanoVGDotNet
         public int StrokeTriCount;
         public int TextTriCount;
 
-        public NvGcontext()
+        public NvgContext()
         {
-            States = new NvGstate[NanoVg.NvgMaxStates];
+            States = new NvgState[NanoVg.NvgMaxStates];
             for (var cont = 0; cont < States.Length; cont++)
-                States[cont] = new NvGstate();
+                States[cont] = new NvgState();
             FontImages = new int[NanoVg.NvgMaxFontimages];
         }
     }

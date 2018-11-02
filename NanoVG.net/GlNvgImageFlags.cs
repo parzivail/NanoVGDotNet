@@ -3,7 +3,7 @@ using System;
 namespace NanoVGDotNet
 {
     [Flags]
-    public enum NvgImageFlagsGl
+    public enum GlNvgImageFlags
     {
         // Do not delete GL texture handle.
         NoDelete = 65536

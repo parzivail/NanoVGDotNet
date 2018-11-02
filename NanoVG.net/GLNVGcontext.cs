@@ -14,10 +14,10 @@ using OpenTK.Graphics.OpenGL;
 
 namespace NanoVGDotNet
 {
-    public class GlnvGcontext
+    public class GlNvgContext
     {
-        public GlnvGshader Shader;
-        public GlnvGtexture[] Textures;
+        public GlNvgShader Shader;
+        public GlNvgTexture[] Textures;
         // [2]
         public float[] View;
         public int Ntextures;
@@ -34,16 +34,16 @@ namespace NanoVGDotNet
         public int Flags;
 
         // Per frame buffers
-        public GlnvGcall[] Calls;
+        public GlNvgCall[] Calls;
         public int Ccalls;
         public int Ncalls;
-        public GlnvGpath[] Paths;
+        public GlNvgPath[] Paths;
         public int Cpaths;
         public int Npaths;
-        public NvGvertex[] Verts;
+        public NvgVertex[] Verts;
         public int Cverts;
         public int Nverts;
-        public GlnvGfragUniforms[] Uniforms;
+        public GlNvgFragUniforms[] Uniforms;
         public int Cuniforms;
         public int Nuniforms;
 
@@ -56,7 +56,7 @@ namespace NanoVGDotNet
         public uint StencilFuncMask;
 #endif
 
-        public GlnvGcontext()
+        public GlNvgContext()
         {
             View = new float[2];
         }

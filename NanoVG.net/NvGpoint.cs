@@ -1,6 +1,6 @@
 namespace NanoVGDotNet
 {
-    public class NvGpoint
+    public class NvgPoint
     {
         public float X, Y;
         public float Dx, Dy;
@@ -13,9 +13,9 @@ namespace NanoVGDotNet
             return $"[NVGpoint]x={X}, y={Y}, dx={Dx}, dy={Dy}, len={Len}, dmx={Dmx}, dmy={Dmy}";
         }
 
-        public NvGpoint Clone()
+        public NvgPoint Clone()
         {
-            var newpoint = new NvGpoint();
+            var newpoint = new NvgPoint();
 
             newpoint.X = X;
             newpoint.Y = Y;

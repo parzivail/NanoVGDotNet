@@ -1,5 +1,5 @@
 namespace NanoVGDotNet
 {
-    public delegate void RenderTrianglesHandler(object uptr, ref NvGpaint paint, ref NvGscissor scissor,
-        NvGvertex[] verts, int nverts);
+    public delegate void RenderTrianglesHandler(object uptr, ref NvgPaint paint, ref NvgScissor scissor,
+        NvgVertex[] verts, int nverts);
 }

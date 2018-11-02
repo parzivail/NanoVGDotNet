@@ -1,20 +1,20 @@
 namespace NanoVGDotNet
 {
-    public class NvGpathCache
+    public class NvgPathCache
     {
-        public NvGpoint[] Points;
+        public NvgPoint[] Points;
         public int Npoints;
         public int Cpoints;
-        public NvGpath[] Paths;
+        public NvgPath[] Paths;
         public int Npaths;
         public int Cpaths;
-        public NvGvertex[] Verts;
+        public NvgVertex[] Verts;
         public int Nverts;
         public int Cverts;
         //[4];
         public float[] Bounds;
 
-        public NvGpathCache()
+        public NvgPathCache()
         {
             Bounds = new float[4];
         }

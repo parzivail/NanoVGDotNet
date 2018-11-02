@@ -1,4 +1,4 @@
 namespace NanoVGDotNet
 {
-    public delegate void RenderFlushHandler(object uptr, NvGcompositeOperationState compositeOperation);
+    public delegate void RenderFlushHandler(object uptr, NvgCompositeOperationState compositeOperation);
 }

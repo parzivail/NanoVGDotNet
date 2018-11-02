@@ -1,6 +1,6 @@
 namespace NanoVGDotNet
 {
-    public struct NvGglyphPosition
+    public struct NvgGlyphPosition
     {
         public int Str;
         // Position of the glyph in the input string.

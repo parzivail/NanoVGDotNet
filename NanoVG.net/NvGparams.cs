@@ -1,13 +1,13 @@
 namespace NanoVGDotNet
 {
-    public struct NvGparams
+    public struct NvgParams
     {
         public object UserPtr;
         public int EdgeAntiAlias;
         public RenderCreateHandler RenderCreate;
 
-        public RenderCreateTextureHandler RenderCreateTexture;
-        public RenderCreateTextureHandler2 RenderCreateTexture2;
+        public RenderCreateTextureHandlerByte RenderCreateTexture;
+        public RenderCreateTextureHandlerBmp RenderCreateTexture2;
         public RenderViewportHandler RenderViewport;
         public RenderFlushHandler RenderFlush;
         public RenderFillHandler RenderFill;

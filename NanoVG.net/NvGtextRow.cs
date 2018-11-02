@@ -1,6 +1,6 @@
 namespace NanoVGDotNet
 {
-    public struct NvGtextRow
+    public struct NvgTextRow
     {
         public int Start;
         // Pointer to the input text where the row starts.
@@ -10,7 +10,7 @@ namespace NanoVGDotNet
         // Pointer to the beginning of the next row.
         public float Width;
         // Logical width of the row.
-        public float Minx, Maxx;
+        public float MinX, MaxX;
         // Actual bounds of the row. Logical with and bounds can differ because of kerning and some parts over extending.
     }
 }

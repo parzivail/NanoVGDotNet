@@ -1,6 +1,6 @@
 namespace NanoVGDotNet
 {
-    public struct GlnvGpath
+    public struct GlNvgPath
     {
         public int FillOffset;
         public int FillCount;

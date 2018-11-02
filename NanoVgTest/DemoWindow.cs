@@ -42,7 +42,7 @@ namespace NanoVgTest
         {
         }
 
-        public void Render(MainWindow win, NvGcontext vg)
+        public void Render(MainWindow win, NvgContext vg)
         {
             NanoVg.NvgSave(vg);
 

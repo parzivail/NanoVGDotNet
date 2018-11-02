@@ -1,15 +1,15 @@
 namespace NanoVGDotNet
 {
-    public class NvGpath
+    public class NvgPath
     {
         public int First;
         public int Count;
         public byte Closed;
         public int Nbevel;
-        public NvGvertex[] Fill;
+        public NvgVertex[] Fill;
         public int Ifill;
         public int Nfill;
-        public NvGvertex[] Stroke;
+        public NvgVertex[] Stroke;
         public int Istroke;
         public int Nstroke;
         public int Winding;
