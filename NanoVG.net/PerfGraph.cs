@@ -45,10 +45,10 @@ namespace NanoVGDotNet
 	{
 		public const int GraphHistoryCount = 100;
 
-		static int _style;
-		static string _name;
-		static float[] _values;
-		static int _head;
+	    private static int _style;
+	    private static string _name;
+	    private static float[] _values;
+	    private static int _head;
 
 		public static void InitGraph(int style, string name)
 		{

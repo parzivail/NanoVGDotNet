@@ -33,7 +33,7 @@ namespace NanoVGDotNet
         public float strokeMult;
         public float strokeThr;
 
-        float texType_;
+        private float texType_;
 
         public int TexType
         {
@@ -41,7 +41,7 @@ namespace NanoVGDotNet
             set { texType_ = value; }
         }
 
-        float type_;
+        private float type_;
 
         public int Type
         {
