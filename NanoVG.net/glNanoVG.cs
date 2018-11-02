@@ -362,14 +362,12 @@ namespace NanoVGDotNet
 			int i;
 			for (i = 0; i < gl.Ntextures; i++)
 			{
-				if (gl.Textures[i].Id == id)
-				{
-					if (gl.Textures[i].Tex != 0 && (gl.Textures[i].Flags & (int)NvgImageFlagsGl.NoDelete) == 0)
-						GL.DeleteTextures(1, ref gl.Textures[i].Tex);
-					//memset(&gl.textures[i], 0, sizeof(gl.textures[i]));
-					gl.Textures[i] = new GlnvGtexture();
-					return 1;
-				}
+			    if (gl.Textures[i].Id != id) continue;
+			    if (gl.Textures[i].Tex != 0 && (gl.Textures[i].Flags & (int)NvgImageFlagsGl.NoDelete) == 0)
+			        GL.DeleteTextures(1, ref gl.Textures[i].Tex);
+			    //memset(&gl.textures[i], 0, sizeof(gl.textures[i]));
+			    gl.Textures[i] = new GlnvGtexture();
+			    return 1;
 			}
 			return 0;
 		}
@@ -381,11 +379,9 @@ namespace NanoVGDotNet
 
 			for (i = 0; i < gl.Ntextures; i++)
 			{
-				if (gl.Textures[i].Id == 0)
-				{
-					tex = gl.Textures[i];
-					break;
-				}
+			    if (gl.Textures[i].Id != 0) continue;
+			    tex = gl.Textures[i];
+			    break;
 			}
 			if (tex == null)
 			{
@@ -1003,16 +999,14 @@ namespace NanoVGDotNet
 				copy.StrokeCount = 0;
 				copy.StrokeOffset = 0;
 
-				if (path.Nstroke != 0)
-				{
-					copy.StrokeOffset = offset;
-					copy.StrokeCount = path.Nstroke;
-					//memcpy(&gl->verts[offset], path->stroke, sizeof(NVGvertex) * path->nstroke);
-					Array.Copy(path.Stroke, 0, gl.Verts, offset, path.Nstroke);
-					offset += path.Nstroke;
-					// TODO ¿Es necesario? ¡¡Sí!! es necesrio
-					gl.Paths[call.PathOffset + i] = copy;
-				}
+			    if (path.Nstroke == 0) continue;
+			    copy.StrokeOffset = offset;
+			    copy.StrokeCount = path.Nstroke;
+			    //memcpy(&gl->verts[offset], path->stroke, sizeof(NVGvertex) * path->nstroke);
+			    Array.Copy(path.Stroke, 0, gl.Verts, offset, path.Nstroke);
+			    offset += path.Nstroke;
+			    // TODO ¿Es necesario? ¡¡Sí!! es necesrio
+			    gl.Paths[call.PathOffset + i] = copy;
 			}
 
 			if ((gl.Flags & (int)NvgCreateFlags.StencilStrokes) != 0)
@@ -1222,11 +1216,9 @@ namespace NanoVGDotNet
 	    private static void glnvg__stencilMask(GlnvGcontext gl, uint mask)
 		{
 #if NANOVG_GL_USE_STATE_FILTER
-			if (gl.StencilMask != mask)
-			{
-				gl.StencilMask = mask;
-				GL.StencilMask(mask);
-			}
+		    if (gl.StencilMask == mask) return;
+		    gl.StencilMask = mask;
+		    GL.StencilMask(mask);
 #else
 			GL.StencilMask(mask);
 #endif
@@ -1235,16 +1227,11 @@ namespace NanoVGDotNet
 	    private static void glnvg__stencilFunc(GlnvGcontext gl, StencilFunction func, int ref_, uint mask)
 		{
 #if NANOVG_GL_USE_STATE_FILTER
-			if ((gl.StencilFunc != func) ||
-			    (gl.StencilFuncRef != ref_) ||
-			    (gl.StencilFuncMask != mask))
-			{
-
-				gl.StencilFunc = func;
-				gl.StencilFuncRef = ref_;
-				gl.StencilFuncMask = mask;
-				GL.StencilFunc(func, ref_, mask);
-			}
+		    if ((gl.StencilFunc == func) && (gl.StencilFuncRef == ref_) && (gl.StencilFuncMask == mask)) return;
+		    gl.StencilFunc = func;
+		    gl.StencilFuncRef = ref_;
+		    gl.StencilFuncMask = mask;
+		    GL.StencilFunc(func, ref_, mask);
 #else
 			GL.StencilFunc(func, ref_, mask);
 #endif
@@ -1385,15 +1372,13 @@ namespace NanoVGDotNet
 				GL.DrawArrays(PrimitiveType.TriangleFan, 
 					paths[i + pathOffset].FillOffset,
 					paths[i + pathOffset].FillCount);
-		
-			if ((gl.Flags & (int)NvgCreateFlags.AntiAlias) != 0)
-			{
-				// Draw fringes
-				for (i = 0; i < npaths; i++)
-					GL.DrawArrays(PrimitiveType.TriangleStrip, 
-						paths[i + pathOffset].StrokeOffset,
-						paths[i + pathOffset].StrokeCount);
-			}
+
+		    if ((gl.Flags & (int) NvgCreateFlags.AntiAlias) == 0) return;
+		    // Draw fringes
+		    for (i = 0; i < npaths; i++)
+		        GL.DrawArrays(PrimitiveType.TriangleStrip, 
+		            paths[i + pathOffset].StrokeOffset,
+		            paths[i + pathOffset].StrokeCount);
 		}
 
 	    private static void glnvg__stroke(GlnvGcontext gl, ref GlnvGcall call)

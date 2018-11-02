@@ -171,12 +171,10 @@ namespace NanoVGDotNet
         private static float nvg__normalize(ref float x, ref float y)
         {
             var d = nvg__sqrtf(x * x + y * y);
-            if (d > 1e-6f)
-            {
-                var id = 1.0f / d;
-                x *= id;
-                y *= id;
-            }
+            if (!(d > 1e-6f)) return d;
+            var id = 1.0f / d;
+            x *= id;
+            y *= id;
             return d;
         }
 
@@ -535,17 +533,15 @@ namespace NanoVGDotNet
                     cverts += (path.Count + path.Nbevel * (ncap + 2) + 1) * 2; // plus one for loop
                 else
                     cverts += (path.Count + path.Nbevel * 5 + 1) * 2; // plus one for loop
-                if (loop == 0)
+                if (loop != 0) continue;
+                // space for caps
+                if (lineCap == (int)NanoVGDotNet.NvgLineCap.Round)
                 {
-                    // space for caps
-                    if (lineCap == (int)NanoVGDotNet.NvgLineCap.Round)
-                    {
-                        cverts += (ncap * 2 + 2) * 2;
-                    }
-                    else
-                    {
-                        cverts += (3 + 3) * 2;
-                    }
+                    cverts += (ncap * 2 + 2) * 2;
+                }
+                else
+                {
+                    cverts += (3 + 3) * 2;
                 }
             }
 
@@ -1008,11 +1004,9 @@ namespace NanoVGDotNet
 
             for (i = 0; i < NvgMaxFontimages; i++)
             {
-                if (ctx.FontImages[i] != 0)
-                {
-                    NvgDeleteImage(ctx, ctx.FontImages[i]);
-                    ctx.FontImages[i] = 0;
-                }
+                if (ctx.FontImages[i] == 0) continue;
+                NvgDeleteImage(ctx, ctx.FontImages[i]);
+                ctx.FontImages[i] = 0;
             }
 
             if (ctx.Params.RenderDelete != null)
@@ -1027,34 +1021,32 @@ namespace NanoVGDotNet
             var state = nvg__getState(ctx);
             //Corrige(state);
             ctx.Params.RenderFlush(ctx.Params.UserPtr, state.CompositeOperation);
-            if (ctx.FontImageIdx != 0)
+            if (ctx.FontImageIdx == 0) return;
+            var fontImage = ctx.FontImages[ctx.FontImageIdx];
+            int i, j, iw = 0, ih = 0;
+            // delete images that smaller than current one
+            if (fontImage == 0)
+                return;
+            NvgImageSize(ctx, fontImage, ref iw, ref ih);
+            for (i = j = 0; i < ctx.FontImageIdx; i++)
             {
-                var fontImage = ctx.FontImages[ctx.FontImageIdx];
-                int i, j, iw = 0, ih = 0;
-                // delete images that smaller than current one
-                if (fontImage == 0)
-                    return;
-                NvgImageSize(ctx, fontImage, ref iw, ref ih);
-                for (i = j = 0; i < ctx.FontImageIdx; i++)
+                if (ctx.FontImages[i] != 0)
                 {
-                    if (ctx.FontImages[i] != 0)
-                    {
-                        int nw = 0, nh = 0;
-                        NvgImageSize(ctx, ctx.FontImages[i], ref nw, ref nh);
-                        if (nw < iw || nh < ih)
-                            NvgDeleteImage(ctx, ctx.FontImages[i]);
-                        else
-                            ctx.FontImages[j++] = ctx.FontImages[i];
-                    }
+                    int nw = 0, nh = 0;
+                    NvgImageSize(ctx, ctx.FontImages[i], ref nw, ref nh);
+                    if (nw < iw || nh < ih)
+                        NvgDeleteImage(ctx, ctx.FontImages[i]);
+                    else
+                        ctx.FontImages[j++] = ctx.FontImages[i];
                 }
-                // make current font image to first
-                ctx.FontImages[j++] = ctx.FontImages[0];
-                ctx.FontImages[0] = fontImage;
-                ctx.FontImageIdx = 0;
-                // clear all images after j
-                for (i = j; i < NvgMaxFontimages; i++)
-                    ctx.FontImages[i] = 0;
             }
+            // make current font image to first
+            ctx.FontImages[j++] = ctx.FontImages[0];
+            ctx.FontImages[0] = fontImage;
+            ctx.FontImageIdx = 0;
+            // clear all images after j
+            for (i = j; i < NvgMaxFontimages; i++)
+                ctx.FontImages[i] = 0;
         }
 
 
@@ -1670,13 +1662,11 @@ namespace NanoVGDotNet
 
         private static NvGvertex[] nvg__allocTempVerts(NvGcontext ctx, int nverts)
         {
-            if (nverts > ctx.Cache.Cverts)
-            {
-                var cverts = (nverts + 0xff) & ~0xff; // Round up to prevent allocations when things change just slightly.
-                                                      //verts = (NVGvertex*)realloc(ctx->cache->verts, sizeof(NVGvertex)*cverts);
-                Array.Resize(ref ctx.Cache.Verts, cverts);
-                ctx.Cache.Cverts = cverts;
-            }
+            if (nverts <= ctx.Cache.Cverts) return ctx.Cache.Verts;
+            var cverts = (nverts + 0xff) & ~0xff; // Round up to prevent allocations when things change just slightly.
+            //verts = (NVGvertex*)realloc(ctx->cache->verts, sizeof(NVGvertex)*cverts);
+            Array.Resize(ref ctx.Cache.Verts, cverts);
+            ctx.Cache.Cverts = cverts;
 
             return ctx.Cache.Verts;
         }
@@ -2688,13 +2678,11 @@ namespace NanoVGDotNet
 
             state.TextAlign = oldAlign;
 
-            if (bounds != null)
-            {
-                bounds[0] = minx;
-                bounds[1] = miny;
-                bounds[2] = maxx;
-                bounds[3] = maxy;
-            }
+            if (bounds == null) return;
+            bounds[0] = minx;
+            bounds[1] = miny;
+            bounds[2] = maxx;
+            bounds[3] = maxy;
         }
 
         public static float NvgTextBounds(NvGcontext ctx, float x, float y, string string_, float[] bounds)
@@ -2714,15 +2702,13 @@ namespace NanoVGDotNet
             FontStash.fonsSetFont(ref ctx.Fs, state.FontId);
 
             width = FontStash.fonsTextBounds(ref ctx.Fs, x * scale, y * scale, string_, bounds);
-            if (bounds != null)
-            {
-                // Use line bounds for height.
-                FontStash.fonsLineBounds(ctx.Fs, y * scale, ref bounds[1], ref bounds[3]);
-                bounds[0] *= invscale;
-                bounds[1] *= invscale;
-                bounds[2] *= invscale;
-                bounds[3] *= invscale;
-            }
+            if (bounds == null) return width * invscale;
+            // Use line bounds for height.
+            FontStash.fonsLineBounds(ctx.Fs, y * scale, ref bounds[1], ref bounds[3]);
+            bounds[0] *= invscale;
+            bounds[1] *= invscale;
+            bounds[2] *= invscale;
+            bounds[3] *= invscale;
             return width * invscale;
         }
 
@@ -2964,16 +2950,14 @@ namespace NanoVGDotNet
             }
 
             // Break the line from the end of the last word, and start new line from the beginning of the new.
-            if (rowStart >= 0)
-            {
-                rows[nrows].Start = rowStart;
-                rows[nrows].End = rowEnd;
-                rows[nrows].Width = rowWidth * invscale;
-                rows[nrows].Minx = rowMinX * invscale;
-                rows[nrows].Maxx = rowMaxX * invscale;
-                rows[nrows].Next = end;
-                nrows++;
-            }
+            if (rowStart < 0) return nrows;
+            rows[nrows].Start = rowStart;
+            rows[nrows].End = rowEnd;
+            rows[nrows].Width = rowWidth * invscale;
+            rows[nrows].Minx = rowMinX * invscale;
+            rows[nrows].Maxx = rowMaxX * invscale;
+            rows[nrows].Next = end;
+            nrows++;
 
             return nrows;
         }
@@ -3101,21 +3085,19 @@ namespace NanoVGDotNet
                 NvgTransformPoint(ref c[4], ref c[5], state.Xform, q.x1 * invscale, q.y1 * invscale);
                 NvgTransformPoint(ref c[6], ref c[7], state.Xform, q.x0 * invscale, q.y1 * invscale);
                 // Create triangles
-                if (nverts + 6 <= cverts)
-                {
-                    nvg__vset(ref verts[nverts], c[0], c[1], q.s0, q.t0);
-                    nverts++;
-                    nvg__vset(ref verts[nverts], c[4], c[5], q.s1, q.t1);
-                    nverts++;
-                    nvg__vset(ref verts[nverts], c[2], c[3], q.s1, q.t0);
-                    nverts++;
-                    nvg__vset(ref verts[nverts], c[0], c[1], q.s0, q.t0);
-                    nverts++;
-                    nvg__vset(ref verts[nverts], c[6], c[7], q.s0, q.t1);
-                    nverts++;
-                    nvg__vset(ref verts[nverts], c[4], c[5], q.s1, q.t1);
-                    nverts++;
-                }
+                if (nverts + 6 > cverts) continue;
+                nvg__vset(ref verts[nverts], c[0], c[1], q.s0, q.t0);
+                nverts++;
+                nvg__vset(ref verts[nverts], c[4], c[5], q.s1, q.t1);
+                nverts++;
+                nvg__vset(ref verts[nverts], c[2], c[3], q.s1, q.t0);
+                nverts++;
+                nvg__vset(ref verts[nverts], c[0], c[1], q.s0, q.t0);
+                nverts++;
+                nvg__vset(ref verts[nverts], c[6], c[7], q.s0, q.t1);
+                nverts++;
+                nvg__vset(ref verts[nverts], c[4], c[5], q.s1, q.t1);
+                nverts++;
             }
 
             //ctx.cache.verts = verts;
@@ -3151,21 +3133,17 @@ namespace NanoVGDotNet
         {
             var dirty = new int[4];
 
-            if (FontStash.fonsValidateTexture(ctx.Fs, dirty) != 0)
-            {
-                var fontImage = ctx.FontImages[ctx.FontImageIdx];
-                // Update texture
-                if (fontImage != 0)
-                {
-                    int iw = 0, ih = 0;
-                    var data = FontStash.fonsGetTextureData(ctx.Fs, ref iw, ref ih);
-                    var x = dirty[0];
-                    var y = dirty[1];
-                    var w = dirty[2] - dirty[0];
-                    var h = dirty[3] - dirty[1];
-                    ctx.Params.RenderUpdateTexture(ctx.Params.UserPtr, fontImage, x, y, w, h, data);
-                }
-            }
+            if (FontStash.fonsValidateTexture(ctx.Fs, dirty) == 0) return;
+            var fontImage = ctx.FontImages[ctx.FontImageIdx];
+            // Update texture
+            if (fontImage == 0) return;
+            int iw = 0, ih = 0;
+            var data = FontStash.fonsGetTextureData(ctx.Fs, ref iw, ref ih);
+            var x = dirty[0];
+            var y = dirty[1];
+            var w = dirty[2] - dirty[0];
+            var h = dirty[3] - dirty[1];
+            ctx.Params.RenderUpdateTexture(ctx.Params.UserPtr, fontImage, x, y, w, h, data);
         }
 
         public static void NvgGlobalAlpha(NvGcontext ctx, float alpha)
