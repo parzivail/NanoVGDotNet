@@ -4,9 +4,11 @@
 #define impulseResponseSize 15
 
 #define grainAmplitude 0.0
+#define warpScale 0.6
 #define maskSize 2.0
 #define scanlineSize 2.0
-#define jitterChance 0.02
+//#define jitterChance 0.015
+#define jitterChance 0.0
 
 // original 0.25
 #define ntscFreqColor 0.25
@@ -43,12 +45,52 @@ float rand(vec2 p)  // replace this by something better
     return fract(p.x*p.y*(p.x+p.y));
 }
 
+vec3 permute(vec3 x) {
+	return mod(((x*34.0)+1.0)*x, 289.0); 
+}
+
+float snoise(vec2 v){
+	const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+			-0.577350269189626, 0.024390243902439);
+	vec2 i  = floor(v + dot(v, C.yy) );
+	vec2 x0 = v -   i + dot(i, C.xx);
+	vec2 i1;
+	i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+	vec4 x12 = x0.xyxy + C.xxzz;
+	x12.xy -= i1;
+	i = mod(i, 289.0);
+	vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
+	+ i.x + vec3(0.0, i1.x, 1.0 ));
+	vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy),
+	dot(x12.zw,x12.zw)), 0.0);
+	m = m*m ;
+	m = m*m ;
+	vec3 x = 2.0 * fract(p * C.www) - 1.0;
+	vec3 h = abs(x) - 0.5;
+	vec3 ox = floor(x + 0.5);
+	vec3 a0 = x - ox;
+	m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+	vec3 g;
+	g.x  = a0.x  * x0.x  + h.x  * x0.y;
+	g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+	return 130.0 * dot(m, g);
+}
+
 vec2 ntscInterlaceJitter(vec2 randvec, vec2 uv)
 {
     int uvY = int(uv.y * iResolution.y / maskSize);
 	float r = rand(randvec + vec2(0., uvY));
+	
+	// deinterlace jitter
     if (r < jitterChance && mod(float(uvY), 2.) == 0.)
         uv.x -= (scanlineSize / iResolution.x);
+
+	// warp jitter
+    uv.x += (snoise(vec2(uvY / 25., iTime * 10.))  * warpScale) / iResolution.x;
+
+	// tracking jitter
+    uv.y += (snoise(vec2(-100., iTime * 10.)) * warpScale * 0.6) / iResolution.y;
+
     return uv;
 }
 
@@ -62,7 +104,7 @@ float sinc(float x)
 {
 	if (x == 0.)
 		return 1.;
-	float a = x*pi*0.98;
+	float a = x*pi*1.0;
 	return sin(a)/a;
 }
 

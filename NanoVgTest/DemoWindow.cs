@@ -12,26 +12,32 @@ namespace NanoVgTest
 {
     class DemoWindow : IWindow
     {
+        private int _imgCat;
+        private int _imgPlanes;
+
         public void Build(MainWindow win)
         {
         }
 
         public void Load(MainWindow win)
         {
-            var rIcons = NanoVg.NvgCreateFont(win.Nvg, "icon",
+            var rIcons = NanoVG.nvgCreateFont(win.Nvg, "icon",
                 $"Resources{Path.DirectorySeparatorChar}Fonts{Path.DirectorySeparatorChar}{MaterialDesignIcons.FontIconFileName}");
             if (rIcons == -1)
                 Console.WriteLine("Unable to load icons");
 
-            var rSans = NanoVg.NvgCreateFont(win.Nvg, "sans",
+            var rSans = NanoVG.nvgCreateFont(win.Nvg, "sans",
                 $"Resources{Path.DirectorySeparatorChar}Fonts{Path.DirectorySeparatorChar}neuehaasgrotesk.ttf");
             if (rSans == -1)
                 Console.WriteLine("Unable to load sans");
 
-            var rVcr = NanoVg.NvgCreateFont(win.Nvg, "vcr",
+            var rVcr = NanoVG.nvgCreateFont(win.Nvg, "vcr",
                 $"Resources{Path.DirectorySeparatorChar}Fonts{Path.DirectorySeparatorChar}vcrmono.ttf");
             if (rVcr == -1)
                 Console.WriteLine("Unable to load vcr");
+
+            _imgCat = NanoVG.nvgCreateImage(ref win.Nvg, "Resources/Images/cat.png", 0);
+            _imgPlanes = NanoVG.nvgCreateImage(ref win.Nvg, "Resources/Images/planes.png", 0);
         }
 
         public void Unload(MainWindow win)
@@ -42,9 +48,9 @@ namespace NanoVgTest
         {
         }
 
-        public void Render(MainWindow win, NvgContext vg)
+        public void Render(MainWindow win, NVGcontext vg)
         {
-            NanoVg.NvgSave(vg);
+            NanoVG.nvgSave(vg);
 
             //            SemanticDotNet.SdnTextButton(vg, 30, 30, 75, SemanticDotNet.Style.ButtonHeight, "Button", connection: SemanticDotNet.SConnectedSide.Right);
             //            SemanticDotNet.SdnIconTextButton(vg, 105, 30, 85, SemanticDotNet.Style.ButtonHeight, MaterialDesignIcons.Qrcode, "Icon", connection: SemanticDotNet.SConnectedSide.Left);
@@ -53,38 +59,48 @@ namespace NanoVgTest
             //
             //            SemanticDotNet.SdnCheckbox(vg, 30, 120, 17, true, "Checkbox");
 
-            NanoVg.NvgFillColor(vg, NanoVg.NvgRgba(255, 255, 255, 255));
-            NanoVg.NvgFontFace(vg, "sans");
-            NanoVg.NvgFontSize(vg, 48);
-            NanoVg.NvgTextAlign(vg, (int)NvgAlign.Top | (int)NvgAlign.Left);
+            NanoVG.nvgFillColor(vg, NanoVG.nvgRGBA(255, 255, 255, 255));
+            NanoVG.nvgFontFace(vg, "sans");
+            NanoVG.nvgFontSize(vg, 48);
+            NanoVG.nvgTextAlign(vg, (int)NvgAlign.Top | (int)NvgAlign.Left);
 
-            NanoVg.NvgText(vg, 50, 50, "commercial towing vehicle 'The Nostromo'");
-            NanoVg.NvgText(vg, 150, 140, "crew:");
-            NanoVg.NvgText(vg, 290, 140, "seven");
-            NanoVg.NvgText(vg, 150, 190, "cargo:");
-            NanoVg.NvgText(vg, 290, 190, "refinery processing");
-            NanoVg.NvgText(vg, 290, 230, "20,000,000 tons of mineral ore");
-            NanoVg.NvgText(vg, 150, 280, "course:");
-            NanoVg.NvgText(vg, 290, 280, "returning to earth");
+            NanoVG.nvgText(vg, 50, 50, "commercial towing vehicle 'The Nostromo'");
+            NanoVG.nvgText(vg, 150, 140, "crew:");
+            NanoVG.nvgText(vg, 290, 140, "seven");
+            NanoVG.nvgText(vg, 150, 190, "cargo:");
+            NanoVG.nvgText(vg, 290, 190, "refinery processing");
+            NanoVG.nvgText(vg, 290, 230, "20,000,000 tons of mineral ore");
+            NanoVG.nvgText(vg, 150, 280, "course:");
+            NanoVG.nvgText(vg, 290, 280, "returning to earth");
 
-            NanoVg.NvgSave(vg);
-            NanoVg.NvgTranslate(vg, 350, 450);
+            NanoVG.nvgSave(vg);
+            NanoVG.nvgTranslate(vg, 350, 450);
 
-            NanoVg.NvgFillColor(vg, NanoVg.NvgRgba(255, 0, 0, 255));
-            NanoVg.NvgStrokeWidth(vg, 4);
-            NanoVg.NvgBeginPath(vg);
-            NanoVg.NvgRect(vg, 0, 0, 80, 80);
-            NanoVg.NvgFill(vg);
+            NanoVG.nvgFillColor(vg, NanoVG.nvgRGBA(255, 0, 0, 255));
+            NanoVG.nvgStrokeWidth(vg, 4);
+            NanoVG.nvgBeginPath(vg);
+            NanoVG.nvgRect(vg, 0, 0, 80, 80);
+            NanoVG.nvgFill(vg);
 
-            NanoVg.NvgFillColor(vg, NanoVg.NvgRgba(0, 255, 128, 255));
-            NanoVg.NvgStrokeWidth(vg, 4);
-            NanoVg.NvgBeginPath(vg);
-            NanoVg.NvgRect(vg, 50, 30, 80, 80);
-            NanoVg.NvgFill(vg);
+            NanoVG.nvgFillColor(vg, NanoVG.nvgRGBA(0, 255, 128, 255));
+            NanoVG.nvgStrokeWidth(vg, 4);
+            NanoVG.nvgBeginPath(vg);
+            NanoVG.nvgRect(vg, 50, 30, 80, 80);
+            NanoVG.nvgFill(vg);
 
-            NanoVg.NvgRestore(vg);
+            NanoVG.nvgFillPaint(vg, NanoVG.nvgImagePattern(vg, 150, 30, 220, 330, 0, _imgCat, 1));
+            NanoVG.nvgBeginPath(vg);
+            NanoVG.nvgRect(vg, 150, 30, 220, 330);
+            NanoVG.nvgFill(vg);
+            
+            NanoVG.nvgFillPaint(vg, NanoVG.nvgImagePattern(vg, 380, 30, 1000, 420, 0, _imgPlanes, 1));
+            NanoVG.nvgBeginPath(vg);
+            NanoVG.nvgRect(vg, 380, 30, 1000, 420);
+            NanoVG.nvgFill(vg);
 
-            NanoVg.NvgRestore(vg);
+            NanoVG.nvgRestore(vg);
+
+            NanoVG.nvgRestore(vg);
         }
     }
 }
