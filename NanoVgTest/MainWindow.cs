@@ -151,9 +151,9 @@ namespace NanoVgTest
                          ClearBufferMask.DepthBufferBit |
                          ClearBufferMask.StencilBufferBit);
 
-                NanoVg.BeginFrame(Nvg, Width, Height, 1);
+                Nvg.BeginFrame(Width, Height, 1);
                 _window.Render(this, Nvg);
-                NanoVg.EndFrame(Nvg);
+                Nvg.EndFrame();
             }
             GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, 0); // disable rendering into the FBO
 

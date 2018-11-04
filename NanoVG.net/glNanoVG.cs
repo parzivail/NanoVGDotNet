@@ -1550,9 +1550,8 @@ namespace NanoVGDotNet
 		/// <summary>
 		/// nvgCreateGL2 == nvgCreateGL3
 		/// </summary>
-		/// <param name="ctx">Context.</param>
 		/// <param name="flags">Flags.</param>
-		public static void CreateGl(out NvgContext ctx, int flags)
+		public static NvgContext CreateGl(int flags)
 		{
 			var params_ = new NvgParams();
 			_gl = new GlNvgContext();
@@ -1575,7 +1574,8 @@ namespace NanoVGDotNet
 
 			_gl.Flags = flags;
 
-			NanoVg.CreateInternal(ref params_, out ctx);
+			NanoVg.CreateInternal(ref params_, out NvgContext ctx);
+		    return ctx;
 		}
 	}
 }

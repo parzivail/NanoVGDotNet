@@ -262,25 +262,25 @@ namespace NanoVGDotNet
             return state;
         }
 
-        private static NvgState nvg__getState(NvgContext ctx)
+        private static NvgState nvg__getState(this NvgContext ctx)
         {
             return ctx.States[ctx.Nstates - 1];
         }
 
         // State setting
-        public static void FontSize(NvgContext ctx, float size)
+        public static void FontSize(this NvgContext ctx, float size)
         {
             var state = nvg__getState(ctx);
             state.FontSize = size;
         }
 
-        public static void FontBlur(NvgContext ctx, float blur)
+        public static void FontBlur(this NvgContext ctx, float blur)
         {
             var state = nvg__getState(ctx);
             state.FontBlur = blur;
         }
 
-        public static void FontFace(NvgContext ctx, string font)
+        public static void FontFace(this NvgContext ctx, string font)
         {
             var state = nvg__getState(ctx);
             state.FontId = FontStash.fonsGetFontByName(ctx.Fs, font);
@@ -485,7 +485,7 @@ namespace NanoVGDotNet
             //return dst;
         }
 
-        private static int nvg__expandStroke(NvgContext ctx, float w, int lineCap, int lineJoin, float miterLimit)
+        private static int nvg__expandStroke(this NvgContext ctx, float w, int lineCap, int lineJoin, float miterLimit)
         {
             var cache = ctx.Cache;
             NvgVertex[] verts;
@@ -678,19 +678,19 @@ namespace NanoVGDotNet
             return p;
         }
 
-        public static void ClosePath(NvgContext ctx)
+        public static void ClosePath(this NvgContext ctx)
         {
             var vals = new[] { (float)NvgCommands.Close };
             nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
-        public static void PathWinding(NvgContext ctx, int dir)
+        public static void PathWinding(this NvgContext ctx, int dir)
         {
             var vals = new[] { (float)NvgCommands.Winding, dir };
             nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
-        public static void Stroke(NvgContext ctx)
+        public static void Stroke(this NvgContext ctx)
         {
             var state = nvg__getState(ctx);
             var scale = nvg__getAverageScale(state.Xform);
@@ -734,7 +734,7 @@ namespace NanoVGDotNet
         }
 
         // State handling
-        public static void Save(NvgContext ctx)
+        public static void Save(this NvgContext ctx)
         {
             if (ctx.Nstates >= NvgMaxStates)
                 return;
@@ -744,7 +744,7 @@ namespace NanoVGDotNet
             ctx.Nstates++;
         }
 
-        public static void Restore(NvgContext ctx)
+        public static void Restore(this NvgContext ctx)
         {
             if (ctx.Nstates <= 1)
                 return;
@@ -788,7 +788,7 @@ namespace NanoVGDotNet
         }
 
         // Scissoring
-        public static void Scissor(NvgContext ctx, float x, float y, float w, float h)
+        public static void Scissor(this NvgContext ctx, float x, float y, float w, float h)
         {
             var state = nvg__getState(ctx);
 
@@ -818,7 +818,7 @@ namespace NanoVGDotNet
             dst[3] = nvg__maxf(0.0f, maxy - miny);
         }
 
-        public static void IntersectScissor(NvgContext ctx, float x, float y, float w, float h)
+        public static void IntersectScissor(this NvgContext ctx, float x, float y, float w, float h)
         {
             var state = nvg__getState(ctx);
             float[] pxform = new float[6], invxorm = new float[6];
@@ -849,7 +849,7 @@ namespace NanoVGDotNet
             Scissor(ctx, rect[0], rect[1], rect[2], rect[3]);
         }
 
-        public static void ResetScissor(NvgContext ctx)
+        public static void ResetScissor(this NvgContext ctx)
         {
             var state = nvg__getState(ctx);
             //memset(state->scissor.xform, 0, sizeof(state->scissor.xform));
@@ -859,7 +859,7 @@ namespace NanoVGDotNet
             state.Scissor.Extent[1] = -1.0f;
         }
 
-        public static void Rotate(NvgContext ctx, float angle)
+        public static void Rotate(this NvgContext ctx, float angle)
         {
             var state = nvg__getState(ctx);
             var t = new float[6];
@@ -867,7 +867,7 @@ namespace NanoVGDotNet
             TransformPremultiply(state.Xform, t);
         }
 
-        public static void Scale(NvgContext ctx, float x, float y)
+        public static void Scale(this NvgContext ctx, float x, float y)
         {
             var state = nvg__getState(ctx);
             var t = new float[6];
@@ -887,7 +887,7 @@ namespace NanoVGDotNet
             p.OuterColor = color;
         }
 
-        public static void Translate(NvgContext ctx, float x, float y)
+        public static void Translate(this NvgContext ctx, float x, float y)
         {
             var state = nvg__getState(ctx);
             var t = new float[6];
@@ -895,7 +895,7 @@ namespace NanoVGDotNet
             TransformPremultiply(state.Xform, t);
         }
 
-        private static void Reset(NvgContext ctx)
+        private static void Reset(this NvgContext ctx)
         {
             var state = nvg__getState(ctx);
 
@@ -964,17 +964,17 @@ namespace NanoVGDotNet
             ctx.FontImageIdx = 0;
         }
 
-        public static void DeleteImage(NvgContext ctx, int image)
+        public static void DeleteImage(this NvgContext ctx, int image)
         {
             ctx.Params.RenderDeleteTexture(ctx.Params.UserPtr, image);
         }
 
-        private static void CancelFrame(NvgContext ctx)
+        private static void CancelFrame(this NvgContext ctx)
         {
             ctx.Params.RenderCancel(ctx.Params.UserPtr);
         }
 
-        private static void DeleteInternal(NvgContext ctx)
+        private static void DeleteInternal(this NvgContext ctx)
         {
             int i;
             if (ctx == null)
@@ -1001,7 +1001,7 @@ namespace NanoVGDotNet
             ctx = null;
         }
 
-        public static void EndFrame(NvgContext ctx)
+        public static void EndFrame(this NvgContext ctx)
         {
             var state = nvg__getState(ctx);
             //Corrige(state);
@@ -1036,13 +1036,13 @@ namespace NanoVGDotNet
 
 
         // Draw
-        public static void BeginPath(NvgContext ctx)
+        public static void BeginPath(this NvgContext ctx)
         {
             ctx.Ncommands = 0;
             nvg__clearPathCache(ctx);
         }
 
-        private static void nvg__clearPathCache(NvgContext ctx)
+        private static void nvg__clearPathCache(this NvgContext ctx)
         {
             ctx.Cache.Npoints = 0;
             ctx.Cache.Npaths = 0;
@@ -1054,7 +1054,7 @@ namespace NanoVGDotNet
             dy = sx * t[1] + sy * t[3] + t[5];
         }
 
-        private static void nvg__appendCommands(NvgContext ctx, float[] vals, int nvals)
+        private static void nvg__appendCommands(this NvgContext ctx, float[] vals, int nvals)
         {
             var state = nvg__getState(ctx);
             int i;
@@ -1129,7 +1129,7 @@ namespace NanoVGDotNet
             return arr.Length; //(sizeof(arr) / sizeof(0[arr]));
         }
 
-        private static void nvg__addPath(NvgContext ctx)
+        private static void nvg__addPath(this NvgContext ctx)
         {
             NvgPath path;
             if (ctx.Cache.Npaths + 1 > ctx.Cache.Cpaths)
@@ -1171,14 +1171,14 @@ namespace NanoVGDotNet
             ctx.Cache.Npaths++;
         }
 
-        private static NvgPoint nvg__lastPoint(NvgContext ctx)
+        private static NvgPoint nvg__lastPoint(this NvgContext ctx)
         {
             if (ctx.Cache.Npoints > 0)
                 return ctx.Cache.Points[ctx.Cache.Npoints - 1];
             return null;
         }
 
-        private static NvgPath nvg__lastPath(NvgContext ctx)
+        private static NvgPath nvg__lastPath(this NvgContext ctx)
         {
             if (ctx.Cache.Npaths > 0)
                 return ctx.Cache.Paths[ctx.Cache.Npaths - 1];
@@ -1192,7 +1192,7 @@ namespace NanoVGDotNet
             return dx * dx + dy * dy < tol * tol;
         }
 
-        private static void nvg__addPoint(NvgContext ctx, float x, float y, int flags)
+        private static void nvg__addPoint(this NvgContext ctx, float x, float y, int flags)
         {
             NvgPoint pt;
             var path = nvg__lastPath(ctx);
@@ -1239,7 +1239,7 @@ namespace NanoVGDotNet
             path.Count++;
         }
 
-        private static void nvg__closePath(NvgContext ctx)
+        private static void nvg__closePath(this NvgContext ctx)
         {
             var path = nvg__lastPath(ctx);
             if (path == null)
@@ -1247,7 +1247,7 @@ namespace NanoVGDotNet
             path.Closed = 1;
         }
 
-        private static void nvg__pathWinding(NvgContext ctx, int winding)
+        private static void nvg__pathWinding(this NvgContext ctx, int winding)
         {
             var path = nvg__lastPath(ctx);
             if (path == null)
@@ -1337,7 +1337,7 @@ namespace NanoVGDotNet
             nvg__tesselateBezier(ctx, x1234, y1234, x234, y234, x34, y34, x4, y4, level + 1, type);
         }
 
-        private static void nvg__flattenPaths(NvgContext ctx)
+        private static void nvg__flattenPaths(this NvgContext ctx)
         {
             var cache = ctx.Cache;
             //	NVGstate* state = nvg__getState(ctx);
@@ -1486,64 +1486,64 @@ namespace NanoVGDotNet
             t[4] = t4;
         }
 
-        public static void LineJoin(NvgContext ctx, int join)
+        public static void LineJoin(this NvgContext ctx, int join)
         {
             var state = nvg__getState(ctx);
             state.LineJoin = join;
         }
 
-        public static void MoveTo(NvgContext ctx, float x, float y)
+        public static void MoveTo(this NvgContext ctx, float x, float y)
         {
             var vals = new[] { (float)NvgCommands.MoveTo, x, y };
             nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
-        public static void BezierTo(NvgContext ctx, float c1X, float c1Y, float c2X, float c2Y, float x, float y)
+        public static void BezierTo(this NvgContext ctx, float c1X, float c1Y, float c2X, float c2Y, float x, float y)
         {
             var vals = new[] { (float)NvgCommands.BezierTo, c1X, c1Y, c2X, c2Y, x, y };
             nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
-        public static void LineTo(NvgContext ctx, float x, float y)
+        public static void LineTo(this NvgContext ctx, float x, float y)
         {
             var vals = new[] { (float)NvgCommands.LineTo, x, y };
             nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
-        public static void LineCap(NvgContext ctx, int cap)
+        public static void LineCap(this NvgContext ctx, int cap)
         {
             var state = nvg__getState(ctx);
             state.LineCap = cap;
         }
 
-        public static void FillPaint(NvgContext ctx, NvgPaint paint)
+        public static void FillPaint(this NvgContext ctx, NvgPaint paint)
         {
             var state = nvg__getState(ctx);
             state.Fill = paint.Clone();
             NvgTransformMultiply(state.Fill.Xform, state.Xform);
         }
 
-        public static void FillColor(NvgContext ctx, NvgColor color)
+        public static void FillColor(this NvgContext ctx, NvgColor color)
         {
             var state = nvg__getState(ctx);
             nvg__setPaintColor(ref state.Fill, color);
         }
 
-        public static void StrokePaint(NvgContext ctx, NvgPaint paint)
+        public static void StrokePaint(this NvgContext ctx, NvgPaint paint)
         {
             var state = nvg__getState(ctx);
             state.Stroke = paint.Clone();
             NvgTransformMultiply(state.Stroke.Xform, state.Xform);
         }
 
-        public static void StrokeColor(NvgContext ctx, NvgColor color)
+        public static void StrokeColor(this NvgContext ctx, NvgColor color)
         {
             var state = nvg__getState(ctx);
             nvg__setPaintColor(ref state.Stroke, color);
         }
 
         // State setting
-        public static void StrokeWidth(NvgContext ctx, float width)
+        public static void StrokeWidth(this NvgContext ctx, float width)
         {
             var state = nvg__getState(ctx);
             state.StrokeWidth = width;
@@ -1557,7 +1557,7 @@ namespace NanoVGDotNet
             vtx.V = v;
         }
 
-        private static void nvg__calculateJoins(NvgContext ctx, float w, int lineJoin, float miterLimit)
+        private static void nvg__calculateJoins(this NvgContext ctx, float w, int lineJoin, float miterLimit)
         {
             var cache = ctx.Cache;
             int i, j;
@@ -1645,7 +1645,7 @@ namespace NanoVGDotNet
             }
         }
 
-        private static NvgVertex[] nvg__allocTempVerts(NvgContext ctx, int nverts)
+        private static NvgVertex[] nvg__allocTempVerts(this NvgContext ctx, int nverts)
         {
             if (nverts <= ctx.Cache.Cverts) return ctx.Cache.Verts;
             var cverts = (nverts + 0xff) & ~0xff; // Round up to prevent allocations when things change just slightly.
@@ -1919,7 +1919,7 @@ namespace NanoVGDotNet
             //return dst[idst];
         }
 
-        private static int nvg__expandFill(NvgContext ctx, float w, int lineJoin, float miterLimit)
+        private static int nvg__expandFill(this NvgContext ctx, float w, int lineJoin, float miterLimit)
         {
             var cache = ctx.Cache;
             NvgVertex[] verts;
@@ -2132,7 +2132,7 @@ namespace NanoVGDotNet
             return 1;
         }
 
-        public static void Fill(NvgContext ctx)
+        public static void Fill(this NvgContext ctx)
         {
             var state = nvg__getState(ctx);
             NvgPath path;
@@ -2163,7 +2163,7 @@ namespace NanoVGDotNet
             }
         }
 
-        public static void Rect(NvgContext ctx, float x, float y, float w, float h)
+        public static void Rect(this NvgContext ctx, float x, float y, float w, float h)
         {
             float[] vals =
             {
@@ -2193,7 +2193,7 @@ namespace NanoVGDotNet
             return dx * dx + dy * dy;
         }
 
-        public static void ArcTo(NvgContext ctx, float x1, float y1, float x2, float y2, float radius)
+        public static void ArcTo(this NvgContext ctx, float x1, float y1, float x2, float y2, float radius)
         {
             float x0 = ctx.Commandx;
             float y0 = ctx.Commandy;
@@ -2255,7 +2255,7 @@ namespace NanoVGDotNet
             Arc(ctx, cx, cy, radius, a0, a1, dir);
         }
 
-        public static void QuadTo(NvgContext ctx, float cx, float cy, float x, float y)
+        public static void QuadTo(this NvgContext ctx, float cx, float cy, float x, float y)
         {
             float x0 = ctx.Commandx;
             float y0 = ctx.Commandy;
@@ -2267,7 +2267,7 @@ namespace NanoVGDotNet
             nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
-        public static void Arc(NvgContext ctx, float cx, float cy, float r, float a0, float a1, int dir)
+        public static void Arc(this NvgContext ctx, float cx, float cy, float r, float a0, float a1, int dir)
         {
             float a = 0, da = 0, hda = 0, kappa = 0;
             float dx = 0, dy = 0, x = 0, y = 0, tanx = 0, tany = 0;
@@ -2347,7 +2347,7 @@ namespace NanoVGDotNet
             nvg__appendCommands(ctx, vals, nvals);
         }
 
-        public static void RoundedRect(NvgContext ctx, float x, float y, float w, float h, float r)
+        public static void RoundedRect(this NvgContext ctx, float x, float y, float w, float h, float r)
         {
             if (r < 0.1f)
             {
@@ -2373,7 +2373,7 @@ namespace NanoVGDotNet
             }
         }
 
-        public static void RoundedRectVarying(NvgContext ctx, float x, float y, float w, float h, float radTopLeft, float radTopRight, float radBottomRight, float radBottomLeft)
+        public static void RoundedRectVarying(this NvgContext ctx, float x, float y, float w, float h, float radTopLeft, float radTopRight, float radBottomRight, float radBottomLeft)
         {
             if (radTopLeft < 0.1f && radTopRight < 0.1f && radBottomRight < 0.1f && radBottomLeft < 0.1f)
             {
@@ -2479,7 +2479,7 @@ namespace NanoVGDotNet
             return p;
         }
 
-        public static void Ellipse(NvgContext ctx, float cx, float cy, float rx, float ry)
+        public static void Ellipse(this NvgContext ctx, float cx, float cy, float rx, float ry)
         {
             float[] vals =
             {
@@ -2493,7 +2493,7 @@ namespace NanoVGDotNet
             nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
-        public static void Circle(NvgContext ctx, float cx, float cy, float r)
+        public static void Circle(this NvgContext ctx, float cx, float cy, float r)
         {
             Ellipse(ctx, cx, cy, r, r);
         }
@@ -2545,7 +2545,7 @@ namespace NanoVGDotNet
             return npos;
         }
 
-        public static void TextBox(NvgContext ctx, float x, float y, float breakRowWidth, string string_)
+        public static void TextBox(this NvgContext ctx, float x, float y, float breakRowWidth, string string_)
         {
             var state = nvg__getState(ctx);
             var rows = new NvgTextRow[2];
@@ -2595,7 +2595,7 @@ namespace NanoVGDotNet
             state.TextAlign = oldAlign;
         }
 
-        public static void TextBoxBounds(NvgContext ctx, float x, float y, float breakRowWidth, string string_, float[] bounds)
+        public static void TextBoxBounds(this NvgContext ctx, float x, float y, float breakRowWidth, string string_, float[] bounds)
         {
             var state = nvg__getState(ctx);
             var rows = new NvgTextRow[2];
@@ -2670,7 +2670,7 @@ namespace NanoVGDotNet
             bounds[3] = maxy;
         }
 
-        public static float TextBounds(NvgContext ctx, float x, float y, string string_, float[] bounds)
+        public static float TextBounds(this NvgContext ctx, float x, float y, string string_, float[] bounds)
         {
             var state = nvg__getState(ctx);
             var scale = nvg__getFontScale(state) * ctx.DevicePxRatio;
@@ -2697,7 +2697,7 @@ namespace NanoVGDotNet
             return width * invscale;
         }
 
-        public static void TextMetrics(NvgContext ctx, ref float ascender, ref float descender, ref float lineh)
+        public static void TextMetrics(this NvgContext ctx, ref float ascender, ref float descender, ref float lineh)
         {
             var state = nvg__getState(ctx);
             var scale = nvg__getFontScale(state) * ctx.DevicePxRatio;
@@ -2947,13 +2947,13 @@ namespace NanoVGDotNet
             return nrows;
         }
 
-        public static void TextLineHeight(NvgContext ctx, float lineHeight)
+        public static void TextLineHeight(this NvgContext ctx, float lineHeight)
         {
             var state = nvg__getState(ctx);
             state.LineHeight = lineHeight;
         }
 
-        public static void TextAlign(NvgContext ctx, int align)
+        public static void TextAlign(this NvgContext ctx, int align)
         {
             var state = nvg__getState(ctx);
             state.TextAlign = align;
@@ -2964,7 +2964,7 @@ namespace NanoVGDotNet
             return nvg__minf(nvg__quantize(nvg__getAverageScale(state.Xform), 0.01f), 4.0f);
         }
 
-        public static void ImageSize(NvgContext ctx, int image, ref int w, ref int h)
+        public static void ImageSize(this NvgContext ctx, int image, ref int w, ref int h)
         {
             ctx.Params.RenderGetTextureSize(ctx.Params.UserPtr, image, ref w, ref h);
         }
@@ -2991,7 +2991,7 @@ namespace NanoVGDotNet
             return p;
         }
 
-        private static int nvg__allocTextAtlas(NvgContext ctx)
+        private static int nvg__allocTextAtlas(this NvgContext ctx)
         {
             int iw = 0, ih = 0;
             nvg__flushTextTexture(ctx);
@@ -3017,7 +3017,7 @@ namespace NanoVGDotNet
             return 1;
         }
 
-        public static float Text(NvgContext ctx, float x, float y, string string_)
+        public static float Text(this NvgContext ctx, float x, float y, string string_)
         {
             var state = nvg__getState(ctx);
             FONStextIter iter = new FONStextIter(), prevIter = new FONStextIter();
@@ -3095,7 +3095,7 @@ namespace NanoVGDotNet
             return iter.x;
         }
 
-        private static void nvg__renderText(NvgContext ctx, NvgVertex[] verts, int nverts)
+        private static void nvg__renderText(this NvgContext ctx, NvgVertex[] verts, int nverts)
         {
             var state = nvg__getState(ctx);
             // last change
@@ -3114,7 +3114,7 @@ namespace NanoVGDotNet
             ctx.TextTriCount += nverts / 3;
         }
 
-        private static void nvg__flushTextTexture(NvgContext ctx)
+        private static void nvg__flushTextTexture(this NvgContext ctx)
         {
             var dirty = new int[4];
 
@@ -3131,7 +3131,7 @@ namespace NanoVGDotNet
             ctx.Params.RenderUpdateTexture(ctx.Params.UserPtr, fontImage, x, y, w, h, data);
         }
 
-        public static void GlobalAlpha(NvgContext ctx, float alpha)
+        public static void GlobalAlpha(this NvgContext ctx, float alpha)
         {
             var state = nvg__getState(ctx);
             state.Alpha = alpha;
@@ -3179,14 +3179,14 @@ namespace NanoVGDotNet
             return col;
         }
 
-        public static int AddFallbackFontId(NvgContext ctx, int baseFont, int fallbackFont)
+        public static int AddFallbackFontId(this NvgContext ctx, int baseFont, int fallbackFont)
         {
             if (baseFont == -1 || fallbackFont == -1)
                 return 0;
             return FontStash.fonsAddFallbackFont(ctx.Fs, baseFont, fallbackFont);
         }
 
-        public static void BeginFrame(NvgContext ctx, int windowWidth, int windowHeight, float devicePixelRatio)
+        public static void BeginFrame(this NvgContext ctx, int windowWidth, int windowHeight, float devicePixelRatio)
         {
             ctx.Nstates = 0;
             Save(ctx);
@@ -3209,7 +3209,7 @@ namespace NanoVGDotNet
         /// <param name="ctx">NanoVG context.</param>
         /// <param name="internalFontName">Internal font name.</param>
         /// <param name="fileName">File name of *.ttf font file (can include a path).</param>
-        public static int CreateFont(NvgContext ctx, string internalFontName, string fileName)
+        public static int CreateFont(this NvgContext ctx, string internalFontName, string fileName)
         {
             return FontStash.fonsAddFont(ctx.Fs, internalFontName, fileName);
         }
