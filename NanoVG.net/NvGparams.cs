@@ -6,8 +6,8 @@ namespace NanoVGDotNet
         public int EdgeAntiAlias;
         public RenderCreateHandler RenderCreate;
 
-        public RenderCreateTextureHandlerByte RenderCreateTexture;
-        public RenderCreateTextureHandlerBmp RenderCreateTexture2;
+        public RenderCreateTextureHandlerByte RenderCreateTextureByte;
+        public RenderCreateTextureHandlerBmp RenderCreateTextureBmp;
         public RenderViewportHandler RenderViewport;
         public RenderFlushHandler RenderFlush;
         public RenderFillHandler RenderFill;

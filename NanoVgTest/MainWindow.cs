@@ -85,7 +85,7 @@ namespace NanoVgTest
             Keyboard = OpenTK.Input.Keyboard.GetState();
             Mouse = OpenTK.Input.Mouse.GetState();
 
-            GlNanoVg.NvgCreateGl(ref Nvg, (int)NvgCreateFlags.AntiAlias | (int)NvgCreateFlags.StencilStrokes);
+            GlNanoVg.CreateGl(out Nvg, (int)NvgCreateFlags.AntiAlias | (int)NvgCreateFlags.StencilStrokes);
             
             _window.Load(this);
         }
@@ -151,9 +151,9 @@ namespace NanoVgTest
                          ClearBufferMask.DepthBufferBit |
                          ClearBufferMask.StencilBufferBit);
 
-                NanoVg.NvgBeginFrame(Nvg, Width, Height, 1);
+                NanoVg.BeginFrame(Nvg, Width, Height, 1);
                 _window.Render(this, Nvg);
-                NanoVg.NvgEndFrame(Nvg);
+                NanoVg.EndFrame(Nvg);
             }
             GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, 0); // disable rendering into the FBO
 

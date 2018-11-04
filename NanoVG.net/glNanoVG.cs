@@ -793,7 +793,7 @@ namespace NanoVGDotNet
 			}
 			else
 			{
-				NanoVg.NvgTransformInverse(invxform, scissor.Xform);
+				NanoVg.TransformInverse(invxform, scissor.Xform);
 				glnvg__xformToMat3x4(frag.scissorMat, invxform);
 				frag.scissorExt[0] = scissor.Extent[0];
 				frag.scissorExt[1] = scissor.Extent[1];
@@ -816,13 +816,13 @@ namespace NanoVGDotNet
 				if ((tex.Flags & (int)NvgImageFlags.FlipY) != 0)
 				{
 					var flipped = new float[6];
-					NanoVg.NvgTransformScale(flipped, 1.0f, -1.0f);
+					NanoVg.TransformScale(flipped, 1.0f, -1.0f);
 					NanoVg.NvgTransformMultiply(flipped, paint.Xform);
-					NanoVg.NvgTransformInverse(invxform, flipped);
+					NanoVg.TransformInverse(invxform, flipped);
 				}
 				else
 				{
-					NanoVg.NvgTransformInverse(invxform, paint.Xform);
+					NanoVg.TransformInverse(invxform, paint.Xform);
 				}
 				frag.Type = (int)GlNvgShaderType.FillImage;
 
@@ -837,7 +837,7 @@ namespace NanoVGDotNet
 				frag.Type = (int)GlNvgShaderType.FillGradient;
 				frag.radius = paint.Radius;
 				frag.feather = paint.Feather;
-				NanoVg.NvgTransformInverse(invxform, paint.Xform);
+				NanoVg.TransformInverse(invxform, paint.Xform);
 			}
 
 			glnvg__xformToMat3x4(frag.paintMat, invxform);
@@ -1552,15 +1552,14 @@ namespace NanoVGDotNet
 		/// </summary>
 		/// <param name="ctx">Context.</param>
 		/// <param name="flags">Flags.</param>
-		public static void NvgCreateGl(ref NvgContext ctx, int flags)
+		public static void CreateGl(out NvgContext ctx, int flags)
 		{
 			var params_ = new NvgParams();
-			ctx = null;
 			_gl = new GlNvgContext();
 
 			params_.RenderCreate = glnvg__renderCreate;
-			params_.RenderCreateTexture = glnvg__renderCreateTexture;
-			params_.RenderCreateTexture2 = glnvg__renderCreateTexture2;
+			params_.RenderCreateTextureByte = glnvg__renderCreateTexture;
+			params_.RenderCreateTextureBmp = glnvg__renderCreateTexture2;
 			params_.RenderFlush = glnvg__renderFlush;
 			params_.RenderFill = glnvg__renderFill;
 			params_.RenderStroke = glnvg__renderStroke;
@@ -1576,7 +1575,7 @@ namespace NanoVGDotNet
 
 			_gl.Flags = flags;
 
-			NanoVg.NvgCreateInternal(ref params_, out ctx);
+			NanoVg.CreateInternal(ref params_, out ctx);
 		}
 	}
 }

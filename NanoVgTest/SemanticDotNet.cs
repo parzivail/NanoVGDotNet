@@ -74,36 +74,36 @@ namespace NanoVgTest
 
             SetPrimaryStrokeColor(ctx, state);
 
-            NanoVg.NvgStrokeWidth(ctx, 2);
+            NanoVg.StrokeWidth(ctx, 2);
 
-            NanoVg.NvgBeginPath(ctx);
-            NanoVg.NvgRoundedRect(ctx, x, y, size, size, Style.BorderRadius);
+            NanoVg.BeginPath(ctx);
+            NanoVg.RoundedRect(ctx, x, y, size, size, Style.BorderRadius);
             NanoVg.Stroke(ctx);
 
             if (@checked)
             {
-                NanoVg.NvgTextAlign(ctx, (int)NvgAlign.Top | (int)NvgAlign.Left);
+                NanoVg.TextAlign(ctx, (int)NvgAlign.Top | (int)NvgAlign.Left);
                 NanoVg.FontFace(ctx, Style.FontIcon);
                 NanoVg.FontSize(ctx, size);
 
                 var ib = new float[4];
-                NanoVg.NvgTextBounds(ctx, 0, 0, MaterialDesignIcons.Check, ib);
+                NanoVg.TextBounds(ctx, 0, 0, MaterialDesignIcons.Check, ib);
                 var ifw = ib[2] - ib[0];
                 var ifh = ib[3] - ib[1];
 
-                NanoVg.NvgFillColor(ctx, Style.FontDefaultColor);
-                NanoVg.NvgText(ctx, Round(x + (size - ifw) / 2), Round(y + (size - ifh) / 2 + 1), MaterialDesignIcons.Check);
+                NanoVg.FillColor(ctx, Style.FontDefaultColor);
+                NanoVg.Text(ctx, Round(x + (size - ifw) / 2), Round(y + (size - ifh) / 2 + 1), MaterialDesignIcons.Check);
             }
 
             SetFontStyle(ctx, state);
 
             NanoVg.FontFace(ctx, Style.FontSans);
             var b = new float[4];
-            NanoVg.NvgTextBounds(ctx, 0, 0, label, b);
+            NanoVg.TextBounds(ctx, 0, 0, label, b);
             var fw = b[2] - b[0];
             var fh = b[3] - b[1];
             
-            NanoVg.NvgText(ctx, Round(x + size + 10), Round(y + (size - fh) / 2 + 1), label);
+            NanoVg.Text(ctx, Round(x + size + 10), Round(y + (size - fh) / 2 + 1), label);
 
             NanoVg.Restore(ctx);
         }
@@ -119,11 +119,11 @@ namespace NanoVgTest
 
             NanoVg.FontFace(ctx, font);
             var b = new float[4];
-            NanoVg.NvgTextBounds(ctx, 0, 0, text, b);
+            NanoVg.TextBounds(ctx, 0, 0, text, b);
             var fw = b[2] - b[0];
             var fh = b[3] - b[1];
             
-            NanoVg.NvgText(ctx, Round(x + (w - fw) / 2), Round(y + (h - fh) / 2), text);
+            NanoVg.Text(ctx, Round(x + (w - fw) / 2), Round(y + (h - fh) / 2), text);
 
             NanoVg.Restore(ctx);
         }
@@ -139,15 +139,15 @@ namespace NanoVgTest
 
             NanoVg.FontFace(ctx, font);
             var b = new float[4];
-            NanoVg.NvgTextBounds(ctx, 0, 0, text, b);
+            NanoVg.TextBounds(ctx, 0, 0, text, b);
             var fw = b[2] - b[0];
             var fh = b[3] - b[1];
 
-            NanoVg.NvgScissor(ctx, x + 1, y + 1, w - 2, h - 2);
+            NanoVg.Scissor(ctx, x + 1, y + 1, w - 2, h - 2);
             
-            NanoVg.NvgText(ctx, Round(x + (w - fw) / 2), Round(y + (h - fh) / 2), text);
+            NanoVg.Text(ctx, Round(x + (w - fw) / 2), Round(y + (h - fh) / 2), text);
 
-            NanoVg.NvgResetScissor(ctx);
+            NanoVg.ResetScissor(ctx);
 
             NanoVg.Restore(ctx);
         }
@@ -163,22 +163,22 @@ namespace NanoVgTest
 
             NanoVg.FontFace(ctx, Style.FontIcon);
             var ib = new float[4];
-            NanoVg.NvgTextBounds(ctx, 0, 0, icon, ib);
+            NanoVg.TextBounds(ctx, 0, 0, icon, ib);
             var ifw = ib[2] - ib[0];
 
             NanoVg.FontFace(ctx, Style.FontSans);
             var sb = new float[4];
-            NanoVg.NvgTextBounds(ctx, 0, 0, text, sb);
+            NanoVg.TextBounds(ctx, 0, 0, text, sb);
             var sfw = sb[2] - sb[0];
             var sfh = sb[3] - sb[1];
 
             var fw = ifw + sfw + Style.IconPadding;
 
             NanoVg.FontFace(ctx, Style.FontIcon);
-            NanoVg.NvgText(ctx, Round(x + (w - fw) / 2), Round(y + (h - sfh) / 2), icon);
+            NanoVg.Text(ctx, Round(x + (w - fw) / 2), Round(y + (h - sfh) / 2), icon);
 
             NanoVg.FontFace(ctx, Style.FontSans);
-            NanoVg.NvgText(ctx, Round(x + ifw + Style.IconPadding + (w - fw) / 2), Round(y + (h - sfh) / 2), text);
+            NanoVg.Text(ctx, Round(x + ifw + Style.IconPadding + (w - fw) / 2), Round(y + (h - sfh) / 2), text);
 
             NanoVg.Restore(ctx);
         }
@@ -200,21 +200,21 @@ namespace NanoVgTest
 
             NanoVg.FontFace(ctx, Style.FontIcon);
             var ib = new float[4];
-            NanoVg.NvgTextBounds(ctx, 0, 0, icon, ib);
+            NanoVg.TextBounds(ctx, 0, 0, icon, ib);
             var ifw = ib[2] - ib[0];
             var ifh = ib[3] - ib[1];
 
             NanoVg.FontFace(ctx, Style.FontSans);
             var sb = new float[4];
-            NanoVg.NvgTextBounds(ctx, 0, 0, text, sb);
+            NanoVg.TextBounds(ctx, 0, 0, text, sb);
             var sfw = sb[2] - sb[0];
             var sfh = sb[3] - sb[1];
 
             NanoVg.FontFace(ctx, Style.FontIcon);
-            NanoVg.NvgText(ctx, Round(x + (splitWidth - ifw) / 2), Round(y + (h - ifh) / 2), icon);
+            NanoVg.Text(ctx, Round(x + (splitWidth - ifw) / 2), Round(y + (h - ifh) / 2), icon);
 
             NanoVg.FontFace(ctx, Style.FontSans);
-            NanoVg.NvgText(ctx, Round(x + splitWidth + (w - sfw) / 2), Round(y + (h - sfh) / 2), text);
+            NanoVg.Text(ctx, Round(x + splitWidth + (w - sfw) / 2), Round(y + (h - sfh) / 2), text);
 
             NanoVg.Restore(ctx);
         }
@@ -240,10 +240,10 @@ namespace NanoVgTest
                 ? 0
                 : Style.BorderRadius;
 
-            NanoVg.NvgBeginPath(ctx);
-            NanoVg.NvgRoundedRectVarying(ctx, x, y, w, h, tl, tr, br, bl);
+            NanoVg.BeginPath(ctx);
+            NanoVg.RoundedRectVarying(ctx, x, y, w, h, tl, tr, br, bl);
             if (fill)
-                NanoVg.NvgFill(ctx);
+                NanoVg.Fill(ctx);
             else
                 NanoVg.Stroke(ctx);
         }
@@ -259,7 +259,7 @@ namespace NanoVgTest
         private static void SetFontStyle(NvgContext ctx, SWidgetState state)
         {
             NanoVg.FontSize(ctx, Style.FontSize);
-            NanoVg.NvgTextAlign(ctx, (int)NvgAlign.Top | (int)NvgAlign.Left);
+            NanoVg.TextAlign(ctx, (int)NvgAlign.Top | (int)NvgAlign.Left);
             SetFontColor(ctx, state);
         }
 
@@ -273,13 +273,13 @@ namespace NanoVgTest
             switch (state)
             {
                 case SWidgetState.Default:
-                    NanoVg.NvgFillColor(ctx, Style.PrimaryDefaultColor);
+                    NanoVg.FillColor(ctx, Style.PrimaryDefaultColor);
                     break;
                 case SWidgetState.Hover:
-                    NanoVg.NvgFillColor(ctx, Style.PrimaryHoverColor);
+                    NanoVg.FillColor(ctx, Style.PrimaryHoverColor);
                     break;
                 case SWidgetState.Focus:
-                    NanoVg.NvgFillColor(ctx, Style.PrimaryFocusColor);
+                    NanoVg.FillColor(ctx, Style.PrimaryFocusColor);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -291,13 +291,13 @@ namespace NanoVgTest
             switch (state)
             {
                 case SWidgetState.Default:
-                    NanoVg.NvgStrokeColor(ctx, Style.PrimaryDefaultColor);
+                    NanoVg.StrokeColor(ctx, Style.PrimaryDefaultColor);
                     break;
                 case SWidgetState.Hover:
-                    NanoVg.NvgStrokeColor(ctx, Style.PrimaryHoverColor);
+                    NanoVg.StrokeColor(ctx, Style.PrimaryHoverColor);
                     break;
                 case SWidgetState.Focus:
-                    NanoVg.NvgStrokeColor(ctx, Style.PrimaryFocusColor);
+                    NanoVg.StrokeColor(ctx, Style.PrimaryFocusColor);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -309,13 +309,13 @@ namespace NanoVgTest
             switch (state)
             {
                 case SWidgetState.Default:
-                    NanoVg.NvgFillColor(ctx, Style.FontDefaultColor);
+                    NanoVg.FillColor(ctx, Style.FontDefaultColor);
                     break;
                 case SWidgetState.Hover:
-                    NanoVg.NvgFillColor(ctx, Style.FontHoverColor);
+                    NanoVg.FillColor(ctx, Style.FontHoverColor);
                     break;
                 case SWidgetState.Focus:
-                    NanoVg.NvgFillColor(ctx, Style.FontFocusColor);
+                    NanoVg.FillColor(ctx, Style.FontFocusColor);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
