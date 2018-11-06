@@ -42,7 +42,6 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Runtime.InteropServices;
 using FontStashDotNet;
 
 namespace NanoVGDotNet
@@ -65,12 +64,6 @@ namespace NanoVGDotNet
 
         //if defined NANOVG_GL2_IMPLEMENTATION
         public const int NanovgGlUniformarraySize = 11;
-
-        private static int NVG_COUNTOF(int arr)
-        {
-            //return (sizeof(arr) / sizeof(0[arr]))
-            throw new Exception("int NVG_COUNTOF(int arr)");
-        }
 
         private static float Sqrtf(float a)
         {
@@ -163,27 +156,20 @@ namespace NanoVGDotNet
             return d;
         }
 
-        private static void DeletePathCache(ref NvgPathCache c)
-        {
-            c.Points = null;
-            c.Paths = null;
-            c.Verts = null;
-        }
-
         private static void AllocPathCache(out NvgPathCache c)
         {
-            c = new NvgPathCache();
-            c.Points = new NvgPoint[NvgInitPointsSize];
-            c.Npoints = 0;
-            c.Cpoints = NvgInitPointsSize;
-
-            c.Paths = new NvgPath[NvgInitPathsSize];
-            c.Npaths = 0;
-            c.Cpaths = NvgInitPathsSize;
-
-            c.Verts = new NvgVertex[NvgInitVertsSize];
-            c.Nverts = 0;
-            c.Cverts = NvgInitVertsSize;
+            c = new NvgPathCache
+            {
+                Points = new NvgPoint[NvgInitPointsSize],
+                Npoints = 0,
+                Cpoints = NvgInitPointsSize,
+                Paths = new NvgPath[NvgInitPathsSize],
+                Npaths = 0,
+                Cpaths = NvgInitPathsSize,
+                Verts = new NvgVertex[NvgInitVertsSize],
+                Nverts = 0,
+                Cverts = NvgInitVertsSize
+            };
         }
 
         private static void SetDevicePixelRatio(ref NvgContext ctx, float ratio)
@@ -340,14 +326,13 @@ namespace NanoVGDotNet
         }
 
         private static void RoundCapStart(NvgVertex[] dst, ref int idst, NvgPoint p,
-                                       float dx, float dy, float w, int ncap, float aa)
+                                       float dx, float dy, float w, int ncap)
         {
             int i;
             var px = p.X;
             var py = p.Y;
             var dlx = dy;
             var dly = -dx;
-            //NVG_NOTUSED(aa);
             for (i = 0; i < ncap; i++)
             {
                 var a = i / (float)(ncap - 1) * NvgPi;
@@ -381,14 +366,13 @@ namespace NanoVGDotNet
         }
 
         private static void RoundCapEnd(NvgVertex[] dst, ref int idst, NvgPoint p,
-                                     float dx, float dy, float w, int ncap, float aa)
+                                     float dx, float dy, float w, int ncap)
         {
             int i;
             var px = p.X;
             var py = p.Y;
             var dlx = dy;
             var dly = -dx;
-            //NVG_NOTUSED(aa);
             Vset(ref dst[idst], px + dlx * w, py + dly * w, 0, 1);
             idst++;
             Vset(ref dst[idst], px - dlx * w, py - dly * w, 1, 1);
@@ -405,22 +389,19 @@ namespace NanoVGDotNet
         }
 
         private static void RoundJoin(NvgVertex[] dst, ref int idst, NvgPoint p0, NvgPoint p1,
-                                   float lw, float rw, float lu, float ru, int ncap, float fringe)
+                                   float lw, float rw, float lu, float ru, int ncap)
         {
             int i, n;
             var dlx0 = p0.Dy;
             var dly0 = -p0.Dx;
             var dlx1 = p1.Dy;
             var dly1 = -p1.Dx;
-            //NVG_NOTUSED(fringe);
-
             if ((p1.Flags & (int)NvgPointFlags.Left) != 0)
             {
-                float lx0 = 0, ly0 = 0, lx1 = 0, ly1 = 0, a0, a1;
                 ChooseBevel(p1.Flags & (int)NvgPointFlags.InnerBevel, p0, p1, lw,
-                    ref lx0, ref ly0, ref lx1, ref ly1);
-                a0 = (float)Math.Atan2(-dly0, -dlx0);
-                a1 = (float)Math.Atan2(-dly1, -dlx1);
+                    out float lx0, out float ly0, out float lx1, out float ly1);
+                var a0 = (float)Math.Atan2(-dly0, -dlx0);
+                var a1 = (float)Math.Atan2(-dly1, -dlx1);
                 if (a1 > a0)
                     a1 -= NvgPi * 2;
 
@@ -450,11 +431,10 @@ namespace NanoVGDotNet
             }
             else
             {
-                float rx0 = 0, ry0 = 0, rx1 = 0, ry1 = 0, a0, a1;
                 ChooseBevel(p1.Flags & (int)NvgPointFlags.InnerBevel, p0, p1, -rw,
-                    ref rx0, ref ry0, ref rx1, ref ry1);
-                a0 = (float)Math.Atan2(dly0, dlx0);
-                a1 = (float)Math.Atan2(dly1, dlx1);
+                    out float rx0, out float ry0, out float rx1, out float ry1);
+                var a0 = (float)Math.Atan2(dly0, dlx0);
+                var a1 = (float)Math.Atan2(dly1, dlx1);
                 if (a1 < a0)
                     a1 += NvgPi * 2;
 
@@ -485,12 +465,9 @@ namespace NanoVGDotNet
             //return dst;
         }
 
-        private static int ExpandStroke(this NvgContext ctx, float w, int lineCap, int lineJoin, float miterLimit)
+        private static void ExpandStroke(this NvgContext ctx, float w, int lineCap, int lineJoin, float miterLimit)
         {
             var cache = ctx.Cache;
-            NvgVertex[] verts;
-            NvgVertex[] dst;
-            int cverts, i, j;
             var aa = ctx.FringeWidth;
             var ncap = CurveDivs(w, NvgPi, ctx.TessTol);  // Calculate divisions per half circle.
 
@@ -509,18 +486,18 @@ namespace NanoVGDotNet
 
 
             // Calculate max vertex usage.
-            cverts = 0;
-            for (i = 0; i < cache.Npaths; i++)
+            var cverts = 0;
+            for (var i = 0; i < cache.Npaths; i++)
             {
                 var path = cache.Paths[i];
                 var loop = path.Closed == 0 ? 0 : 1;
-                if (lineJoin == (int)NanoVGDotNet.NvgLineCap.Round)
+                if (lineJoin == (int)NvgLineCap.Round)
                     cverts += (path.Count + path.Nbevel * (ncap + 2) + 1) * 2; // plus one for loop
                 else
                     cverts += (path.Count + path.Nbevel * 5 + 1) * 2; // plus one for loop
                 if (loop != 0) continue;
                 // space for caps
-                if (lineCap == (int)NanoVGDotNet.NvgLineCap.Round)
+                if (lineCap == (int)NvgLineCap.Round)
                 {
                     cverts += (ncap * 2 + 2) * 2;
                 }
@@ -530,21 +507,21 @@ namespace NanoVGDotNet
                 }
             }
 
-            verts = AllocTempVerts(ctx, cverts);
+            var verts = AllocTempVerts(ctx, cverts);
 
             if (verts == null)
-                return 0;
+                return;
 
-            for (i = 0; i < cache.Npaths; i++)
+            for (var i = 0; i < cache.Npaths; i++)
             {
                 var path = cache.Paths[i];
                 var ipts = path.First;
                 var pts = cache.Points;
                 NvgPoint p0;
-                var ip0 = 0;
+                int ip0;
                 NvgPoint p1;
-                var ip1 = 0;
-                int s, e, loop;
+                int ip1;
+                int s, e;
                 float dx, dy;
                 var iverts = 0;
 
@@ -553,8 +530,8 @@ namespace NanoVGDotNet
                 path.Ifill = 0;
 
                 // Calculate fringe or stroke
-                loop = path.Closed == 0 ? 0 : 1;
-                dst = verts;
+                var loop = path.Closed == 0 ? 0 : 1;
+                var dst = verts;
                 var idst = iverts;
                 path.Stroke = dst;
                 path.Istroke = idst;
@@ -586,26 +563,32 @@ namespace NanoVGDotNet
                     dx = p1.X - p0.X;
                     dy = p1.Y - p0.Y;
                     Normalize(ref dx, ref dy);
-                    if (lineCap == (int)NanoVGDotNet.NvgLineCap.Butt)
+                    if (lineCap == (int)NvgLineCap.Butt)
                         ButtCapStart(dst, ref idst, p0, dx, dy, w, -aa * 0.5f, aa);
-                    else if (lineCap == (int)NanoVGDotNet.NvgLineCap.Butt || lineCap == (int)NanoVGDotNet.NvgLineCap.Square)
-                        ButtCapStart(dst, ref idst, p0, dx, dy, w, w - aa, aa);
-                    else if (lineCap == (int)NanoVGDotNet.NvgLineCap.Round)
-                        RoundCapStart(dst, ref idst, p0, dx, dy, w, ncap, aa);
+                    else switch (lineCap)
+                    {
+                        case (int)NvgLineCap.Butt:
+                        case (int)NvgLineCap.Square:
+                            ButtCapStart(dst, ref idst, p0, dx, dy, w, w - aa, aa);
+                            break;
+                        case (int)NvgLineCap.Round:
+                            RoundCapStart(dst, ref idst, p0, dx, dy, w, ncap);
+                            break;
+                    }
 
                 }
-
-                for (j = s; j < e; ++j)
+                
+                for (var j = s; j < e; ++j)
                 {
                     if ((p1.Flags & (int)(NvgPointFlags.Bevel | NvgPointFlags.InnerBevel)) != 0)
                     {
-                        if (lineJoin == (int)NanoVGDotNet.NvgLineCap.Round)
+                        if (lineJoin == (int)NvgLineCap.Round)
                         {
-                            RoundJoin(dst, ref idst, p0, p1, w, w, 0, 1, ncap, aa);
+                            RoundJoin(dst, ref idst, p0, p1, w, w, 0, 1, ncap);
                         }
                         else
                         {
-                            BevelJoin(dst, ref idst, p0, p1, w, w, 0, 1, aa);
+                            BevelJoin(dst, ref idst, p0, p1, w, w, 0, 1);
                         }
                     }
                     else
@@ -634,23 +617,24 @@ namespace NanoVGDotNet
                     dx = p1.X - p0.X;
                     dy = p1.Y - p0.Y;
                     Normalize(ref dx, ref dy);
-                    if (lineCap == (int)NanoVGDotNet.NvgLineCap.Butt)
+                    if (lineCap == (int)NvgLineCap.Butt)
                         ButtCapEnd(dst, ref idst, p1, dx, dy, w, -aa * 0.5f, aa);
-                    else if (lineCap == (int)NanoVGDotNet.NvgLineCap.Butt || lineCap == (int)NanoVGDotNet.NvgLineCap.Square)
-                        ButtCapEnd(dst, ref idst, p1, dx, dy, w, w - aa, aa);
-                    else if (lineCap == (int)NanoVGDotNet.NvgLineCap.Round)
-                        RoundCapEnd(dst, ref idst, p1, dx, dy, w, ncap, aa);
+                    else switch (lineCap)
+                    {
+                        case (int)NvgLineCap.Butt:
+                        case (int)NvgLineCap.Square:
+                            ButtCapEnd(dst, ref idst, p1, dx, dy, w, w - aa, aa);
+                            break;
+                        case (int)NvgLineCap.Round:
+                            RoundCapEnd(dst, ref idst, p1, dx, dy, w, ncap);
+                            break;
+                    }
                 }
 
                 path.Nstroke = idst - iverts;
 
                 verts = dst;
-                iverts = idst;
             }
-
-            //ctx.cache.verts = verts;
-
-            return 1;
         }
 
         public static NvgPaint BoxGradient(NvgContext ctx,
@@ -658,8 +642,6 @@ namespace NanoVGDotNet
                                               NvgColor icol, NvgColor ocol)
         {
             var p = new NvgPaint();
-            //NVG_NOTUSED(ctx);
-            //memset(&p, 0, sizeof(p));
 
             TransformIdentity(p.Xform);
             p.Xform[4] = x + w * 0.5f;
@@ -696,7 +678,6 @@ namespace NanoVGDotNet
             var scale = GetAverageScale(state.Xform);
             var strokeWidth = Clampf(state.StrokeWidth * scale, 0.0f, 200.0f);
             var strokePaint = state.Stroke.Clone();
-            NvgPath path;
             int i;
 
             if (strokeWidth < ctx.FringeWidth)
@@ -727,7 +708,7 @@ namespace NanoVGDotNet
             // Count triangles
             for (i = 0; i < ctx.Cache.Npaths; i++)
             {
-                path = ctx.Cache.Paths[i];
+                var path = ctx.Cache.Paths[i];
                 ctx.StrokeTriCount += path.Nstroke - 2;
                 ctx.DrawCallCount++;
             }
@@ -823,7 +804,6 @@ namespace NanoVGDotNet
             var state = GetState(ctx);
             float[] pxform = new float[6], invxorm = new float[6];
             var rect = new float[4];
-            float ex, ey, tex, tey;
 
             // If no previous scissor has been set, set the scissor as current scissor.
             if (state.Scissor.Extent[0] < 0)
@@ -836,12 +816,12 @@ namespace NanoVGDotNet
             // If there is difference in rotation, this will be approximation.
             //memcpy(pxform, state->scissor.xform, sizeof(float)*6);
             Array.Copy(state.Scissor.Xform, pxform, 6);
-            ex = state.Scissor.Extent[0];
-            ey = state.Scissor.Extent[1];
+            var ex = state.Scissor.Extent[0];
+            var ey = state.Scissor.Extent[1];
             TransformInverse(invxorm, state.Xform);
             NvgTransformMultiply(pxform, invxorm);
-            tex = ex * Absf(pxform[0]) + ey * Absf(pxform[2]);
-            tey = ex * Absf(pxform[1]) + ey * Absf(pxform[3]);
+            var tex = ex * Absf(pxform[0]) + ey * Absf(pxform[2]);
+            var tey = ex * Absf(pxform[1]) + ey * Absf(pxform[3]);
 
             // Intersect rects.
             IsectRects(rect, pxform[4] - tex, pxform[5] - tey, tex * 2, tey * 2, x, y, w, h);
@@ -875,9 +855,9 @@ namespace NanoVGDotNet
             TransformPremultiply(state.Xform, t);
         }
 
-        private static void SetPaintColor(ref NvgPaint p, NvgColor color)
+        private static NvgPaint SetPaintColor(NvgColor color)
         {
-            p = new NvgPaint();
+            var p = new NvgPaint();
             // la anterior línea de código equivale a "memset(p, 0, sizeof(*p));", es
             // necesario de lo contrario aparece un degradado de color no uniforme
             TransformIdentity(p.Xform);
@@ -885,6 +865,8 @@ namespace NanoVGDotNet
             p.Feather = 1.0f;
             p.InnerColor = color;
             p.OuterColor = color;
+
+            return p;
         }
 
         public static void Translate(this NvgContext ctx, float x, float y)
@@ -899,13 +881,13 @@ namespace NanoVGDotNet
         {
             var state = GetState(ctx);
 
-            SetPaintColor(ref state.Fill, Rgba(255, 255, 255, 255));
-            SetPaintColor(ref state.Stroke, Rgba(0, 0, 0, 255));
+            state.Fill = SetPaintColor(Rgba(255, 255, 255, 255));
+            state.Stroke = SetPaintColor(Rgba(0, 0, 0, 255));
             state.CompositeOperation = CompositeOperationState((int)NvgCompositeOperation.SourceOver);
             state.StrokeWidth = 1.0f;
             state.MiterLimit = 10.0f;
-            state.LineCap = (int)NanoVGDotNet.NvgLineCap.Butt;
-            state.LineJoin = (int)NanoVGDotNet.NvgLineCap.Miter;
+            state.LineCap = (int)NvgLineCap.Butt;
+            state.LineJoin = (int)NvgLineCap.Miter;
             state.Alpha = 1.0f;
             TransformIdentity(state.Xform);
 
@@ -969,38 +951,6 @@ namespace NanoVGDotNet
             ctx.Params.RenderDeleteTexture(ctx.Params.UserPtr, image);
         }
 
-        private static void CancelFrame(this NvgContext ctx)
-        {
-            ctx.Params.RenderCancel(ctx.Params.UserPtr);
-        }
-
-        private static void DeleteInternal(this NvgContext ctx)
-        {
-            int i;
-            if (ctx == null)
-                return;
-            //if (ctx.commands != null)
-            //	free(ctx->commands);
-            if (ctx.Cache != null)
-                DeletePathCache(ref ctx.Cache);
-
-            if (ctx.Fs != null)
-                FontStash.fonsDeleteInternal(ctx.Fs);
-
-            for (i = 0; i < NvgMaxFontimages; i++)
-            {
-                if (ctx.FontImages[i] == 0) continue;
-                DeleteImage(ctx, ctx.FontImages[i]);
-                ctx.FontImages[i] = 0;
-            }
-
-            if (ctx.Params.RenderDelete != null)
-                ctx.Params.RenderDelete(ctx.Params.UserPtr);
-
-            //free(ctx);
-            ctx = null;
-        }
-
         public static void EndFrame(this NvgContext ctx)
         {
             var state = GetState(ctx);
@@ -1048,7 +998,7 @@ namespace NanoVGDotNet
             ctx.Cache.Npaths = 0;
         }
 
-        private static void TransformPoint(ref float dx, ref float dy, float[] t, float sx, float sy)
+        private static void TransformPoint(out float dx, out float dy, float[] t, float sx, float sy)
         {
             dx = sx * t[0] + sy * t[2] + t[4];
             dy = sx * t[1] + sy * t[3] + t[5];
@@ -1057,7 +1007,6 @@ namespace NanoVGDotNet
         private static void AppendCommands(this NvgContext ctx, float[] vals, int nvals)
         {
             var state = GetState(ctx);
-            int i;
 
             if (ctx.Ncommands + nvals > ctx.Ccommands)
             {
@@ -1075,24 +1024,24 @@ namespace NanoVGDotNet
             }
 
             // transform commands
-            i = 0;
+            var i = 0;
             while (i < nvals)
             {
                 var cmd = (int)vals[i];
                 switch (cmd)
                 {
                     case (int)NvgCommands.MoveTo:
-                        TransformPoint(ref vals[i + 1], ref vals[i + 2], state.Xform, vals[i + 1], vals[i + 2]);
+                        TransformPoint(out vals[i + 1], out vals[i + 2], state.Xform, vals[i + 1], vals[i + 2]);
                         i += 3;
                         break;
                     case (int)NvgCommands.LineTo:
-                        TransformPoint(ref vals[i + 1], ref vals[i + 2], state.Xform, vals[i + 1], vals[i + 2]);
+                        TransformPoint(out vals[i + 1], out vals[i + 2], state.Xform, vals[i + 1], vals[i + 2]);
                         i += 3;
                         break;
                     case (int)NvgCommands.BezierTo:
-                        TransformPoint(ref vals[i + 1], ref vals[i + 2], state.Xform, vals[i + 1], vals[i + 2]);
-                        TransformPoint(ref vals[i + 3], ref vals[i + 4], state.Xform, vals[i + 3], vals[i + 4]);
-                        TransformPoint(ref vals[i + 5], ref vals[i + 6], state.Xform, vals[i + 5], vals[i + 6]);
+                        TransformPoint(out vals[i + 1], out vals[i + 2], state.Xform, vals[i + 1], vals[i + 2]);
+                        TransformPoint(out vals[i + 3], out vals[i + 4], state.Xform, vals[i + 3], vals[i + 4]);
+                        TransformPoint(out vals[i + 5], out vals[i + 6], state.Xform, vals[i + 5], vals[i + 6]);
                         i += 7;
                         break;
                     case (int)NvgCommands.Close:
@@ -1131,7 +1080,6 @@ namespace NanoVGDotNet
 
         private static void AddPath(this NvgContext ctx)
         {
-            NvgPath path;
             if (ctx.Cache.Npaths + 1 > ctx.Cache.Cpaths)
             {
                 var cpaths = ctx.Cache.Npaths + 1 + ctx.Cache.Cpaths / 2;
@@ -1143,7 +1091,7 @@ namespace NanoVGDotNet
                 ctx.Cache.Paths = paths;
                 ctx.Cache.Cpaths = cpaths;
             }
-            path = ctx.Cache.Paths[ctx.Cache.Npaths];
+            var path = ctx.Cache.Paths[ctx.Cache.Npaths];
             if (path == null)
             {
                 path = new NvgPath();
@@ -1239,7 +1187,7 @@ namespace NanoVGDotNet
             path.Count++;
         }
 
-        private static void closePath(this NvgContext ctx)
+        private static void ClosePathInternal(this NvgContext ctx)
         {
             var path = LastPath(ctx);
             if (path == null)
@@ -1247,7 +1195,7 @@ namespace NanoVGDotNet
             path.Closed = 1;
         }
 
-        private static void pathWinding(this NvgContext ctx, int winding)
+        private static void PathWindingInternal(this NvgContext ctx, int winding)
         {
             var path = LastPath(ctx);
             if (path == null)
@@ -1280,11 +1228,10 @@ namespace NanoVGDotNet
 
         private static void PolyReverse(NvgPoint[] pts, int ipts, int npts)
         {
-            NvgPoint tmp;
             int i = 0, j = npts - 1;
             while (i < j)
             {
-                tmp = pts[i + ipts].Clone();
+                var tmp = pts[i + ipts].Clone();
                 pts[i + ipts] = pts[j + ipts].Clone();
                 pts[j + ipts] = tmp;
                 i++;
@@ -1297,25 +1244,22 @@ namespace NanoVGDotNet
                                          float x3, float y3, float x4, float y4,
                                          int level, int type)
         {
-            float x12, y12, x23, y23, x34, y34, x123, y123, x234, y234, x1234, y1234;
-            float dx, dy, d2, d3;
-
             if (level > 10)
                 return;
 
-            x12 = (x1 + x2) * 0.5f;
-            y12 = (y1 + y2) * 0.5f;
-            x23 = (x2 + x3) * 0.5f;
-            y23 = (y2 + y3) * 0.5f;
-            x34 = (x3 + x4) * 0.5f;
-            y34 = (y3 + y4) * 0.5f;
-            x123 = (x12 + x23) * 0.5f;
-            y123 = (y12 + y23) * 0.5f;
+            var x12 = (x1 + x2) * 0.5f;
+            var y12 = (y1 + y2) * 0.5f;
+            var x23 = (x2 + x3) * 0.5f;
+            var y23 = (y2 + y3) * 0.5f;
+            var x34 = (x3 + x4) * 0.5f;
+            var y34 = (y3 + y4) * 0.5f;
+            var x123 = (x12 + x23) * 0.5f;
+            var y123 = (y12 + y23) * 0.5f;
 
-            dx = x4 - x1;
-            dy = y4 - y1;
-            d2 = Absf((x2 - x4) * dy - (y2 - y4) * dx);
-            d3 = Absf((x3 - x4) * dy - (y3 - y4) * dx);
+            var dx = x4 - x1;
+            var dy = y4 - y1;
+            var d2 = Absf((x2 - x4) * dy - (y2 - y4) * dx);
+            var d3 = Absf((x3 - x4) * dy - (y3 - y4) * dx);
 
             if ((d2 + d3) * (d2 + d3) < ctx.TessTol * (dx * dx + dy * dy))
             {
@@ -1328,10 +1272,10 @@ namespace NanoVGDotNet
 				return;
 			}*/
 
-            x234 = (x23 + x34) * 0.5f;
-            y234 = (y23 + y34) * 0.5f;
-            x1234 = (x123 + x234) * 0.5f;
-            y1234 = (y123 + y234) * 0.5f;
+            var x234 = (x23 + x34) * 0.5f;
+            var y234 = (y23 + y34) * 0.5f;
+            var x1234 = (x123 + x234) * 0.5f;
+            var y1234 = (y123 + y234) * 0.5f;
 
             TesselateBezier(ctx, x1, y1, x12, y12, x123, y123, x1234, y1234, level + 1, 0);
             TesselateBezier(ctx, x1234, y1234, x234, y234, x34, y34, x4, y4, level + 1, type);
@@ -1340,32 +1284,18 @@ namespace NanoVGDotNet
         private static void FlattenPaths(this NvgContext ctx)
         {
             var cache = ctx.Cache;
-            //	NVGstate* state = getState(ctx);
-            NvgPoint last;
-            NvgPoint p0;
-            NvgPoint p1;
-            var ip1 = 0;
-            NvgPoint[] pts;
-            var ipts = 0;
-            NvgPath path;
-            int i, j;
-            float[] cp1;
-            var icp1 = 0;
-            float[] cp2;
-            var icp2 = 0;
-            float[] p;
-            var ip = 0;
-            float area;
 
             if (cache.Npaths > 0)
                 return;
 
             // Flatten
-            i = 0;
+            var i = 0;
             while (i < ctx.Ncommands)
             {
                 var cmd = (int)ctx.Commands[i];
 
+                float[] p;
+                int ip;
                 switch (cmd)
                 {
                     case (int)NvgCommands.MoveTo:
@@ -1382,13 +1312,13 @@ namespace NanoVGDotNet
                         i += 3;
                         break;
                     case (int)NvgCommands.BezierTo:
-                        last = LastPoint(ctx);
+                        var last = LastPoint(ctx);
                         if (last != null)
                         {
-                            cp1 = ctx.Commands;
-                            icp1 = i + 1;
-                            cp2 = ctx.Commands;
-                            icp2 = i + 3;
+                            var cp1 = ctx.Commands;
+                            var icp1 = i + 1;
+                            var cp2 = ctx.Commands;
+                            var icp2 = i + 3;
                             p = ctx.Commands;
                             ip = i + 5;
                             TesselateBezier(ctx, last.X, last.Y,
@@ -1401,11 +1331,11 @@ namespace NanoVGDotNet
                         i += 7;
                         break;
                     case (int)NvgCommands.Close:
-                        closePath(ctx);
+                        ClosePathInternal(ctx);
                         i++;
                         break;
                     case (int)NvgCommands.Winding:
-                        pathWinding(ctx, (int)ctx.Commands[i + 1]);
+                        PathWindingInternal(ctx, (int)ctx.Commands[i + 1]);
                         i += 2;
                         break;
                     default:
@@ -1418,16 +1348,16 @@ namespace NanoVGDotNet
             cache.Bounds[2] = cache.Bounds[3] = -1e6f;
 
             // Calculate the direction and length of line segments.
-            for (j = 0; j < cache.Npaths; j++)
+            for (var j = 0; j < cache.Npaths; j++)
             {
-                path = cache.Paths[j];
-                pts = cache.Points;
-                ipts = path.First;
+                var path = cache.Paths[j];
+                var pts = cache.Points;
+                var ipts = path.First;
 
                 // If the first and last points are the same, remove the last, mark as closed path.
-                p0 = pts[ipts + path.Count - 1];
-                ip1 = 0 + ipts;
-                p1 = pts[ip1];
+                var p0 = pts[ipts + path.Count - 1];
+                var ip1 = 0 + ipts;
+                var p1 = pts[ip1];
 
                 if (PtEquals(p0.X, p0.Y, p1.X, p1.Y, ctx.DistTol))
                 {
@@ -1439,7 +1369,7 @@ namespace NanoVGDotNet
                 // Enforce winding.
                 if (path.Count > 2)
                 {
-                    area = PolyArea(pts, ipts, path.Count);
+                    var area = PolyArea(pts, ipts, path.Count);
                     if (path.Winding == (int)NvgWinding.CounterClockwise && area < 0.0f)
                     {
                         PolyReverse(pts, ipts, path.Count);
@@ -1526,7 +1456,7 @@ namespace NanoVGDotNet
         public static void FillColor(this NvgContext ctx, NvgColor color)
         {
             var state = GetState(ctx);
-            SetPaintColor(ref state.Fill, color);
+            state.Fill = SetPaintColor(color);
         }
 
         public static void StrokePaint(this NvgContext ctx, NvgPaint paint)
@@ -1539,7 +1469,7 @@ namespace NanoVGDotNet
         public static void StrokeColor(this NvgContext ctx, NvgColor color)
         {
             var state = GetState(ctx);
-            SetPaintColor(ref state.Stroke, color);
+            state.Stroke = SetPaintColor(color);
         }
 
         // State setting
@@ -1560,14 +1490,13 @@ namespace NanoVGDotNet
         private static void CalculateJoins(this NvgContext ctx, float w, int lineJoin, float miterLimit)
         {
             var cache = ctx.Cache;
-            int i, j;
             var iw = 0.0f;
 
             if (w > 0.0f)
                 iw = 1.0f / w;
 
             // Calculate which joins needs extra vertices to append, and gather vertex count.
-            for (i = 0; i < cache.Npaths; i++)
+            for (var i = 0; i < cache.Npaths; i++)
             {
                 var path = cache.Paths[i];
 
@@ -1582,18 +1511,17 @@ namespace NanoVGDotNet
                 var nleft = 0;
 
                 path.Nbevel = 0;
-
-                for (j = 0; j < path.Count; j++)
+                
+                for (var j = 0; j < path.Count; j++)
                 {
-                    float dlx0, dly0, dlx1, dly1, dmr2, cross, limit;
-                    dlx0 = p0.Dy;
-                    dly0 = -p0.Dx;
-                    dlx1 = p1.Dy;
-                    dly1 = -p1.Dx;
+                    var dlx0 = p0.Dy;
+                    var dly0 = -p0.Dx;
+                    var dlx1 = p1.Dy;
+                    var dly1 = -p1.Dx;
                     // Calculate extrusions
                     p1.Dmx = (dlx0 + dlx1) * 0.5f;
                     p1.Dmy = (dly0 + dly1) * 0.5f;
-                    dmr2 = p1.Dmx * p1.Dmx + p1.Dmy * p1.Dmy;
+                    var dmr2 = p1.Dmx * p1.Dmx + p1.Dmy * p1.Dmy;
                     if (dmr2 > 0.000001f)
                     {
                         var scale = 1.0f / dmr2;
@@ -1610,7 +1538,7 @@ namespace NanoVGDotNet
                                        (int)NvgPointFlags.Corner) != 0 ? (int)NvgPointFlags.Corner : 0);
 
                     // Keep track of left turns.
-                    cross = p1.Dx * p0.Dy - p0.Dx * p1.Dy;
+                    var cross = p1.Dx * p0.Dy - p0.Dx * p1.Dy;
                     if (cross > 0.0f)
                     {
                         nleft++;
@@ -1618,7 +1546,7 @@ namespace NanoVGDotNet
                     }
 
                     // Calculate if we should use bevel or miter for inner join.
-                    limit = Maxf(1.01f, Minf(p0.Len, p1.Len) * iw);
+                    var limit = Maxf(1.01f, Minf(p0.Len, p1.Len) * iw);
                     if (dmr2 * limit * limit < 1.0f)
                         p1.Flags |= (int)NvgPointFlags.InnerBevel;
 
@@ -1626,8 +1554,8 @@ namespace NanoVGDotNet
                     if ((p1.Flags & (int)NvgPointFlags.Corner) != 0)
                     {
                         if (dmr2 * miterLimit * miterLimit < 1.0f ||
-                            lineJoin == (int)NanoVGDotNet.NvgLineCap.Bevel ||
-                            lineJoin == (int)NanoVGDotNet.NvgLineCap.Round)
+                            lineJoin == (int)NvgLineCap.Bevel ||
+                            lineJoin == (int)NvgLineCap.Round)
                         {
                             p1.Flags |= (int)NvgPointFlags.Bevel;
                         }
@@ -1656,27 +1584,8 @@ namespace NanoVGDotNet
             return ctx.Cache.Verts;
         }
 
-        private static void ChooseBevel(int bevel, NvgPoint[] p0, int ip0, NvgPoint[] p1, int ip1, float w,
-                                     ref float x0, ref float y0, ref float x1, ref float y1)
-        {
-            if (bevel != 0)
-            {
-                x0 = p1[ip1].X + p0[ip0].Dy * w;
-                y0 = p1[ip1].Y - p0[ip0].Dx * w;
-                x1 = p1[ip1].X + p1[ip1].Dy * w;
-                y1 = p1[ip1].Y - p1[ip1].Dx * w;
-            }
-            else
-            {
-                x0 = p1[ip1].X + p1[ip1].Dmx * w;
-                y0 = p1[ip1].Y + p1[ip1].Dmy * w;
-                x1 = p1[ip1].X + p1[ip1].Dmx * w;
-                y1 = p1[ip1].Y + p1[ip1].Dmy * w;
-            }
-        }
-
         private static void ChooseBevel(int bevel, NvgPoint p0, NvgPoint p1, float w,
-                                     ref float x0, ref float y0, ref float x1, ref float y1)
+                                     out float x0, out float y0, out float x1, out float y1)
         {
             if (bevel != 0)
             {
@@ -1695,20 +1604,19 @@ namespace NanoVGDotNet
         }
 
         private static void BevelJoin(NvgVertex[] dst, ref int idst,
-                                   NvgPoint p0, NvgPoint p1, float lw, float rw, float lu, float ru, float fringe)
+                                   NvgPoint p0, NvgPoint p1, float lw, float rw, float lu, float ru)
         {
-            float rx0 = 0, ry0 = 0, rx1 = 0, ry1 = 0;
-            float lx0 = 0, ly0 = 0, lx1 = 0, ly1 = 0;
+            float rx0, ry0;
+            float lx0, ly0;
             var dlx0 = p0.Dy;
             var dly0 = -p0.Dx;
             var dlx1 = p1.Dy;
             var dly1 = -p1.Dx;
-            //NVG_NOTUSED(fringe);
 
             if ((p1.Flags & (int)NvgPointFlags.Left) != 0)
             {
                 ChooseBevel(p1.Flags & (int)NvgPointFlags.InnerBevel,
-                    p0, p1, lw, ref lx0, ref ly0, ref lx1, ref ly1);
+                    p0, p1, lw, out lx0, out ly0, out float lx1, out float ly1);
 
                 Vset(ref dst[idst], lx0, ly0, lu, 1);
                 idst++;
@@ -1757,7 +1665,7 @@ namespace NanoVGDotNet
             else
             {
                 ChooseBevel(p1.Flags & (int)NvgPointFlags.InnerBevel,
-                    p0, p1, -rw, ref rx0, ref ry0, ref rx1, ref ry1);
+                    p0, p1, -rw, out rx0, out ry0, out float rx1, out float ry1);
 
                 Vset(ref dst[idst], p1.X + dlx0 * lw, p1.Y + dly0 * lw, lu, 1);
                 idst++;
@@ -1802,139 +1710,20 @@ namespace NanoVGDotNet
                 Vset(ref dst[idst], rx1, ry1, ru, 1);
                 idst++;
             }
-
-            //return dst[idst];
         }
 
-        private static void BevelJoin(NvgVertex[] dst, ref int idst,
-                                   NvgPoint[] p0, int ip0, NvgPoint[] p1, int ip1,
-                                   float lw, float rw, float lu, float ru, float fringe)
-        {
-            float rx0 = 0, ry0 = 0, rx1 = 0, ry1 = 0;
-            float lx0 = 0, ly0 = 0, lx1 = 0, ly1 = 0;
-            var dlx0 = p0[ip0].Dy;
-            var dly0 = -p0[ip0].Dx;
-            var dlx1 = p1[ip1].Dy;
-            var dly1 = -p1[ip1].Dx;
-            //NVG_NOTUSED(fringe);
-
-            if ((p1[ip1].Flags & (int)NvgPointFlags.Left) != 0)
-            {
-                ChooseBevel(p1[ip1].Flags & (int)NvgPointFlags.InnerBevel,
-                    p0, ip0, p1, ip1, lw, ref lx0, ref ly0, ref lx1, ref ly1);
-
-                Vset(ref dst[idst], lx0, ly0, lu, 1);
-                idst++;
-                Vset(ref dst[idst], p1[ip1].X - dlx0 * rw, p1[ip1].Y - dly0 * rw, ru, 1);
-                idst++;
-
-                if ((p1[ip1].Flags & (int)NvgPointFlags.Bevel) != 0)
-                {
-                    Vset(ref dst[idst], lx0, ly0, lu, 1);
-                    idst++;
-                    Vset(ref dst[idst], p1[ip1].X - dlx0 * rw, p1[ip1].Y - dly0 * rw, ru, 1);
-                    idst++;
-
-                    Vset(ref dst[idst], lx1, ly1, lu, 1);
-                    idst++;
-                    Vset(ref dst[idst], p1[ip1].X - dlx1 * rw, p1[ip1].Y - dly1 * rw, ru, 1);
-                    idst++;
-                }
-                else
-                {
-                    rx0 = p1[ip1].X - p1[ip1].Dmx * rw;
-                    ry0 = p1[ip1].Y - p1[ip1].Dmy * rw;
-
-                    Vset(ref dst[idst], p1[ip1].X, p1[ip1].Y, 0.5f, 1);
-                    idst++;
-                    Vset(ref dst[idst], p1[ip1].X - dlx0 * rw, p1[ip1].Y - dly0 * rw, ru, 1);
-                    idst++;
-
-                    Vset(ref dst[idst], rx0, ry0, ru, 1);
-                    idst++;
-                    Vset(ref dst[idst], rx0, ry0, ru, 1);
-                    idst++;
-
-                    Vset(ref dst[idst], p1[ip1].X, p1[ip1].Y, 0.5f, 1);
-                    idst++;
-                    Vset(ref dst[idst], p1[ip1].X - dlx1 * rw, p1[ip1].Y - dly1 * rw, ru, 1);
-                    idst++;
-                }
-
-                Vset(ref dst[idst], lx1, ly1, lu, 1);
-                idst++;
-                Vset(ref dst[idst], p1[ip1].X - dlx1 * rw, p1[ip1].Y - dly1 * rw, ru, 1);
-                idst++;
-
-            }
-            else
-            {
-                ChooseBevel(p1[ip1].Flags & (int)NvgPointFlags.InnerBevel,
-                    p0, ip0, p1, ip1, -rw, ref rx0, ref ry0, ref rx1, ref ry1);
-
-                Vset(ref dst[idst], p1[ip1].X + dlx0 * lw, p1[ip1].Y + dly0 * lw, lu, 1);
-                idst++;
-                Vset(ref dst[idst], rx0, ry0, ru, 1);
-                idst++;
-
-                if ((p1[ip1].Flags & (int)NvgPointFlags.Bevel) != 0)
-                {
-                    Vset(ref dst[idst], p1[ip1].X + dlx0 * lw, p1[ip1].Y + dly0 * lw, lu, 1);
-                    idst++;
-                    Vset(ref dst[idst], rx0, ry0, ru, 1);
-                    idst++;
-
-                    Vset(ref dst[idst], p1[ip1].X + dlx1 * lw, p1[ip1].Y + dly1 * lw, lu, 1);
-                    idst++;
-                    Vset(ref dst[idst], rx1, ry1, ru, 1);
-                    idst++;
-                }
-                else
-                {
-                    lx0 = p1[ip1].X + p1[ip1].Dmx * lw;
-                    ly0 = p1[ip1].Y + p1[ip1].Dmy * lw;
-
-                    Vset(ref dst[idst], p1[ip1].X + dlx0 * lw, p1[ip1].Y + dly0 * lw, lu, 1);
-                    idst++;
-                    Vset(ref dst[idst], p1[ip1].X, p1[ip1].Y, 0.5f, 1);
-                    idst++;
-
-                    Vset(ref dst[idst], lx0, ly0, lu, 1);
-                    idst++;
-                    Vset(ref dst[idst], lx0, ly0, lu, 1);
-                    idst++;
-
-                    Vset(ref dst[idst], p1[ip1].X + dlx1 * lw, p1[ip1].Y + dly1 * lw, lu, 1);
-                    idst++;
-                    Vset(ref dst[idst], p1[ip1].X, p1[ip1].Y, 0.5f, 1);
-                    idst++;
-                }
-
-                Vset(ref dst[idst], p1[ip1].X + dlx1 * lw, p1[ip1].Y + dly1 * lw, lu, 1);
-                idst++;
-                Vset(ref dst[idst], rx1, ry1, ru, 1);
-                idst++;
-            }
-
-            //return dst[idst];
-        }
-
-        private static int ExpandFill(this NvgContext ctx, float w, int lineJoin, float miterLimit)
+        private static void ExpandFill(this NvgContext ctx, float w, int lineJoin, float miterLimit)
         {
             var cache = ctx.Cache;
-            NvgVertex[] verts;
             var iverts = 0;
-            NvgVertex[] dst;
-            var idst = 0;
-            int cverts, i, j;
-            var convex = false;
+            int i;
             var aa = ctx.FringeWidth;
             var fringe = w > 0.0f;
 
             CalculateJoins(ctx, w, lineJoin, miterLimit);
 
             // Calculate max vertex usage.
-            cverts = 0;
+            var cverts = 0;
             for (i = 0; i < cache.Npaths; i++)
             {
                 var path = cache.Paths[i];
@@ -1943,33 +1732,30 @@ namespace NanoVGDotNet
                     cverts += (path.Count + path.Nbevel * 5 + 1) * 2; // plus one for loop
             }
 
-            verts = AllocTempVerts(ctx, cverts);
+            var verts = AllocTempVerts(ctx, cverts);
             if (verts == null)
-                return 0;
+                return;
 
-            convex = cache.Npaths == 1 && cache.Paths[0].Convex != 0;
-
-            NvgPath path2;
+            var convex = cache.Npaths == 1 && cache.Paths[0].Convex != 0;
 
             for (i = 0; i < cache.Npaths; i++)
             {
-                path2 = cache.Paths[i];
+                var path2 = cache.Paths[i];
                 var pts = cache.Points;
                 var ipts = path2.First;
                 NvgPoint p0;
-                var ip0 = 0;
+                int ip0;
                 NvgPoint p1;
-                var ip1 = 0;
-                float rw, lw, woff;
-                float ru, lu;
+                int ip1;
 
                 // Calculate shape vertices.
-                woff = 0.5f * aa;
-                dst = verts;
-                idst = iverts;
+                var woff = 0.5f * aa;
+                var dst = verts;
+                var idst = iverts;
                 path2.Fill = dst;
                 path2.Ifill = idst;
 
+                int j;
                 if (fringe)
                 {
                     // Looping
@@ -2031,10 +1817,10 @@ namespace NanoVGDotNet
                 // Calculate fringe (Calcula flecos)
                 if (fringe)
                 {
-                    lw = w + woff;
-                    rw = w - woff;
-                    lu = 0;
-                    ru = 1;
+                    var lw = w + woff;
+                    var rw = w - woff;
+                    float lu = 0;
+                    float ru = 1;
                     idst = iverts;
                     dst = verts;
                     path2.Stroke = dst;
@@ -2059,7 +1845,7 @@ namespace NanoVGDotNet
                         if ((p1.Flags &
                             ((int)NvgPointFlags.Bevel | (int)NvgPointFlags.InnerBevel)) != 0)
                         {
-                            BevelJoin(dst, ref idst, p0, p1, lw, rw, lu, ru, ctx.FringeWidth);
+                            BevelJoin(dst, ref idst, p0, p1, lw, rw, lu, ru);
                         }
                         else
                         {
@@ -2100,8 +1886,6 @@ namespace NanoVGDotNet
             }
 
             //ctx.cache.verts = verts;
-
-            return 1;
         }
 
         public static void TransformScale(float[] t, float sx, float sy)
@@ -2116,13 +1900,13 @@ namespace NanoVGDotNet
 
         public static int TransformInverse(float[] inv, float[] t)
         {
-            double invdet, det = (double)t[0] * t[3] - (double)t[2] * t[1];
+            var det = (double)t[0] * t[3] - (double)t[2] * t[1];
             if (det > -1e-6 && det < 1e-6)
             {
                 TransformIdentity(inv);
                 return 0;
             }
-            invdet = 1.0 / det;
+            var invdet = 1.0 / det;
             inv[0] = (float)(t[3] * invdet);
             inv[2] = (float)(-t[2] * invdet);
             inv[4] = (float)(((double)t[2] * t[5] - (double)t[3] * t[4]) * invdet);
@@ -2135,16 +1919,12 @@ namespace NanoVGDotNet
         public static void Fill(this NvgContext ctx)
         {
             var state = GetState(ctx);
-            NvgPath path;
             var fillPaint = state.Fill.Clone();
             int i;
 
             FlattenPaths(ctx);
 
-            if (ctx.Params.EdgeAntiAlias != 0)
-                ExpandFill(ctx, ctx.FringeWidth, (int)NanoVGDotNet.NvgLineCap.Miter, 2.4f);
-            else
-                ExpandFill(ctx, 0.0f, (int)NanoVGDotNet.NvgLineCap.Miter, 2.4f);
+            ExpandFill(ctx, ctx.Params.EdgeAntiAlias != 0 ? ctx.FringeWidth : 0.0f, (int) NvgLineCap.Miter, 2.4f);
 
             // Apply global alpha
             fillPaint.InnerColor.A *= state.Alpha;
@@ -2156,7 +1936,7 @@ namespace NanoVGDotNet
             // Count triangles
             for (i = 0; i < ctx.Cache.Npaths; i++)
             {
-                path = ctx.Cache.Paths[i];
+                var path = ctx.Cache.Paths[i];
                 ctx.FillTriCount += path.Nfill - 2;
                 ctx.FillTriCount += path.Nstroke - 2;
                 ctx.DrawCallCount += 2;
@@ -2178,13 +1958,12 @@ namespace NanoVGDotNet
 
         private static float DistPtSeg(float x, float y, float px, float py, float qx, float qy)
         {
-            float pqx, pqy, dx, dy, d, t;
-            pqx = qx - px;
-            pqy = qy - py;
-            dx = x - px;
-            dy = y - py;
-            d = pqx * pqx + pqy * pqy;
-            t = pqx * dx + pqy * dy;
+            var pqx = qx - px;
+            var pqy = qy - py;
+            var dx = x - px;
+            var dy = y - py;
+            var d = pqx * pqx + pqy * pqy;
+            var t = pqx * dx + pqy * dy;
             if (d > 0) t /= d;
             if (t < 0) t = 0;
             else if (t > 1) t = 1;
@@ -2195,9 +1974,9 @@ namespace NanoVGDotNet
 
         public static void ArcTo(this NvgContext ctx, float x1, float y1, float x2, float y2, float radius)
         {
-            float x0 = ctx.Commandx;
-            float y0 = ctx.Commandy;
-            float dx0, dy0, dx1, dy1, a, d, cx, cy, a0, a1;
+            var x0 = ctx.Commandx;
+            var y0 = ctx.Commandy;
+            float cx, cy, a0, a1;
             int dir;
 
             if (ctx.Ncommands == 0)
@@ -2216,14 +1995,14 @@ namespace NanoVGDotNet
             }
 
             // Calculate tangential circle to lines (x0,y0)-(x1,y1) and (x1,y1)-(x2,y2).
-            dx0 = x0 - x1;
-            dy0 = y0 - y1;
-            dx1 = x2 - x1;
-            dy1 = y2 - y1;
+            var dx0 = x0 - x1;
+            var dy0 = y0 - y1;
+            var dx1 = x2 - x1;
+            var dy1 = y2 - y1;
             Normalize(ref dx0, ref dy0);
             Normalize(ref dx1, ref dy1);
-            a = Acosf(dx0 * dx1 + dy0 * dy1);
-            d = radius / Tanf(a / 2.0f);
+            var a = Acosf(dx0 * dx1 + dy0 * dy1);
+            var d = radius / Tanf(a / 2.0f);
 
             //	printf("a=%f° d=%f\n", a/NVG_PI*180.0f, d);
 
@@ -2257,8 +2036,8 @@ namespace NanoVGDotNet
 
         public static void QuadTo(this NvgContext ctx, float cx, float cy, float x, float y)
         {
-            float x0 = ctx.Commandx;
-            float y0 = ctx.Commandy;
+            var x0 = ctx.Commandx;
+            var y0 = ctx.Commandy;
             float[] vals = { (int)NvgCommands.BezierTo,
                 x0 + 2.0f/3.0f*(cx - x0), y0 + 2.0f/3.0f*(cy - y0),
                 x + 2.0f/3.0f*(cx - x), y + 2.0f/3.0f*(cy - y),
@@ -2269,15 +2048,13 @@ namespace NanoVGDotNet
 
         public static void Arc(this NvgContext ctx, float cx, float cy, float r, float a0, float a1, int dir)
         {
-            float a = 0, da = 0, hda = 0, kappa = 0;
-            float dx = 0, dy = 0, x = 0, y = 0, tanx = 0, tany = 0;
             float px = 0, py = 0, ptanx = 0, ptany = 0;
             var vals = new float[3 + 5 * 7 + 100];
-            int i, ndivs, nvals;
+            int i;
             var move = ctx.Ncommands > 0 ? (int)NvgCommands.LineTo : (int)NvgCommands.MoveTo;
 
             // Clamp angles
-            da = a1 - a0;
+            var da = a1 - a0;
             if (dir == (int)NvgWinding.Clockwise)
             {
                 if (Absf(da) >= NvgPi * 2)
@@ -2304,23 +2081,23 @@ namespace NanoVGDotNet
             }
 
             // Split arc into max 90 degree segments.
-            ndivs = Maxi(1, Mini((int)(Absf(da) / (NvgPi * 0.5f) + 0.5f), 5));
-            hda = da / ndivs / 2.0f;
-            kappa = Absf(4.0f / 3.0f * (1.0f - Cosf(hda)) / Sinf(hda));
+            var ndivs = Maxi(1, Mini((int)(Absf(da) / (NvgPi * 0.5f) + 0.5f), 5));
+            var hda = da / ndivs / 2.0f;
+            var kappa = Absf(4.0f / 3.0f * (1.0f - Cosf(hda)) / Sinf(hda));
 
             if (dir == (int)NvgWinding.CounterClockwise)
                 kappa = -kappa;
 
-            nvals = 0;
+            var nvals = 0;
             for (i = 0; i <= ndivs; i++)
             {
-                a = a0 + da * (i / (float)ndivs);
-                dx = Cosf(a);
-                dy = Sinf(a);
-                x = cx + dx * r;
-                y = cy + dy * r;
-                tanx = -dy * r * kappa;
-                tany = dx * r * kappa;
+                var a = a0 + da * (i / (float)ndivs);
+                var dx = Cosf(a);
+                var dy = Sinf(a);
+                var x = cx + dx * r;
+                var y = cy + dy * r;
+                var tanx = -dy * r * kappa;
+                var tany = dx * r * kappa;
 
                 if (i == 0)
                 {
@@ -2407,15 +2184,14 @@ namespace NanoVGDotNet
                                                  NvgColor icol, NvgColor ocol)
         {
             var p = new NvgPaint();
-            float dx, dy, d;
             const float large = (float)1e5;
             //NVG_NOTUSED(ctx);
             //memset(&p, 0, sizeof(p));
 
             // Calculate transform aligned to the line
-            dx = ex - sx;
-            dy = ey - sy;
-            d = (float)Math.Sqrt(dx * dx + dy * dy);
+            var dx = ex - sx;
+            var dy = ey - sy;
+            var d = (float)Math.Sqrt(dx * dx + dy * dy);
             if (d > 0.0001f)
             {
                 dx /= d;
@@ -2504,7 +2280,7 @@ namespace NanoVGDotNet
             var state = GetState(ctx);
             var scale = GetFontScale(state) * ctx.DevicePxRatio;
             var invscale = 1.0f / scale;
-            FONStextIter iter = new FONStextIter(), prevIter = new FONStextIter();
+            var iter = new FONStextIter();
             var q = new FONSquad();
             var npos = 0;
 
@@ -2524,7 +2300,7 @@ namespace NanoVGDotNet
             FontStash.fonsSetFont(ref ctx.Fs, state.FontId);
 
             FontStash.fonsTextIterInit(ctx.Fs, ref iter, x * scale, y * scale, string_);
-            prevIter = iter;
+            var prevIter = iter;
             while (FontStash.fonsTextIterNext(ctx.Fs, ref iter, ref q) != 0)
             {
                 if (iter.prevGlyphIndex < 0 && AllocTextAtlas(ctx) > 0)
@@ -2549,7 +2325,7 @@ namespace NanoVGDotNet
         {
             var state = GetState(ctx);
             var rows = new NvgTextRow[2];
-            int nrows = 0, i;
+            int nrows;
             var oldAlign = state.TextAlign;
             var haling = state.TextAlign & ((int)NvgAlign.Left | (int)NvgAlign.Center | (int)NvgAlign.Right);
             var valign = state.TextAlign & ((int)NvgAlign.Top | (int)NvgAlign.Middle | (int)NvgAlign.Bottom | (int)NvgAlign.Baseline);
@@ -2565,7 +2341,7 @@ namespace NanoVGDotNet
 
             while ((nrows = TextBreakLines(ctx, string_, breakRowWidth, rows, 2)) > 0)
             {
-                for (i = 0; i < nrows; i++)
+                for (var i = 0; i < nrows; i++)
                 {
                     string str;
                     var row = rows[i];
@@ -2601,12 +2377,12 @@ namespace NanoVGDotNet
             var rows = new NvgTextRow[2];
             var scale = GetFontScale(state) * ctx.DevicePxRatio;
             var invscale = 1.0f / scale;
-            int nrows = 0, i;
+            int nrows;
             var oldAlign = state.TextAlign;
             var haling = state.TextAlign & ((int)NvgAlign.Left | (int)NvgAlign.Center | (int)NvgAlign.Right);
             var valign = state.TextAlign & ((int)NvgAlign.Top | (int)NvgAlign.Middle | (int)NvgAlign.Bottom | (int)NvgAlign.Baseline);
             float lineh = 0, rminy = 0, rmaxy = 0;
-            float minx, miny, maxx, maxy;
+            float maxx, maxy;
             float fnull = 0;
 
             if (state.FontId == FontStash.FONS_INVALID)
@@ -2620,8 +2396,8 @@ namespace NanoVGDotNet
 
             state.TextAlign = (int)NvgAlign.Left | valign;
 
-            minx = maxx = x;
-            miny = maxy = y;
+            var minx = maxx = x;
+            var miny = maxy = y;
 
             FontStash.fonsSetSize(ref ctx.Fs, state.FontSize * scale);
             FontStash.fonsSetSpacing(ref ctx.Fs, state.LetterSpacing * scale);
@@ -2634,10 +2410,10 @@ namespace NanoVGDotNet
 
             while ((nrows = TextBreakLines(ctx, string_, breakRowWidth, rows, 2)) > 0)
             {
-                for (i = 0; i < nrows; i++)
+                for (var i = 0; i < nrows; i++)
                 {
                     var row = rows[i];
-                    float rminx, rmaxx, dx = 0;
+                    float dx = 0;
                     // Horizontal bounds
                     if ((haling & (int)NvgAlign.Left) != 0)
                         dx = 0;
@@ -2645,8 +2421,8 @@ namespace NanoVGDotNet
                         dx = breakRowWidth * 0.5f - row.Width * 0.5f;
                     else if ((haling & (int)NvgAlign.Right) != 0)
                         dx = breakRowWidth - row.Width;
-                    rminx = x + row.MinX + dx;
-                    rmaxx = x + row.MaxX + dx;
+                    var rminx = x + row.MinX + dx;
+                    var rmaxx = x + row.MaxX + dx;
                     minx = Minf(minx, rminx);
                     maxx = Maxf(maxx, rmaxx);
                     // Vertical bounds.
@@ -2675,7 +2451,6 @@ namespace NanoVGDotNet
             var state = GetState(ctx);
             var scale = GetFontScale(state) * ctx.DevicePxRatio;
             var invscale = 1.0f / scale;
-            float width;
 
             if (state.FontId == FontStash.FONS_INVALID)
                 return 0;
@@ -2686,7 +2461,7 @@ namespace NanoVGDotNet
             FontStash.fonsSetAlign(ctx.Fs, (FONSalign)state.TextAlign);
             FontStash.fonsSetFont(ref ctx.Fs, state.FontId);
 
-            width = FontStash.fonsTextBounds(ref ctx.Fs, x * scale, y * scale, string_, bounds);
+            var width = FontStash.fonsTextBounds(ref ctx.Fs, x * scale, y * scale, string_, bounds);
             if (bounds == null) return width * invscale;
             // Use line bounds for height.
             FontStash.fonsLineBounds(ctx.Fs, y * scale, ref bounds[1], ref bounds[3]);
@@ -2724,7 +2499,7 @@ namespace NanoVGDotNet
             var state = GetState(ctx);
             var scale = GetFontScale(state) * ctx.DevicePxRatio;
             var invscale = 1.0f / scale;
-            FONStextIter iter = new FONStextIter(), prevIter = new FONStextIter();
+            var iter = new FONStextIter();
             var q = new FONSquad();
             var nrows = 0;
             float rowStartX = 0;
@@ -2739,7 +2514,7 @@ namespace NanoVGDotNet
             var breakEnd = -1;
             float breakWidth = 0;
             float breakMaxX = 0;
-            int type = (int)NvgCodepointType.Space, ptype = (int)NvgCodepointType.Space;
+            int ptype = (int)NvgCodepointType.Space;
             uint pcodepoint = 0;
 
             if (string_ == null)
@@ -2760,7 +2535,7 @@ namespace NanoVGDotNet
             breakRowWidth *= scale;
 
             FontStash.fonsTextIterInit(ctx.Fs, ref iter, 0, 0, string_);
-            prevIter = iter;
+            var prevIter = iter;
             while (FontStash.fonsTextIterNext(ctx.Fs, ref iter, ref q) != 0)
             {
                 // can not retrieve glyph?
@@ -2770,6 +2545,7 @@ namespace NanoVGDotNet
                     FontStash.fonsTextIterNext(ctx.Fs, ref iter, ref q); // try again
                 }
                 prevIter = iter;
+                int type;
                 switch (iter.codepoint)
                 {
                     case 9:         // \t
@@ -2797,16 +2573,13 @@ namespace NanoVGDotNet
                 {
                     // Always handle new lines.
                     rows[nrows].Start = rowStart >= 0 ? rowStart : iter.iStr;
-                    var rs = string_.Substring(rows[nrows].Start);
 
                     rows[nrows].End = rowEnd >= 0 ? rowEnd : iter.iStr;
-                    var re = string_.Substring(rows[nrows].End);
 
                     rows[nrows].Width = rowWidth * invscale;
                     rows[nrows].MinX = rowMinX * invscale;
                     rows[nrows].MaxX = rowMaxX * invscale;
                     rows[nrows].Next = iter.iNext;
-                    var inx = string_.Substring(rows[nrows].Next);
 
                     nrows++;
                     if (nrows >= maxRows)
@@ -2831,16 +2604,13 @@ namespace NanoVGDotNet
                             // The current char is the row so far
                             rowStartX = iter.x;
                             rowStart = iter.iStr;
-                            var rs = string_.Substring(rowStart);
 
                             rowEnd = iter.iNext;
-                            var re = string_.Substring(rowEnd);
 
                             rowWidth = iter.nextx - rowStartX; // q.x1 - rowStartX;
                             rowMinX = q.x0 - rowStartX;
                             rowMaxX = q.x1 - rowStartX;
                             wordStart = iter.iStr;
-                            var ws = string_.Substring(wordStart);
 
                             wordStartX = iter.x;
                             wordMinX = q.x0 - rowStartX;
@@ -3020,12 +2790,10 @@ namespace NanoVGDotNet
         public static float Text(this NvgContext ctx, float x, float y, string string_)
         {
             var state = GetState(ctx);
-            FONStextIter iter = new FONStextIter(), prevIter = new FONStextIter();
+            var iter = new FONStextIter();
             var q = new FONSquad();
-            NvgVertex[] verts;
             var scale = GetFontScale(state) * ctx.DevicePxRatio;
             var invscale = 1.0f / scale;
-            var cverts = 0;
             var nverts = 0;
 
             var end = string_.Length;
@@ -3039,13 +2807,13 @@ namespace NanoVGDotNet
             FontStash.fonsSetAlign(ctx.Fs, (FONSalign)state.TextAlign);
             FontStash.fonsSetFont(ref ctx.Fs, state.FontId);
 
-            cverts = Maxi(2, end) * 6; // conservative estimate.
-            verts = AllocTempVerts(ctx, cverts);
+            var cverts = Maxi(2, end) * 6;
+            var verts = AllocTempVerts(ctx, cverts);
             if (verts == null)
                 return x;
 
             FontStash.fonsTextIterInit(ctx.Fs, ref iter, x * scale, y * scale, string_);
-            prevIter = iter;
+            var prevIter = iter;
             while (FontStash.fonsTextIterNext(ctx.Fs, ref iter, ref q) != 0)
             {
                 var c = new float[4 * 2];
@@ -3065,10 +2833,10 @@ namespace NanoVGDotNet
                 }
                 prevIter = iter;
                 // Transform corners.
-                TransformPoint(ref c[0], ref c[1], state.Xform, q.x0 * invscale, q.y0 * invscale);
-                TransformPoint(ref c[2], ref c[3], state.Xform, q.x1 * invscale, q.y0 * invscale);
-                TransformPoint(ref c[4], ref c[5], state.Xform, q.x1 * invscale, q.y1 * invscale);
-                TransformPoint(ref c[6], ref c[7], state.Xform, q.x0 * invscale, q.y1 * invscale);
+                TransformPoint(out c[0], out c[1], state.Xform, q.x0 * invscale, q.y0 * invscale);
+                TransformPoint(out c[2], out c[3], state.Xform, q.x1 * invscale, q.y0 * invscale);
+                TransformPoint(out c[4], out c[5], state.Xform, q.x1 * invscale, q.y1 * invscale);
+                TransformPoint(out c[6], out c[7], state.Xform, q.x0 * invscale, q.y1 * invscale);
                 // Create triangles
                 if (nverts + 6 > cverts) continue;
                 Vset(ref verts[nverts], c[0], c[1], q.s0, q.t0);
@@ -3221,51 +2989,9 @@ namespace NanoVGDotNet
             return ms.ToArray();
         }
 
-        private static int CreateImageRgbaByte(ref NvgContext ctx, int w, int h, int imageFlags, byte[] data)
-        {
-            return ctx.Params.RenderCreateTextureByte(ctx.Params.UserPtr, (int)NvgTexture.Rgba, w, h, imageFlags, data);
-        }
-
         private static int CreateImageRgbaBmp(ref NvgContext ctx, int w, int h, int imageFlags, Bitmap bmp)
         {
             return ctx.Params.RenderCreateTextureBmp(ctx.Params.UserPtr, (int)NvgTexture.Rgba, w, h, imageFlags, bmp);
-        }
-
-        /// <summary>
-        /// Convert a bitmap to a byte array
-        /// </summary>
-        /// <param name="bitmap">image to convert</param>
-        /// <returns>image as bytes</returns>
-        private static byte[] ConvertBitmap(Bitmap bitmap)
-        {
-            //Code excerpted from Microsoft Robotics Studio v1.5
-            BitmapData raw = null;  //used to get attributes of the image
-            byte[] rawImage = null; //the image as a byte[]
-
-            try
-            {
-                //Freeze the image in memory
-                raw = bitmap.LockBits(
-                    new Rectangle(0, 0, bitmap.Width, bitmap.Height),
-                    ImageLockMode.ReadOnly,
-                    PixelFormat.Format24bppRgb
-                );
-
-                var size = raw.Height * raw.Stride;
-                rawImage = new byte[size];
-
-                //Copy the image into the byte[]
-                Marshal.Copy(raw.Scan0, rawImage, 0, size);
-            }
-            finally
-            {
-                if (raw != null)
-                {
-                    //Unfreeze the memory for the image
-                    bitmap.UnlockBits(raw);
-                }
-            }
-            return rawImage;
         }
 
         public static int CreateImage(ref NvgContext ctx, string filename, int imageFlags)
