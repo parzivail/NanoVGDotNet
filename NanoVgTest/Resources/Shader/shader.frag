@@ -11,10 +11,10 @@
 #define jitterChance 0.0
 
 // original 0.25
-#define ntscFreqColor 0.25
+#define ntscFreqColor 0.29
 
 // original 0.125
-#define ntscFreqLuma 0.125
+#define ntscFreqLuma 0.123
 
 // original 0.02
 #define ntscFreqGrayscale 0.02
