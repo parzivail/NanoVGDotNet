@@ -445,9 +445,11 @@ namespace NanoVGDotNet
 			GL.UniformBlockBinding(gl.Shader.Prog, iBlock, (int)GlNvgUniformBindings.FragBinding);
 			GL.GenBuffers(1, out gl.FragBuf);
 			GL.GetInteger(GetPName.UniformBufferOffsetAlignment, out int align);
+#else
+		    const int align = 4;
 #endif
 
-			var size = (int)GlNvgFragUniforms.GetSize; 
+            var size = (int)GlNvgFragUniforms.GetSize; 
 			gl.FragSize = size + align - size % align;
 
 			CheckError(gl, "create done");
