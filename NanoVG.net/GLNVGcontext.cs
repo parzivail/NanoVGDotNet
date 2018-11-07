@@ -28,7 +28,7 @@ namespace NanoVGDotNet
         public uint VertArr;
 #endif
 #if NANOVG_GL_USE_UNIFORMBUFFER
-		public uint fragBuf;
+		public uint FragBuf;
 #endif
         public int FragSize;
         public int Flags;

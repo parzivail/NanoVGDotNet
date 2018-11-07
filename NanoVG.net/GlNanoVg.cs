@@ -407,7 +407,7 @@ namespace NanoVGDotNet
 			shader.Loc[(int)GlNvgUniformLoc.LocTex] = GL.GetUniformLocation(shader.Prog, "tex");
 
 #if NANOVG_GL_USE_UNIFORMBUFFER
-			shader.loc[(int)GlNvgUniformLoc.LocFrag] = GL.GetUniformBlockIndex(shader.prog, "frag");
+			shader.Loc[(int)GlNvgUniformLoc.LocFrag] = GL.GetUniformBlockIndex(shader.Prog, "frag");
 #else
 			shader.Loc[(int)GlNvgUniformLoc.LocFrag] = GL.GetUniformLocation(shader.Prog, "frag");
 #endif
@@ -416,11 +416,10 @@ namespace NanoVGDotNet
 	    private static int RenderCreate(object uptr)
 		{
 			var gl = (GlNvgContext)uptr;
-			var align = 4;
 
-			CheckError(gl, "init");
+            CheckError(gl, "init");
 
-			if ((gl.Flags & (int)NvgCreateFlags.AntiAlias) != 0)
+            if ((gl.Flags & (int)NvgCreateFlags.AntiAlias) != 0)
 			{
 				if (CreateShader(out gl.Shader, "shader", _shaderHeader, "#define EDGE_AA 1\n", _fillVertShader, _fillFragShader) == 0)
 					return 0;
@@ -442,10 +441,10 @@ namespace NanoVGDotNet
 
 #if NANOVG_GL_USE_UNIFORMBUFFER
 			// Create UBOs
-			uint iBlock = (uint)gl.shader.loc[(int)GlNvgUniformLoc.LocFrag];
-			GL.UniformBlockBinding(gl.shader.prog, iBlock, (int)GlNvgUniformBindings.GLNVG_FRAG_BINDING);
-			GL.GenBuffers(1, out gl.fragBuf);
-			GL.GetInteger(GetPName.UniformBufferOffsetAlignment, out align);
+			var iBlock = gl.Shader.Loc[(int)GlNvgUniformLoc.LocFrag];
+			GL.UniformBlockBinding(gl.Shader.Prog, iBlock, (int)GlNvgUniformBindings.FragBinding);
+			GL.GenBuffers(1, out gl.FragBuf);
+			GL.GetInteger(GetPName.UniformBufferOffsetAlignment, out int align);
 #endif
 
 			var size = (int)GlNvgFragUniforms.GetSize; 
@@ -488,8 +487,8 @@ namespace NanoVGDotNet
 
 			#if NANOVG_GL3
 			#if NANOVG_GL_USE_UNIFORMBUFFER
-		if (gl->fragBuf != 0)
-			glDeleteBuffers(1, &gl->fragBuf);
+		    if (gl.FragBuf != 0)
+		        GL.DeleteBuffer(gl.FragBuf);
 			#endif
 		if (gl.VertArr != 0)
 			GL.DeleteVertexArray(gl.VertArr);
@@ -1230,7 +1229,8 @@ namespace NanoVGDotNet
 	    private static void SetUniforms(GlNvgContext gl, int uniformOffset, int image)
 		{
 #if NANOVG_GL_USE_UNIFORMBUFFER
-			glBindBufferRange(GL_UNIFORM_BUFFER, GLNVG_FRAG_BINDING, gl->fragBuf, uniformOffset, sizeof(GLNVGfragUniforms));
+		    GL.BindBufferRange(BufferRangeTarget.UniformBuffer, (int) GlNvgUniformBindings.FragBinding, gl.FragBuf,
+		        GlNvgFragUniforms.GetSize);
 #else
 			var frag = nvg__fragUniformPtr(gl, uniformOffset);
 
@@ -1448,7 +1448,7 @@ namespace NanoVGDotNet
 
 #if NANOVG_GL_USE_UNIFORMBUFFER
 				// Upload ubo for frag shaders
-				glBindBuffer(GL_UNIFORM_BUFFER, gl.fragBuf);
+				glBindBuffer(GL_UNIFORM_BUFFER, gl.FragBuf);
 				glBufferData(GL_UNIFORM_BUFFER, gl.nuniforms * gl.fragSize, gl.uniforms, GL_STREAM_DRAW);
 #endif
 

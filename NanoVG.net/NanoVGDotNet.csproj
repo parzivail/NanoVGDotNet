@@ -40,6 +40,7 @@
     <Compile Include="GLNVGshader.cs" />
     <Compile Include="GlNvgShaderType.cs" />
     <Compile Include="GLNVGtexture.cs" />
+    <Compile Include="GlNvgUniformBindings.cs" />
     <Compile Include="GlNvgUniformLoc.cs" />
     <Compile Include="GraphRenderStyle.cs" />
     <Compile Include="NvgAlign.cs" />
