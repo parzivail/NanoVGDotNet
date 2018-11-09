@@ -85,7 +85,7 @@ namespace NanoVgTest
             Keyboard = OpenTK.Input.Keyboard.GetState();
             Mouse = OpenTK.Input.Mouse.GetState();
 
-            Nvg = GlNanoVg.CreateGl((int)NvgCreateFlags.AntiAlias | (int)NvgCreateFlags.StencilStrokes);
+            Nvg = GlNanoVg.CreateGl(NvgCreateFlags.AntiAlias | NvgCreateFlags.StencilStrokes);
             
             _window.Load(this);
         }

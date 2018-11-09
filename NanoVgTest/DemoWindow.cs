@@ -62,7 +62,7 @@ namespace NanoVgTest
             vg.FillColor(NanoVg.Rgba(255, 255, 255, 255));
             vg.FontFace("sans");
             vg.FontSize(48);
-            vg.TextAlign((int)NvgAlign.Top | (int)NvgAlign.Left);
+            vg.TextAlign(NvgAlign.Top | NvgAlign.Left);
 
             vg.Text(50, 50, "commercial towing vehicle 'The Nostromo'");
             vg.Text(150, 140, "crew:");

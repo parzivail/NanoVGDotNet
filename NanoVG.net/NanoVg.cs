@@ -465,7 +465,7 @@ namespace NanoVGDotNet
             //return dst;
         }
 
-        private static void ExpandStroke(this NvgContext ctx, float w, int lineCap, int lineJoin, float miterLimit)
+        private static void ExpandStroke(this NvgContext ctx, float w, NvgLineCap lineCap, NvgLineCap lineJoin, float miterLimit)
         {
             var cache = ctx.Cache;
             var aa = ctx.FringeWidth;
@@ -491,13 +491,13 @@ namespace NanoVGDotNet
             {
                 var path = cache.Paths[i];
                 var loop = path.Closed == 0 ? 0 : 1;
-                if (lineJoin == (int)NvgLineCap.Round)
+                if (lineJoin == NvgLineCap.Round)
                     cverts += (path.Count + path.Nbevel * (ncap + 2) + 1) * 2; // plus one for loop
                 else
                     cverts += (path.Count + path.Nbevel * 5 + 1) * 2; // plus one for loop
                 if (loop != 0) continue;
                 // space for caps
-                if (lineCap == (int)NvgLineCap.Round)
+                if (lineCap == NvgLineCap.Round)
                 {
                     cverts += (ncap * 2 + 2) * 2;
                 }
@@ -567,11 +567,11 @@ namespace NanoVGDotNet
                         ButtCapStart(dst, ref idst, p0, dx, dy, w, -aa * 0.5f, aa);
                     else switch (lineCap)
                     {
-                        case (int)NvgLineCap.Butt:
-                        case (int)NvgLineCap.Square:
+                        case NvgLineCap.Butt:
+                        case NvgLineCap.Square:
                             ButtCapStart(dst, ref idst, p0, dx, dy, w, w - aa, aa);
                             break;
-                        case (int)NvgLineCap.Round:
+                        case NvgLineCap.Round:
                             RoundCapStart(dst, ref idst, p0, dx, dy, w, ncap);
                             break;
                     }
@@ -582,7 +582,7 @@ namespace NanoVGDotNet
                 {
                     if ((p1.Flags & (int)(NvgPointFlags.Bevel | NvgPointFlags.InnerBevel)) != 0)
                     {
-                        if (lineJoin == (int)NvgLineCap.Round)
+                        if (lineJoin == NvgLineCap.Round)
                         {
                             RoundJoin(dst, ref idst, p0, p1, w, w, 0, 1, ncap);
                         }
@@ -617,15 +617,15 @@ namespace NanoVGDotNet
                     dx = p1.X - p0.X;
                     dy = p1.Y - p0.Y;
                     Normalize(ref dx, ref dy);
-                    if (lineCap == (int)NvgLineCap.Butt)
+                    if (lineCap == NvgLineCap.Butt)
                         ButtCapEnd(dst, ref idst, p1, dx, dy, w, -aa * 0.5f, aa);
                     else switch (lineCap)
                     {
-                        case (int)NvgLineCap.Butt:
-                        case (int)NvgLineCap.Square:
+                        case NvgLineCap.Butt:
+                        case NvgLineCap.Square:
                             ButtCapEnd(dst, ref idst, p1, dx, dy, w, w - aa, aa);
                             break;
-                        case (int)NvgLineCap.Round:
+                        case NvgLineCap.Round:
                             RoundCapEnd(dst, ref idst, p1, dx, dy, w, ncap);
                             break;
                     }
@@ -666,9 +666,9 @@ namespace NanoVGDotNet
             AppendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
-        public static void PathWinding(this NvgContext ctx, int dir)
+        public static void PathWinding(this NvgContext ctx, NvgWinding dir)
         {
-            var vals = new[] { (float)NvgCommands.Winding, dir };
+            var vals = new[] { (float)NvgCommands.Winding, (int)dir };
             AppendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
@@ -698,9 +698,9 @@ namespace NanoVGDotNet
 
             if (ctx.Params.EdgeAntiAlias != 0)
                 ExpandStroke(ctx, strokeWidth * 0.5f + ctx.FringeWidth * 0.5f,
-                    state.LineCap, state.LineJoin, state.MiterLimit);
+                    (NvgLineCap)state.LineCap, (NvgLineCap)state.LineJoin, state.MiterLimit);
             else
-                ExpandStroke(ctx, strokeWidth * 0.5f, state.LineCap, state.LineJoin, state.MiterLimit);
+                ExpandStroke(ctx, strokeWidth * 0.5f, (NvgLineCap)state.LineCap, (NvgLineCap)state.LineJoin, state.MiterLimit);
 
             ctx.Params.RenderStroke(ctx.Params.UserPtr, ref strokePaint, ref state.Scissor, ctx.FringeWidth,
                 strokeWidth, ctx.Cache.Paths, ctx.Cache.Npaths);
@@ -1416,10 +1416,10 @@ namespace NanoVGDotNet
             t[4] = t4;
         }
 
-        public static void LineJoin(this NvgContext ctx, int join)
+        public static void LineJoin(this NvgContext ctx, NvgLineCap join)
         {
             var state = GetState(ctx);
-            state.LineJoin = join;
+            state.LineJoin = (int)join;
         }
 
         public static void MoveTo(this NvgContext ctx, float x, float y)
@@ -1440,10 +1440,10 @@ namespace NanoVGDotNet
             AppendCommands(ctx, vals, NVG_COUNTOF(vals));
         }
 
-        public static void LineCap(this NvgContext ctx, int cap)
+        public static void LineCap(this NvgContext ctx, NvgLineCap cap)
         {
             var state = GetState(ctx);
-            state.LineCap = cap;
+            state.LineCap = (int)cap;
         }
 
         public static void FillPaint(this NvgContext ctx, NvgPaint paint)
@@ -1487,7 +1487,7 @@ namespace NanoVGDotNet
             vtx.V = v;
         }
 
-        private static void CalculateJoins(this NvgContext ctx, float w, int lineJoin, float miterLimit)
+        private static void CalculateJoins(this NvgContext ctx, float w, NvgLineCap lineJoin, float miterLimit)
         {
             var cache = ctx.Cache;
             var iw = 0.0f;
@@ -1554,8 +1554,8 @@ namespace NanoVGDotNet
                     if ((p1.Flags & (int)NvgPointFlags.Corner) != 0)
                     {
                         if (dmr2 * miterLimit * miterLimit < 1.0f ||
-                            lineJoin == (int)NvgLineCap.Bevel ||
-                            lineJoin == (int)NvgLineCap.Round)
+                            lineJoin == NvgLineCap.Bevel ||
+                            lineJoin == NvgLineCap.Round)
                         {
                             p1.Flags |= (int)NvgPointFlags.Bevel;
                         }
@@ -1712,7 +1712,7 @@ namespace NanoVGDotNet
             }
         }
 
-        private static void ExpandFill(this NvgContext ctx, float w, int lineJoin, float miterLimit)
+        private static void ExpandFill(this NvgContext ctx, float w, NvgLineCap lineJoin, float miterLimit)
         {
             var cache = ctx.Cache;
             var iverts = 0;
@@ -1924,7 +1924,7 @@ namespace NanoVGDotNet
 
             FlattenPaths(ctx);
 
-            ExpandFill(ctx, ctx.Params.EdgeAntiAlias != 0 ? ctx.FringeWidth : 0.0f, (int) NvgLineCap.Miter, 2.4f);
+            ExpandFill(ctx, ctx.Params.EdgeAntiAlias != 0 ? ctx.FringeWidth : 0.0f, NvgLineCap.Miter, 2.4f);
 
             // Apply global alpha
             fillPaint.InnerColor.A *= state.Alpha;
@@ -2436,7 +2436,6 @@ namespace NanoVGDotNet
                 if (string_.Length == 1)
                     string_ = "";
             }
-
             state.TextAlign = oldAlign;
 
             if (bounds == null) return;
@@ -2723,10 +2722,10 @@ namespace NanoVGDotNet
             state.LineHeight = lineHeight;
         }
 
-        public static void TextAlign(this NvgContext ctx, int align)
+        public static void TextAlign(this NvgContext ctx, NvgAlign align)
         {
             var state = GetState(ctx);
-            state.TextAlign = align;
+            state.TextAlign = (int)align;
         }
 
         private static float GetFontScale(NvgState state)
