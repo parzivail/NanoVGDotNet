@@ -21,11 +21,6 @@ namespace NanoVgTest
 
         public void Load(MainWindow win)
         {
-            var rIcons = win.Nvg.CreateFont("icon",
-                $"Resources{Path.DirectorySeparatorChar}Fonts{Path.DirectorySeparatorChar}{MaterialDesignIcons.FontIconFileName}");
-            if (rIcons == -1)
-                Console.WriteLine("Unable to load icons");
-
             var rSans = win.Nvg.CreateFont("sans",
                 $"Resources{Path.DirectorySeparatorChar}Fonts{Path.DirectorySeparatorChar}neuehaasgrotesk.ttf");
             if (rSans == -1)
@@ -51,13 +46,6 @@ namespace NanoVgTest
         public void Render(MainWindow win, NvgContext vg)
         {
             vg.Save();
-
-            //            SemanticDotNet.SdnTextButton(vg, 30, 30, 75, SemanticDotNet.Style.ButtonHeight, "Button", connection: SemanticDotNet.SConnectedSide.Right);
-            //            SemanticDotNet.SdnIconTextButton(vg, 105, 30, 85, SemanticDotNet.Style.ButtonHeight, MaterialDesignIcons.Qrcode, "Icon", connection: SemanticDotNet.SConnectedSide.Left);
-            //
-            //            SemanticDotNet.SdnSplitIconTextButton(vg, 30, 75, 36, 75, SemanticDotNet.Style.ButtonHeight, MaterialDesignIcons.BrightnessAuto, "Auto");
-            //
-            //            SemanticDotNet.SdnCheckbox(vg, 30, 120, 17, true, "Checkbox");
 
             vg.FillColor(NanoVg.Rgba(255, 255, 255, 255));
             vg.FontFace("sans");

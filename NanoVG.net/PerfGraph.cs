@@ -75,21 +75,18 @@ namespace NanoVGDotNet
 		public static void RenderGraph(NvgContext vg, float x, float y)
 		{
 			int i;
-			float avg, w, h;
-			string str;
+		    string str;
+			var avg = GetGraphAverage();
+			const float w = 200;
+			const float h = 35;
 
-			avg = GetGraphAverage();
+			vg.BeginPath();
+			vg.Rect(x, y, w, h);
+			vg.FillColor(NanoVg.Rgba(0, 0, 0, 128));
+			vg.Fill();
 
-			w = 200;
-			h = 35;
-
-			NanoVg.BeginPath(vg);
-			NanoVg.Rect(vg, x, y, w, h);
-			NanoVg.FillColor(vg, NanoVg.Rgba(0, 0, 0, 128));
-			NanoVg.Fill(vg);
-
-			NanoVg.BeginPath(vg);
-			NanoVg.MoveTo(vg, x, y + h);
+			vg.BeginPath();
+			vg.MoveTo(x, y + h);
 			if (_style == (int)GraphRenderStyle.Fps)
 			{
 				for (i = 0; i < GraphHistoryCount; i++)
@@ -100,7 +97,7 @@ namespace NanoVGDotNet
 						v = 80.0f;
 					vx = x + (float)i / (GraphHistoryCount - 1) * w;
 					vy = y + h - v / 80.0f * h;
-					NanoVg.LineTo(vg, vx, vy);
+					vg.LineTo(vx, vy);
 				}
 			}
 			else if (_style == (int)GraphRenderStyle.Percent)
@@ -113,7 +110,7 @@ namespace NanoVGDotNet
 						v = 100.0f;
 					vx = x + (float)i / (GraphHistoryCount - 1) * w;
 					vy = y + h - v / 100.0f * h;
-					NanoVg.LineTo(vg, vx, vy);
+					vg.LineTo(vx, vy);
 				}
 			}
 			else
@@ -126,52 +123,52 @@ namespace NanoVGDotNet
 						v = 20.0f;
 					vx = x + (float)i / (GraphHistoryCount - 1) * w;
 					vy = y + h - v / 20.0f * h;
-					NanoVg.LineTo(vg, vx, vy);
+					vg.LineTo(vx, vy);
 				}
 			}
-			NanoVg.LineTo(vg, x + w, y + h);
-			NanoVg.FillColor(vg, NanoVg.Rgba(255, 192, 0, 128));
-			NanoVg.Fill(vg);
+			vg.LineTo(x + w, y + h);
+			vg.FillColor(NanoVg.Rgba(255, 192, 0, 128));
+			vg.Fill();
 
-			NanoVg.FontFace(vg, "sans");
+			vg.FontFace("sans");
 
 			if (_name[0] != '\0')
 			{
-				NanoVg.FontSize(vg, 14.0f);
-				NanoVg.TextAlign(vg, (int)(NvgAlign.Left | NvgAlign.Top));
-				NanoVg.FillColor(vg, NanoVg.Rgba(240, 240, 240, 192));
-				NanoVg.Text(vg, x + 3, y + 1, _name);
+				vg.FontSize(14.0f);
+				vg.TextAlign(NvgAlign.Left | NvgAlign.Top);
+				vg.FillColor(NanoVg.Rgba(240, 240, 240, 192));
+				vg.Text(x + 3, y + 1, _name);
 			}
 
 			if (_style == (int)GraphRenderStyle.Fps)
 			{
-				NanoVg.FontSize(vg, 18.0f);
-				NanoVg.TextAlign(vg, (int)(NvgAlign.Right | NvgAlign.Top));
-				NanoVg.FillColor(vg, NanoVg.Rgba(240, 240, 240, 255));
+				vg.FontSize(18.0f);
+				vg.TextAlign(NvgAlign.Right | NvgAlign.Top);
+				vg.FillColor(NanoVg.Rgba(240, 240, 240, 255));
 				str = $"{1.0f / avg:0.00} FPS";
-				NanoVg.Text(vg, x + w - 3, y + 1, str);
+				vg.Text(x + w - 3, y + 1, str);
 
-				NanoVg.FontSize(vg, 15.0f);
-				NanoVg.TextAlign(vg, (int)(NvgAlign.Right | NvgAlign.Bottom));
-				NanoVg.FillColor(vg, NanoVg.Rgba(240, 240, 240, 160));
+				vg.FontSize(15.0f);
+				vg.TextAlign(NvgAlign.Right | NvgAlign.Bottom);
+				vg.FillColor(NanoVg.Rgba(240, 240, 240, 160));
 				str = $"{avg * 1000.0f:0.00} ms";
-				NanoVg.Text(vg, x + w - 3, y + h - 1, str);
+				vg.Text(x + w - 3, y + h - 1, str);
 			}
 			else if (_style == (int)GraphRenderStyle.Percent)
 			{
-				NanoVg.FontSize(vg, 18.0f);
-				NanoVg.TextAlign(vg, (int)(NvgAlign.Right | NvgAlign.Top));
-				NanoVg.FillColor(vg, NanoVg.Rgba(240, 240, 240, 255));
+				vg.FontSize(18.0f);
+				vg.TextAlign(NvgAlign.Right | NvgAlign.Top);
+				vg.FillColor(NanoVg.Rgba(240, 240, 240, 255));
 				str = $"{avg * 1.0f:0.0} %";
-				NanoVg.Text(vg, x + w - 3, y + 1, str);
+				vg.Text(x + w - 3, y + 1, str);
 			}
 			else
 			{
-				NanoVg.FontSize(vg, 18.0f);
-				NanoVg.TextAlign(vg, (int)(NvgAlign.Right | NvgAlign.Top));
-				NanoVg.FillColor(vg, NanoVg.Rgba(240, 240, 240, 255));
+				vg.FontSize(18.0f);
+				vg.TextAlign(NvgAlign.Right | NvgAlign.Top);
+				vg.FillColor(NanoVg.Rgba(240, 240, 240, 255));
 				str = $"{avg * 1000.0f:0.00} ms";
-				NanoVg.Text(vg, x + w - 3, y + 1, str);
+				vg.Text(x + w - 3, y + 1, str);
 			}
 		}
 	}
