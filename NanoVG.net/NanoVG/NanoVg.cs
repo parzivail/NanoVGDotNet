@@ -284,7 +284,7 @@ namespace NanoVGDotNet.NanoVG
             return color;
         }
 
-        private static NvgColor Rgba(float r, float g, float b, float a)
+        public static NvgColor Rgba(float r, float g, float b, float a)
         {
             var color = default(NvgColor);
             // Use longer initialization to suppress warning.
@@ -293,6 +293,11 @@ namespace NanoVGDotNet.NanoVG
             color.B = b;
             color.A = a;
             return color;
+        }
+
+        public static NvgColor Rgba(Color color)
+        {
+            return Rgba(color.R, color.G, color.B, color.A);
         }
 
         private static float GetAverageScale(float[] t)
