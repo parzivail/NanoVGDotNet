@@ -566,18 +566,18 @@ namespace NanoVGDotNet.NanoVG
                     if (lineCap == (int)NvgLineCap.Butt)
                         ButtCapStart(dst, ref idst, p0, dx, dy, w, -aa * 0.5f, aa);
                     else switch (lineCap)
-                    {
-                        case NvgLineCap.Butt:
-                        case NvgLineCap.Square:
-                            ButtCapStart(dst, ref idst, p0, dx, dy, w, w - aa, aa);
-                            break;
-                        case NvgLineCap.Round:
-                            RoundCapStart(dst, ref idst, p0, dx, dy, w, ncap);
-                            break;
-                    }
+                        {
+                            case NvgLineCap.Butt:
+                            case NvgLineCap.Square:
+                                ButtCapStart(dst, ref idst, p0, dx, dy, w, w - aa, aa);
+                                break;
+                            case NvgLineCap.Round:
+                                RoundCapStart(dst, ref idst, p0, dx, dy, w, ncap);
+                                break;
+                        }
 
                 }
-                
+
                 for (var j = s; j < e; ++j)
                 {
                     if ((p1.Flags & (int)(NvgPointFlags.Bevel | NvgPointFlags.InnerBevel)) != 0)
@@ -620,15 +620,15 @@ namespace NanoVGDotNet.NanoVG
                     if (lineCap == NvgLineCap.Butt)
                         ButtCapEnd(dst, ref idst, p1, dx, dy, w, -aa * 0.5f, aa);
                     else switch (lineCap)
-                    {
-                        case NvgLineCap.Butt:
-                        case NvgLineCap.Square:
-                            ButtCapEnd(dst, ref idst, p1, dx, dy, w, w - aa, aa);
-                            break;
-                        case NvgLineCap.Round:
-                            RoundCapEnd(dst, ref idst, p1, dx, dy, w, ncap);
-                            break;
-                    }
+                        {
+                            case NvgLineCap.Butt:
+                            case NvgLineCap.Square:
+                                ButtCapEnd(dst, ref idst, p1, dx, dy, w, w - aa, aa);
+                                break;
+                            case NvgLineCap.Round:
+                                RoundCapEnd(dst, ref idst, p1, dx, dy, w, ncap);
+                                break;
+                        }
                 }
 
                 path.Nstroke = idst - iverts;
@@ -1356,12 +1356,13 @@ namespace NanoVGDotNet.NanoVG
 
                 // If the first and last points are the same, remove the last, mark as closed path.
                 var p0 = pts[ipts + path.Count - 1];
-                var ip1 = 0 + ipts;
+                var ip1 = ipts;
                 var p1 = pts[ip1];
 
                 if (PtEquals(p0.X, p0.Y, p1.X, p1.Y, ctx.DistTol))
                 {
-                    path.Count--;
+                    if (ipts > 0)
+                        path.Count--;
                     p0 = pts[ipts + path.Count - 1];
                     path.Closed = 1;
                 }
@@ -1398,7 +1399,8 @@ namespace NanoVGDotNet.NanoVG
                     // Advance
                     p0 = p1;
                     ip1 += 1;
-                    p1 = pts[ip1];
+                    if (ip1 < pts.Length)
+                        p1 = pts[ip1];
                 }
             }
         }
@@ -1511,7 +1513,7 @@ namespace NanoVGDotNet.NanoVG
                 var nleft = 0;
 
                 path.Nbevel = 0;
-                
+
                 for (var j = 0; j < path.Count; j++)
                 {
                     var dlx0 = p0.Dy;
@@ -1566,7 +1568,8 @@ namespace NanoVGDotNet.NanoVG
 
                     p0 = p1;
                     ip1 += 1;
-                    p1 = pts[ip1];
+                    if (ip1 < pts.Length)
+                        p1 = pts[ip1];
                 }
 
                 path.Convex = nleft == path.Count ? 1 : 0;
