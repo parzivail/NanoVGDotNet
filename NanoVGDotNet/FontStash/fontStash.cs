@@ -162,6 +162,12 @@ namespace NanoVGDotNet.FontStash
 			return fonsAddFontMem(stash, name, data, dataSize, 1);
 		}
 
+		public static int fonsAddFont(FONScontext stash, string name, byte[] data)
+		{
+			var dataSize = (uint)data.Length;
+			return fonsAddFontMem(stash, name, data, dataSize, 1);
+		}
+
 		public static FONScontext fonsCreateInternal(ref FONSparams fparams)
 		{
 			var stash = new FONScontext();
@@ -385,8 +391,7 @@ namespace NanoVGDotNet.FontStash
 			FONSstate state;
 			fons__getState(stash, out state);
 			uint codepoint = 0;
-			uint utf8state = 0;
-			var q = new FONSquad();
+            var q = new FONSquad();
 			FONSglyph glyph;
 			var prevGlyphIndex = -1;
 			var isize = (short)(state.size * 10.0f);
