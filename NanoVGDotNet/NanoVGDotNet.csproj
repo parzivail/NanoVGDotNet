@@ -3,10 +3,10 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <PackageId>NanoVG.NET</PackageId>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
     <Authors>parzivail</Authors>
     <Company>parzivail</Company>
-    <PackageLicenseUrl>https://github.com/parzivail/NanoVGDotNet/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/parzivail/NanoVGDotNet</PackageProjectUrl>
     <RepositoryUrl>https://github.com/parzivail/NanoVGDotNet</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -17,6 +17,10 @@
     <Description>OpenTK3 fork of bitiopia's NanoVG port</Description>
     <GenerateDocumentationFile Condition="'$(Configuration)'=='Release'">true</GenerateDocumentationFile>
     <RootNamespace>NanoVGDotNet</RootNamespace>
+    <PackageLicenseExpression></PackageLicenseExpression>
+    <AssemblyVersion>1.0.6.0</AssemblyVersion>
+    <FileVersion>1.0.6.0</FileVersion>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
