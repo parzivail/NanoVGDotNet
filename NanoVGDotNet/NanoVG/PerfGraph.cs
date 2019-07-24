@@ -44,15 +44,17 @@ namespace NanoVGDotNet.NanoVG
 	public class PerfGraph
 	{
 	    private readonly int _graphHistoryCount;
-	    private readonly GraphRenderStyle _style;
-	    private readonly string _name;
-	    private readonly float[] _values;
+        private readonly float[] _values;
 	    private int _head;
+        
+        public string Name { get; set; }
+        public GraphRenderStyle Style { get; set; }
+        public string Font { get; set; } = "sans";
 
 		public PerfGraph(GraphRenderStyle style, string name, int graphHistoryCount = 100)
 		{
-			_style = style;
-			_name = name;
+			Style = style;
+			Name = name;
 		    _graphHistoryCount = graphHistoryCount;
             _values = new float[_graphHistoryCount];
 			_head = 0;
@@ -97,7 +99,7 @@ namespace NanoVGDotNet.NanoVG
 
 			vg.BeginPath();
 			vg.MoveTo(x, y + h);
-			switch (_style)
+			switch (Style)
 			{
 			    case GraphRenderStyle.Fps:
 			        for (i = 0; i < _graphHistoryCount; i++)
@@ -136,24 +138,24 @@ namespace NanoVGDotNet.NanoVG
 			vg.FillColor(NanoVg.Rgba(255, 192, 0, 128));
 			vg.Fill();
 
-		    var avgPerc = MathHelper.Clamp((avg - min) / (max - min), 0, 1);
+		    var avgPerc = MathHelper.Clamp(1 - (avg - min) / (max - min), 0, 1);
             vg.BeginPath();
 		    vg.MoveTo(x, y + h - avgPerc * h);
             vg.LineTo(x + w, y + h - avgPerc * h);
 		    vg.StrokeColor(NanoVg.Rgba(255, 255, 255, 128));
             vg.Stroke();
 
-            vg.FontFace("sans");
+            vg.FontFace(Font);
 
-			if (_name != null)
+			if (Name != null)
 			{
 				vg.FontSize(14.0f);
 				vg.TextAlign(NvgAlign.Left | NvgAlign.Top);
 				vg.FillColor(NanoVg.Rgba(240, 240, 240, 192));
-				vg.Text(x + 3, y + 1, _name);
+				vg.Text(x + 3, y + 1, Name);
 			}
 
-			switch (_style)
+			switch (Style)
 			{
 			    case GraphRenderStyle.Fps:
 			        vg.FontSize(16.0f);

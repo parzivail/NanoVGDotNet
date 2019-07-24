@@ -1461,7 +1461,7 @@ namespace NanoVGDotNet.NanoVG
 				GL.BindBuffer(BufferTarget.ArrayBuffer, gl.VertBuf);
 				//GL.BufferData(BufferTarget.ArrayBuffer, gl.nverts * Marshal.SizeOf(typeof(NVGvertex)), gl.verts, BufferUsageHint.StaticDraw);
 				var iptr = (IntPtr)(gl.Nverts * Marshal.SizeOf(typeof(NvgVertex)));
-				GL.BufferData(BufferTarget.ArrayBuffer, iptr, gl.Verts, BufferUsageHint.StreamDraw);
+				GL.BufferData(BufferTarget.ArrayBuffer, iptr, gl.Verts, BufferUsageHint.StaticDraw);
 				GL.EnableVertexAttribArray(0);
 				GL.EnableVertexAttribArray(1);
 
